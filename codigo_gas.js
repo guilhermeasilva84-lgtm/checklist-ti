@@ -1,12 +1,3 @@
-// ════════════════════════════════════════════════════════════
-// GOOGLE APPS SCRIPT — Checklist TI Lojas
-// Cole este código em script.google.com → Novo projeto
-// Depois: Implantar → Nova implantação → App da Web
-//   • Executar como: Eu
-//   • Acesso: Qualquer pessoa
-// Copie a URL gerada e cole no app (tela de configuração)
-// ════════════════════════════════════════════════════════════
-
 function doPost(e) {
   try {
     const payload = JSON.parse(e.postData.contents);
