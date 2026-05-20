@@ -2,47 +2,36 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Checklist TI Loja</title>
 
-<link rel="icon" href="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg">
+<link rel="icon"
+href="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg">
 
 <style>
 
 :root{
-  --brand:#0d47a1;
-  --ok:#16a34a;
-  --warn:#f59e0b;
-  --crit:#dc2626;
-  --gray:#6b7280;
-  --bg:#f3f4f6;
-  --card:#ffffff;
-  --border:#e5e7eb;
+  --blue:#0d47a1;
+  --green:#16a34a;
+  --yellow:#facc15;
+  --red:#ef4444;
+  --gray:#9ca3af;
+  --bg:#f5f7fb;
 }
 
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
 }
 
 body{
-  font-family:Arial, Helvetica, sans-serif;
+  font-family:Arial, sans-serif;
   background:var(--bg);
-  color:#111;
 }
 
-#app{
-  max-width:500px;
-  margin:auto;
-  min-height:100vh;
-  background:white;
-  position:relative;
-}
-
-/* LOADING */
+/* SPLASH */
 
 #loading-screen{
   position:fixed;
@@ -52,32 +41,36 @@ body{
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  z-index:9999;
+  z-index:99999;
   animation:fadeOut 1s forwards;
   animation-delay:2s;
 }
 
 .loading-logo{
-  width:120px;
+  width:140px;
   animation:pulse 1.5s infinite;
 }
 
 .loader{
-  width:50px;
-  height:50px;
-  border:5px solid #eee;
-  border-top:5px solid #dc2626;
+  width:60px;
+  height:60px;
+  border:6px solid #eee;
+  border-top:6px solid #e30613;
   border-radius:50%;
-  margin-top:20px;
+  margin-top:25px;
   animation:spin 1s linear infinite;
 }
 
 @keyframes spin{
-  to{transform:rotate(360deg);}
+  to{
+    transform:rotate(360deg);
+  }
 }
 
 @keyframes pulse{
-  50%{transform:scale(1.06);}
+  50%{
+    transform:scale(1.08);
+  }
 }
 
 @keyframes fadeOut{
@@ -89,180 +82,199 @@ body{
 
 /* TOPO */
 
-.topo{
-  background:white;
-  padding:15px;
+.topbar{
+  background:var(--blue);
+  color:white;
+  padding:18px;
+  border-bottom-left-radius:20px;
+  border-bottom-right-radius:20px;
+}
+
+.topbar-header{
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  gap:12px;
-  border-bottom:1px solid var(--border);
 }
 
-.logo{
-  width:80px;
+.topbar-title{
+  font-size:24px;
+  font-weight:bold;
 }
 
-.topo h1{
-  font-size:18px;
-  color:var(--brand);
+.topbar-sub{
+  opacity:0.8;
+  margin-top:5px;
+  font-size:13px;
 }
 
-.topo p{
-  font-size:12px;
-  color:var(--gray);
+.logo-top{
+  width:85px;
+  background:white;
+  padding:8px;
+  border-radius:10px;
 }
 
-/* INFO */
-
-.info{
-  background:var(--brand);
-  padding:12px;
+.topbar-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px;
+  gap:10px;
+  margin-top:20px;
 }
 
-.info input{
-  width:100%;
+.field{
+  background:rgba(255,255,255,0.12);
+  border-radius:10px;
   padding:10px;
+}
+
+.field label{
+  font-size:11px;
+  opacity:0.8;
+}
+
+.field input{
+  width:100%;
+  margin-top:5px;
   border:none;
-  border-radius:8px;
+  outline:none;
+  background:transparent;
+  color:white;
+  font-size:14px;
+}
+
+/* PROGRESSO */
+
+.progress-wrap{
+  background:white;
+  margin:15px;
+  padding:15px;
+  border-radius:16px;
+}
+
+.progress-top{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
   font-size:13px;
 }
 
 .progress{
-  background:#dbeafe;
-  height:8px;
-  border-radius:999px;
+  height:12px;
+  background:#ddd;
+  border-radius:99px;
   overflow:hidden;
-  margin:12px;
 }
 
 .progress-fill{
-  background:var(--brand);
   height:100%;
   width:0%;
-  transition:0.3s;
+  background:var(--blue);
 }
 
-/* TABS */
+/* SEÇÕES */
 
-.tabs{
-  display:flex;
-  overflow:auto;
-  border-bottom:1px solid var(--border);
-  background:white;
+.section{
+  margin:15px;
 }
 
-.tab{
-  padding:12px;
-  font-size:13px;
-  white-space:nowrap;
-  cursor:pointer;
-  border-bottom:3px solid transparent;
-}
-
-.tab.active{
-  border-color:var(--brand);
-  color:var(--brand);
+.section-title{
+  font-size:20px;
   font-weight:bold;
+  margin-bottom:15px;
 }
 
-/* ITEMS */
+/* CARD */
 
-#content{
-  padding-bottom:120px;
-}
-
-.item{
+.card{
   background:white;
-  padding:14px;
-  border-bottom:1px solid var(--border);
+  border-radius:16px;
+  padding:15px;
+  margin-bottom:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.06);
 }
 
-.item-top{
+.item-title{
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.qty-row{
   display:flex;
-  justify-content:space-between;
   align-items:center;
   gap:10px;
-}
-
-.item-text{
-  font-size:14px;
-  flex:1;
-}
-
-.buttons{
-  display:flex;
-  gap:4px;
-}
-
-.btn{
-  width:35px;
-  height:32px;
-  border:none;
-  border-radius:6px;
-  font-weight:bold;
-  cursor:pointer;
-  color:white;
-}
-
-.ok{background:var(--ok);}
-.warn{background:var(--warn);}
-.crit{background:var(--crit);}
-.na{background:var(--gray);}
-
-textarea{
-  width:100%;
-  margin-top:10px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:8px;
-  resize:none;
-  min-height:60px;
+  margin-bottom:12px;
 }
 
 .qty{
   width:80px;
-  padding:8px;
-  border:1px solid var(--border);
-  border-radius:8px;
+  height:40px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  text-align:center;
 }
 
-/* FOOTER */
-
-.footer{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  max-width:500px;
-  margin:auto;
-  background:white;
-  border-top:1px solid var(--border);
-  padding:10px;
+.buttons{
   display:flex;
-  gap:10px;
+  gap:8px;
+  flex-wrap:wrap;
 }
 
-.score{
+.btn{
   flex:1;
-  background:#eff6ff;
+  min-width:100px;
+  height:42px;
+  border:none;
+  border-radius:10px;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.ok{
+  background:var(--green);
+}
+
+.at{
+  background:var(--yellow);
+  color:black;
+}
+
+.cr{
+  background:var(--red);
+}
+
+.na{
+  background:var(--gray);
+}
+
+textarea{
+  width:100%;
+  margin-top:12px;
+  border:1px solid #ddd;
   border-radius:10px;
   padding:10px;
+  resize:none;
+  min-height:60px;
 }
 
-.score h2{
-  font-size:24px;
-  color:var(--brand);
+/* SALVAR */
+
+.bottom{
+  position:sticky;
+  bottom:0;
+  background:white;
+  padding:15px;
+  box-shadow:0 -2px 10px rgba(0,0,0,0.08);
 }
 
 .save{
-  background:var(--brand);
-  color:white;
+  width:100%;
+  height:55px;
   border:none;
-  border-radius:10px;
-  padding:14px 18px;
+  background:var(--blue);
+  color:white;
+  font-size:18px;
+  border-radius:14px;
   font-weight:bold;
   cursor:pointer;
 }
@@ -272,366 +284,332 @@ textarea{
 
 <body>
 
-<!-- LOADING -->
 <div id="loading-screen">
-  <img src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg" class="loading-logo">
-  <div class="loader"></div>
+
+<img
+src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
+class="loading-logo">
+
+<div class="loader"></div>
+
 </div>
 
-<div id="app">
+<div class="topbar">
 
-<!-- TOPO -->
-<div class="topo">
-  <img src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg" class="logo">
+<div class="topbar-header">
 
-  <div>
-    <h1>Checklist TI Loja</h1>
-    <p>Sistema de Vistorias</p>
-  </div>
+<div>
+<div class="topbar-title">
+Checklist TI Loja
 </div>
 
-<!-- INFO -->
-<div class="info">
-  <input id="loja" placeholder="Loja">
-  <input id="data" type="date">
-
-  <input id="resp" placeholder="Responsável">
-  <input id="regional" placeholder="Regional">
+<div class="topbar-sub">
+Sistema de Vistorias
+</div>
 </div>
 
-<!-- PROGRESS -->
+<img
+src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
+class="logo-top">
+
+</div>
+
+<div class="topbar-grid">
+
+<div class="field">
+<label>Loja</label>
+<input placeholder="Nome da loja">
+</div>
+
+<div class="field">
+<label>Data</label>
+<input type="date">
+</div>
+
+<div class="field">
+<label>Responsável</label>
+<input placeholder="Seu nome">
+</div>
+
+<div class="field">
+<label>Regional</label>
+<input placeholder="Regional">
+</div>
+
+</div>
+
+</div>
+
+<div class="progress-wrap">
+
+<div class="progress-top">
+<div>Progresso checklist</div>
+<div id="progressText">0%</div>
+</div>
+
 <div class="progress">
-  <div class="progress-fill" id="progressFill"></div>
+<div class="progress-fill" id="progressFill"></div>
 </div>
-
-<!-- TABS -->
-<div class="tabs" id="tabs"></div>
-
-<!-- CONTENT -->
-<div id="content"></div>
-
-<!-- FOOTER -->
-<div class="footer">
-
-  <div class="score">
-    <small>Score Geral</small>
-    <h2 id="score">0%</h2>
-  </div>
-
-  <button class="save" onclick="salvarChecklist()">
-    Salvar
-  </button>
 
 </div>
 
+<div id="app"></div>
+
+<div class="bottom">
+<button class="save">
+Salvar Checklist
+</button>
 </div>
 
 <script>
 
-document.getElementById('data').value =
-new Date().toISOString().split('T')[0];
-
 const sections = [
 
 {
-id:'geral',
-label:'Geral',
+title:"Geral",
 items:[
-{id:'g1',text:'Gerente presente',type:'status'},
-{id:'g2',text:'Resp. TI presente',type:'status'},
-{id:'g3',text:'PDVs padrão abertos',type:'status'},
-{id:'g4',text:'Fila PDV',type:'qty'}
+"Gerente presente",
+"Resp. TI presente",
+"PDVs padrão abertos",
+"PDVs padrão fila",
+"PDVs self checkout abertos",
+"PDVs self checkout fila"
 ]
 },
 
 {
-id:'cftv',
-label:'CFTV',
+title:"Visão Geral",
 items:[
-{id:'c1',text:'Todas câmeras funcionando',type:'status'},
-{id:'c2',text:'Gravação ativa',type:'status'},
-{id:'c3',text:'Imagem adequada',type:'status'}
+"Loja segue padrão TI",
+"Sem equipamentos fora da área",
+"Sem sucata acumulada"
 ]
 },
 
 {
-id:'rede',
-label:'Rede',
+title:"Computadores",
 items:[
-{id:'r1',text:'Wi-Fi funcionando',type:'status'},
-{id:'r2',text:'Rack organizado',type:'status'}
+"Notebooks controlados",
+"Notebooks no CPD",
+"Sem notebooks indevidos",
+"CPUs identificadas",
+"Monitores organizados",
+"Equipamentos mapeados"
 ]
 },
 
 {
-id:'cpd',
-label:'CPD',
+title:"Impressoras",
 items:[
-{id:'p1',text:'CPD organizado',type:'status'},
-{id:'p2',text:'Sem sucata',type:'status'}
+"Quantidade correta",
+"Funcionando",
+"Conferidas",
+"Impressoras no CPD",
+"Sem impressoras sem controle"
+]
+},
+
+{
+title:"CFTV",
+items:[
+"Câmeras funcionando",
+"Imagem adequada",
+"Gravação ativa",
+"Cobertura PDV",
+"Cobertura estacionamento",
+"Cobertura recebimento"
+]
+},
+
+{
+title:"Áudio",
+items:[
+"Caixas funcionando",
+"Volume adequado",
+"Sem ruídos",
+"Cobertura uniforme"
+]
+},
+
+{
+title:"Antenas",
+items:[
+"Portal entrada",
+"Portal saída",
+"RFID funcionando",
+"Portais ligados"
+]
+},
+
+{
+title:"Coletores",
+items:[
+"Quantidade correta",
+"Coletores no CPD",
+"Equipamentos com capa",
+"Bandoleiras",
+"Estado físico"
+]
+},
+
+{
+title:"Balanças",
+items:[
+"Balanças funcionando",
+"Sem avarias",
+"Quantidade correta",
+"Integração funcionando"
+]
+},
+
+{
+title:"Celulares",
+items:[
+"Celulares controlados",
+"Todos ativos",
+"MDM aplicado",
+"Em uso operacional"
+]
+},
+
+{
+title:"Scanners",
+items:[
+"Quantidade correta",
+"Cabos bons",
+"Funcionando"
+]
+},
+
+{
+title:"Self Checkout",
+items:[
+"Quantidade correta",
+"Funcionando",
+"Pesagem OK",
+"Ventilação adequada"
+]
+},
+
+{
+title:"Telefonia",
+items:[
+"Telefones funcionando",
+"Linhas operantes",
+"Sem reclamações"
+]
+},
+
+{
+title:"CPD",
+items:[
+"Ambiente organizado",
+"Sem sucata",
+"Acesso controlado",
+"Equipamentos identificados"
+]
+},
+
+{
+title:"Rede",
+items:[
+"WiFi funcionando",
+"Rack organizado",
+"Cabeamento organizado",
+"Rede estável"
+]
+},
+
+{
+title:"Energia",
+items:[
+"Nobreak funcionando",
+"Sem sobrecarga",
+"Equipamentos protegidos"
+]
+},
+
+{
+title:"Processos",
+items:[
+"Abertura correta chamados",
+"Sem fluxo indevido",
+"Equipamentos sem retenção"
+]
+},
+
+{
+title:"Segurança",
+items:[
+"Equipamentos protegidos",
+"Sem risco furto",
+"Acesso CPD controlado"
 ]
 }
 
 ];
 
-let current='geral';
-const state={};
+const app = document.getElementById("app");
 
-function renderTabs(){
+sections.forEach(section=>{
 
-  const el=document.getElementById('tabs');
+let html = `
+<div class="section">
 
-  el.innerHTML=sections.map(sec=>`
-  
-    <div
-      class="tab ${sec.id===current?'active':''}"
-      onclick="trocar('${sec.id}')">
+<div class="section-title">
+${section.title}
+</div>
+`;
 
-      ${sec.label}
+section.items.forEach(item=>{
 
-    </div>
+html += `
 
-  `).join('');
+<div class="card">
 
-}
+<div class="item-title">
+${item}
+</div>
 
-function render(){
+<div class="qty-row">
 
-  const sec=sections.find(s=>s.id===current);
+<span>Quantidade:</span>
 
-  const el=document.getElementById('content');
+<input
+type="number"
+class="qty"
+placeholder="0"
+>
 
-  let html='';
+</div>
 
-  sec.items.forEach(item=>{
+<div class="buttons">
 
-    const s=state[item.id]||{};
+<button class="btn ok">✓ OK</button>
 
-    html+=`
-    
-    <div class="item">
+<button class="btn at">! Atenção</button>
 
-      <div class="item-top">
+<button class="btn cr">✕ Crítico</button>
 
-        <div class="item-text">
-          ${item.text}
-        </div>
+<button class="btn na">N/A</button>
 
-    `;
+</div>
 
-    if(item.type==='status'){
+<textarea
+placeholder="Observação (opcional)"
+></textarea>
 
-      html+=`
-      
-      <div class="buttons">
+</div>
 
-        <button class="btn ok"
-        onclick="setStatus('${item.id}','ok')">
-        ✓
-        </button>
+`;
 
-        <button class="btn warn"
-        onclick="setStatus('${item.id}','warn')">
-        !
-        </button>
+});
 
-        <button class="btn crit"
-        onclick="setStatus('${item.id}','crit')">
-        ✗
-        </button>
+html += `</div>`;
 
-        <button class="btn na"
-        onclick="setStatus('${item.id}','na')">
-        N/A
-        </button>
+app.innerHTML += html;
 
-      </div>
-      </div>
-
-      <textarea
-      placeholder="Observação..."
-      oninput="setObs('${item.id}',this.value)">${s.obs||''}</textarea>
-      
-      `;
-
-    }else{
-
-      html+=`
-      
-      <input
-      class="qty"
-      type="number"
-      placeholder="Qtd"
-      value="${s.qty||''}"
-      oninput="setQty('${item.id}',this.value)">
-      
-      </div>
-      `;
-
-    }
-
-    html+=`</div>`;
-
-  });
-
-  el.innerHTML=html;
-
-  updateScore();
-
-}
-
-function trocar(id){
-  current=id;
-  renderTabs();
-  render();
-}
-
-function setStatus(id,status){
-
-  if(!state[id]) state[id]={};
-
-  state[id].status=status;
-
-  updateScore();
-
-}
-
-function setObs(id,val){
-
-  if(!state[id]) state[id]={};
-
-  state[id].obs=val;
-
-}
-
-function setQty(id,val){
-
-  if(!state[id]) state[id]={};
-
-  state[id].qty=val;
-
-}
-
-function updateScore(){
-
-  const all=[];
-
-  sections.forEach(sec=>{
-    sec.items.forEach(i=>{
-      if(i.type==='status') all.push(i.id);
-    });
-  });
-
-  let pts=0;
-
-  all.forEach(id=>{
-
-    const s=state[id]?.status;
-
-    if(s==='ok') pts+=1;
-    if(s==='warn') pts+=0.5;
-
-  });
-
-  const total=all.length;
-
-  const score=Math.round((pts/total)*100);
-
-  document.getElementById('score').innerText=
-  score+'%';
-
-  const filled=all.filter(id=>state[id]?.status).length;
-
-  document.getElementById('progressFill').style.width=
-  ((filled/total)*100)+'%';
-
-}
-
-async function salvarChecklist(){
-
-  const gasUrl=localStorage.getItem('gas_url');
-
-  if(!gasUrl){
-
-    const url=prompt('Cole URL do Apps Script');
-
-    if(!url) return;
-
-    localStorage.setItem('gas_url',url);
-
-  }
-
-  const rows=[];
-
-  sections.forEach(sec=>{
-
-    sec.items.forEach(item=>{
-
-      const s=state[item.id]||{};
-
-      rows.push([
-        document.getElementById('loja').value,
-        document.getElementById('data').value,
-        document.getElementById('resp').value,
-        document.getElementById('regional').value,
-        sec.label,
-        item.text,
-        s.status||'',
-        s.qty||'',
-        s.obs||'',
-        new Date().toLocaleString('pt-BR')
-      ]);
-
-    });
-
-  });
-
-  const payload={
-
-    sheetName:'Checklist TI Lojas',
-
-    headers:[
-      'Loja',
-      'Data',
-      'Responsável',
-      'Regional',
-      'Seção',
-      'Item',
-      'Status',
-      'Quantidade',
-      'Observação',
-      'Salvo Em'
-    ],
-
-    rows
-
-  };
-
-  try{
-
-    const res=await fetch(
-      localStorage.getItem('gas_url'),
-      {
-        method:'POST',
-        headers:{
-          'Content-Type':'text/plain'
-        },
-        body:JSON.stringify(payload)
-      }
-    );
-
-    alert('Checklist salvo com sucesso!');
-
-  }catch(e){
-
-    alert('Erro ao salvar');
-
-  }
-
-}
-
-renderTabs();
-render();
+});
 
 </script>
 
