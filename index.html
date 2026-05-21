@@ -1,67 +1,86 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color"
+content="#0d47a1">
 
 <title>Checklist TI Loja</title>
 
 <link rel="icon"
-href="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg">
+href="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"><meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a56db">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Checklist TI">
+  <title>Checklist TI – Visita Loja</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <style>/* TOPO */
 
-<style>
-
-:root{
-  --blue:#0d47a1;
-  --green:#16a34a;
-  --yellow:#facc15;
-  --red:#ef4444;
-  --gray:#9ca3af;
-  --bg:#f5f7fb;
+.topo-app{
+  background:white;
+  padding:15px;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  border-bottom:1px solid #e5e7eb;
 }
 
-*{
+.logo-tenda{
+  width:80px;
+}
+
+.topo-texto h1{
+  font-size:18px;
   margin:0;
-  padding:0;
-  box-sizing:border-box;
+  color:#0d47a1;
 }
 
-body{
-  font-family:Arial, sans-serif;
-  background:var(--bg);
+.topo-texto p{
+  font-size:12px;
+  color:#6b7280;
+  margin-top:2px;
 }
 
-/* SPLASH */
+/* LOADING */
 
 #loading-screen{
   position:fixed;
   inset:0;
   background:white;
+
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
+
   z-index:99999;
+
   animation:fadeOut 1s forwards;
   animation-delay:2s;
 }
 
 .loading-logo{
-  width:140px;
+  width:130px;
   animation:pulse 1.5s infinite;
 }
 
 .loader{
-  width:60px;
-  height:60px;
+  width:55px;
+  height:55px;
   border:6px solid #eee;
   border-top:6px solid #e30613;
   border-radius:50%;
-  margin-top:25px;
-  animation:spin 1s linear infinite;
+  margin-top:20px;
+
+  animation:spinLoader 1s linear infinite;
 }
 
-@keyframes spin{
+@keyframes spinLoader{
   to{
     transform:rotate(360deg);
   }
@@ -79,539 +98,1063 @@ body{
     visibility:hidden;
   }
 }
+    :root {
+      --brand: #1a56db;
+      --brand-dark: #1448b8;
+      --ok: #059669;
+      --ok-light: #d1fae5;
+      --atencao: #d97706;
+      --atencao-light: #fef3c7;
+      --critico: #dc2626;
+      --critico-light: #fee2e2;
+      --na: #6b7280;
+      --na-light: #f3f4f6;
+      --bg: #f9fafb;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --border-light: #f3f4f6;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+<div id="loading-screen
 
-/* TOPO */
+  <img
+  src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
+  class="loading-logo">
 
-.topbar{
-  background:var(--blue);
-  color:white;
-  padding:18px;
-  border-bottom-left-radius:20px;
-  border-bottom-right-radius:20px;
-}
+  <div class="loader"></div>
+   <img
+    src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
+    class="logo-tenda"
+    alt="Logo Tenda">
 
-.topbar-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+  
+    <h1>Checklist TI Loja</h1>
+    <p>Sistema de Vistorias</p>
+  </div>
 
-.topbar-title{
-  font-size:24px;
-  font-weight:bold;
-}
+</div>
 
-.topbar-sub{
-  opacity:0.8;
-  margin-top:5px;
-  font-size:13px;
-}
+</div>
 
-.logo-top{
-  width:85px;
-  background:white;
-  padding:8px;
-  border-radius:10px;
-}
+  <img
+  src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
+  class="loading-logo">
 
-.topbar-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:20px;
-}
+  <div class="loader"></div>
 
-.field{
-  background:rgba(255,255,255,0.12);
-  border-radius:10px;
-  padding:10px;
-}
+</div>
 
-.field label{
-  font-size:11px;
-  opacity:0.8;
-}
+<!-- TOPO -->
+<div class="topo-app">
 
-.field input{
-  width:100%;
-  margin-top:5px;
-  border:none;
-  outline:none;
-  background:transparent;
-  color:white;
-  font-size:14px;
-}
+  <img
+  src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
+  class="logo-tenda">
 
-/* PROGRESSO */
+  <div class="topo-texto">
+    <h1>Checklist TI Loja</h1>
+    <p>Sistema de Vistorias</p>
+  </div>
 
-.progress-wrap{
-  background:white;
-  margin:15px;
-  padding:15px;
-  border-radius:16px;
-}
+</div>
+    body {<div class="topo-app"><div id="loading-screen">
 
-.progress-top{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:10px;
-  font-size:13px;
-}
+  <img
+  src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
+  class="loading-logo">
 
-.progress{
-  height:12px;
-  background:#ddd;
-  border-radius:99px;
-  overflow:hidden;
-}
+  <div class="loader"></div>
 
-.progress-fill{
-  height:100%;
-  width:0%;
-  background:var(--blue);
-}
+</div>
 
-/* SEÇÕES */
+  <img
+  src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
+  class="logo-tenda">
 
-.section{
-  margin:15px;
-}
+  <div>
+    <h1>Checklist TI Loja</h1>
+    <p>Sistema de Vistorias</p>
+  </div>
 
-.section-title{
-  font-size:20px;
-  font-weight:bold;
-  margin-bottom:15px;
-}
+</div>
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-/* CARD */
+    /* ── APP SHELL ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      height: 100dvh;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--surface);
+      position: relative;
+    }
 
-.card{
-  background:white;
-  border-radius:16px;
-  padding:15px;
-  margin-bottom:15px;
-  box-shadow:0 2px 10px rgba(0,0,0,0.06);
-}
+    /* ── SCREENS ── */
+    .screen { display: none; flex-direction: column; height: 100%; }
+    .screen.active { display: flex; }
 
-.item-title{
-  font-weight:bold;
-  margin-bottom:12px;
-}
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--brand);
+      color: #fff;
+      padding: 12px 16px 10px;
+      flex-shrink: 0;
+      padding-top: calc(12px + env(safe-area-inset-top));
+    }
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .topbar-title svg { width: 16px; height: 16px; opacity: 0.9; }
+    .topbar-sub { font-size: 11px; opacity: 0.75; margin-top: 2px; }
+    .topbar-meta { display: flex; gap: 8px; margin-top: 10px; }
+    .meta-field {
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 11px;
+      flex: 1;
+      color: #fff;
+    }
+    .meta-field input, .meta-field select {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 11px;
+      width: 100%;
+      font-family: inherit;
+    }
+    .meta-field input::placeholder { color: rgba(255,255,255,0.55); }
+    .meta-field select option { color: #111; background: #fff; }
+    .meta-label { font-size: 10px; opacity: 0.65; margin-bottom: 2px; }
 
-.qty-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:12px;
-}
+    /* ── PROGRESS BAR ── */
+    .progress-bar-wrap {
+      background: var(--brand);
+      padding: 0 16px 12px;
+      flex-shrink: 0;
+    }
+    .progress-track {
+      background: rgba(255,255,255,0.25);
+      border-radius: 99px;
+      height: 5px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: #fff;
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+    .progress-txt {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: rgba(255,255,255,0.8);
+      margin-top: 4px;
+    }
 
-.qty{
-  width:80px;
-  height:40px;
-  border:1px solid #ddd;
-  border-radius:10px;
-  text-align:center;
-}
+    /* ── SECTION TABS ── */
+    .section-tabs {
+      display: flex;
+      overflow-x: auto;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .section-tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      padding: 9px 13px;
+      font-size: 12px;
+      white-space: nowrap;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      user-select: none;
+      transition: color 0.15s;
+    }
+    .tab.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 600; }
+    .tab-dot {
+      display: inline-block;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      margin-left: 4px;
+      vertical-align: middle;
+      background: var(--border);
+      transition: background 0.2s;
+    }
+    .tab-dot.done { background: var(--ok); }
+    .tab-dot.partial { background: var(--atencao); }
 
-.buttons{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
+    /* ── SECTION CONTENT ── */
+    .section-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 70px;
+    }
+    .section-header {
+      background: var(--bg);
+      padding: 8px 16px 5px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .item-row {
+      background: var(--surface);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .item-text {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .item-text.qty-label { color: var(--text-secondary); font-size: 12px; }
+    .item-qty {
+      width: 58px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 6px;
+      font-size: 12px;
+      text-align: center;
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+    }
+    .item-qty:focus { border-color: var(--brand); }
+    .status-btns { display: flex; gap: 3px; flex-shrink: 0; }
+    .sbtn {
+      width: 34px; height: 30px;
+      border-radius: 6px;
+      border: 1.5px solid transparent;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.12s;
+      display: flex; align-items: center; justify-content: center;
+      user-select: none;
+    }
+    .sbtn:active { transform: scale(0.92); }
+    .ok-btn  { border-color: var(--ok);     color: var(--ok);     background: var(--surface); }
+    .at-btn  { border-color: var(--atencao); color: var(--atencao); background: var(--surface); }
+    .cr-btn  { border-color: var(--critico); color: var(--critico); background: var(--surface); }
+    .na-btn  { border-color: var(--border);  color: var(--text-secondary); background: var(--surface); font-size: 9px; }
+    .ok-btn.sel  { background: var(--ok);     color: #fff; }
+    .at-btn.sel  { background: var(--atencao); color: #fff; }
+    .cr-btn.sel  { background: var(--critico); color: #fff; }
+    .na-btn.sel  { background: var(--na);     color: #fff; border-color: var(--na); }
 
-.btn{
-  flex:1;
-  min-width:100px;
-  height:42px;
-  border:none;
-  border-radius:10px;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
+    .obs-row {
+      padding: 3px 14px 8px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .obs-input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 12px;
+      resize: none;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+      height: 38px;
+      outline: none;
+    }
+    .obs-input:focus { border-color: var(--brand); }
+    .obs-input::placeholder { color: var(--text-secondary); }
 
-.ok{
-  background:var(--green);
-}
+    /* ── BOTTOM BAR ── */
+    .bottom-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 8px 14px;
+      padding-bottom: calc(8px + env(safe-area-inset-bottom));
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      z-index: 10;
+    }
+    .score-box {
+      flex: 1;
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+    .score-num { font-size: 20px; font-weight: 700; color: var(--text); line-height: 1.1; }
+    .legend { display: flex; gap: 6px; font-size: 10px; color: var(--text-secondary); align-items: center; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .save-btn {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .save-btn:active { background: var(--brand-dark); }
+    .save-btn:disabled { background: var(--na); cursor: not-allowed; }
 
-.at{
-  background:var(--yellow);
-  color:black;
-}
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1f2937;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 100;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--ok); }
+    .toast.error { background: var(--critico); }
 
-.cr{
-  background:var(--red);
-}
+    /* ── LOADING OVERLAY ── */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .loading-overlay.show { display: flex; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .loading-txt { color: #fff; font-size: 14px; font-weight: 500; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-.na{
-  background:var(--gray);
-}
-
-textarea{
-  width:100%;
-  margin-top:12px;
-  border:1px solid #ddd;
-  border-radius:10px;
-  padding:10px;
-  resize:none;
-  min-height:60px;
-}
-
-/* SALVAR */
-
-.bottom{
-  position:sticky;
-  bottom:0;
-  background:white;
-  padding:15px;
-  box-shadow:0 -2px 10px rgba(0,0,0,0.08);
-}
-
-.save{
-  width:100%;
-  height:55px;
-  border:none;
-  background:var(--blue);
-  color:white;
-  font-size:18px;
-  border-radius:14px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-</style>
+    /* ── CONFIG SCREEN ── */
+    .config-screen {
+      padding: 24px 20px;
+      overflow-y: auto;
+    }
+    .config-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .config-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .config-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .config-input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      margin-bottom: 16px;
+    }
+    .config-input:focus { border-color: var(--brand); }
+    .config-btn {
+      width: 100%;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .config-btn:active { background: var(--brand-dark); }
+    .config-hint {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: -10px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px; height: 22px;
+      background: var(--brand);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      margin-bottom: 12px;
+    }
+    .step-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+    .config-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 20px 0;
+    }
+    .already-set {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ok-light);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--ok);
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+  </style>
 </head>
-
 <body>
+<div id="app">
 
-<div id="loading-screen">
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-txt" id="loadingTxt">Salvando...</div>
+  </div>
 
-<img
-src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
-class="loading-logo">
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
 
-<div class="loader"></div>
+  <!-- ══ TELA: CONFIG (primeiro uso) ══ -->
+  <div class="screen active" id="screenConfig">
+    <div style="background:var(--brand);color:#fff;padding:16px;padding-top:calc(16px + env(safe-area-inset-top));flex-shrink:0;">
+      <div style="font-size:16px;font-weight:700;">⚙️ Configurar integração</div>
+      <div style="font-size:12px;opacity:0.8;margin-top:2px;">Feito uma vez, salvo no dispositivo</div>
+    </div>
+    <div class="config-screen">
+      <div class="config-title">Conectar ao Google Sheets</div>
+      <div class="config-sub">Cada checklist salvo vai aparecer automaticamente como uma nova linha na sua planilha.</div>
 
-</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:12px;">Como configurar:</div>
 
-<div class="topbar">
+      <div class="step-row">
+        <span class="step-badge">1</span>
+        <span class="step-text">Acesse <strong>script.google.com</strong> → Novo projeto</span>
+      </div>
+      <div class="step-row">
+        <span class="step-badge">2</span>
+        <span class="step-text">Cole o código do arquivo <strong>codigo_gas.js</strong> que vem junto com este app</span>
+      </div>
+      <div class="step-row">
+        <span class="step-badge">3</span>
+        <span class="step-text">Clique em <strong>Implantar → Nova implantação → App da Web</strong> → Executar como "Eu" → Acesso "Qualquer pessoa"</span>
+      </div>
+      <div class="step-row">
+        <span class="step-badge">4</span>
+        <span class="step-text">Copie a <strong>URL da implantação</strong> e cole abaixo</span>
+      </div>
 
-<div class="topbar-header">
+      <hr class="config-divider">
 
-<div>
-<div class="topbar-title">
-Checklist TI Loja
-</div>
+      <div id="alreadySetMsg" class="already-set" style="display:none;">
+        ✅ URL já configurada — pode alterar abaixo se necessário
+      </div>
 
-<div class="topbar-sub">
-Sistema de Vistorias
-</div>
-</div>
+      <div class="config-label">URL do Google Apps Script</div>
+      <input class="config-input" id="gasUrl" type="url" placeholder="https://script.google.com/macros/s/...">
+      <div class="config-hint">Cole aqui a URL gerada após implantar o script.</div>
 
-<img
-src="https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo.svg"
-class="logo-top">
+      <div class="config-label">Nome da planilha (opcional)</div>
+      <input class="config-input" id="sheetName" type="text" placeholder="Checklist TI Lojas" value="Checklist TI Lojas">
+      <div class="config-hint">Deixe em branco para usar a primeira aba da planilha.</div>
 
-</div>
+      <button class="config-btn" onclick="saveConfig()">Salvar configuração e abrir app →</button>
+      <button class="config-btn" style="background:transparent;color:var(--brand);margin-top:8px;" onclick="skipConfig()">Pular por agora (sem salvar no Sheets)</button>
+    </div>
+  </div>
 
-<div class="topbar-grid">
+  <!-- ══ TELA: CHECKLIST ══ -->
+  <div class="screen" id="screenChecklist">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="topbar-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Checklist TI – Visita Loja
+        </div>
+        <button onclick="goConfig()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">⚙️</button>
+      </div>
+      <div class="topbar-meta">
+        <div class="meta-field">
+          <div class="meta-label">Loja</div>
+          <input id="inp-loja" placeholder="Nome da loja" autocomplete="off">
+        </div>
+        <div class="meta-field">
+          <div class="meta-label">Data</div>
+          <input id="inp-data" type="date">
+        </div>
+      </div>
+      <div class="topbar-meta" style="margin-top:6px;">
+        <div class="meta-field">
+          <div class="meta-label">Responsável</div>
+          <input id="inp-resp" placeholder="Seu nome" autocomplete="off">
+        </div>
+        <div class="meta-field">
+          <div class="meta-label">Regional</div>
+          <input id="inp-reg" placeholder="Regional" autocomplete="off">
+        </div>
+      </div>
+    </div>
 
-<div class="field">
-<label>Loja</label>
-<input placeholder="Nome da loja">
-</div>
+    <!-- Progress -->
+    <div class="progress-bar-wrap">
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-txt">
+        <span id="prog-txt">0 de 0 itens preenchidos</span>
+        <span id="prog-pct">0%</span>
+      </div>
+    </div>
 
-<div class="field">
-<label>Data</label>
-<input type="date">
-</div>
+    <!-- Abas -->
+    <div class="section-tabs" id="section-tabs"></div>
 
-<div class="field">
-<label>Responsável</label>
-<input placeholder="Seu nome">
-</div>
+    <!-- Conteúdo -->
+    <div class="section-content" id="section-content"></div>
 
-<div class="field">
-<label>Regional</label>
-<input placeholder="Regional">
-</div>
+    <!-- Bottom bar -->
+    <div class="bottom-bar">
+      <div class="score-box">
+        <div style="font-size:10px;color:var(--text-secondary);">Score geral</div>
+        <div class="score-num" id="score-num">—</div>
+      </div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--ok)"></span> OK</span>
+        <span><span class="dot" style="background:var(--atencao)"></span> At.</span>
+        <span><span class="dot" style="background:var(--critico)"></span> Crit.</span>
+      </div>
+      <button class="save-btn" id="saveBtn" onclick="salvarChecklist()">Salvar ↗</button>
+    </div>
+  </div>
 
-</div>
-
-</div>
-
-<div class="progress-wrap">
-
-<div class="progress-top">
-<div>Progresso checklist</div>
-<div id="progressText">0%</div>
-</div>
-
-<div class="progress">
-<div class="progress-fill" id="progressFill"></div>
-</div>
-
-</div>
-
-<div id="app"></div>
-
-<div class="bottom">
-<button class="save">
-Salvar Checklist
-</button>
 </div>
 
 <script>
-
-const sections = [
-
-{
-title:"Geral",
-items:[
-"Gerente presente",
-"Resp. TI presente",
-"PDVs padrão abertos",
-"PDVs padrão fila",
-"PDVs self checkout abertos",
-"PDVs self checkout fila"
-]
-},
-
-{
-title:"Visão Geral",
-items:[
-"Loja segue padrão TI",
-"Sem equipamentos fora da área",
-"Sem sucata acumulada"
-]
-},
-
-{
-title:"Computadores",
-items:[
-"Notebooks controlados",
-"Notebooks no CPD",
-"Sem notebooks indevidos",
-"CPUs identificadas",
-"Monitores organizados",
-"Equipamentos mapeados"
-]
-},
-
-{
-title:"Impressoras",
-items:[
-"Quantidade correta",
-"Funcionando",
-"Conferidas",
-"Impressoras no CPD",
-"Sem impressoras sem controle"
-]
-},
-
-{
-title:"CFTV",
-items:[
-"Câmeras funcionando",
-"Imagem adequada",
-"Gravação ativa",
-"Cobertura PDV",
-"Cobertura estacionamento",
-"Cobertura recebimento"
-]
-},
-
-{
-title:"Áudio",
-items:[
-"Caixas funcionando",
-"Volume adequado",
-"Sem ruídos",
-"Cobertura uniforme"
-]
-},
-
-{
-title:"Antenas",
-items:[
-"Portal entrada",
-"Portal saída",
-"RFID funcionando",
-"Portais ligados"
-]
-},
-
-{
-title:"Coletores",
-items:[
-"Quantidade correta",
-"Coletores no CPD",
-"Equipamentos com capa",
-"Bandoleiras",
-"Estado físico"
-]
-},
-
-{
-title:"Balanças",
-items:[
-"Balanças funcionando",
-"Sem avarias",
-"Quantidade correta",
-"Integração funcionando"
-]
-},
-
-{
-title:"Celulares",
-items:[
-"Celulares controlados",
-"Todos ativos",
-"MDM aplicado",
-"Em uso operacional"
-]
-},
-
-{
-title:"Scanners",
-items:[
-"Quantidade correta",
-"Cabos bons",
-"Funcionando"
-]
-},
-
-{
-title:"Self Checkout",
-items:[
-"Quantidade correta",
-"Funcionando",
-"Pesagem OK",
-"Ventilação adequada"
-]
-},
-
-{
-title:"Telefonia",
-items:[
-"Telefones funcionando",
-"Linhas operantes",
-"Sem reclamações"
-]
-},
-
-{
-title:"CPD",
-items:[
-"Ambiente organizado",
-"Sem sucata",
-"Acesso controlado",
-"Equipamentos identificados"
-]
-},
-
-{
-title:"Rede",
-items:[
-"WiFi funcionando",
-"Rack organizado",
-"Cabeamento organizado",
-"Rede estável"
-]
-},
-
-{
-title:"Energia",
-items:[
-"Nobreak funcionando",
-"Sem sobrecarga",
-"Equipamentos protegidos"
-]
-},
-
-{
-title:"Processos",
-items:[
-"Abertura correta chamados",
-"Sem fluxo indevido",
-"Equipamentos sem retenção"
-]
-},
-
-{
-title:"Segurança",
-items:[
-"Equipamentos protegidos",
-"Sem risco furto",
-"Acesso CPD controlado"
-]
-}
-
+// ════════════════════════════════════════════
+// DADOS DO CHECKLIST
+// ════════════════════════════════════════════
+const SECTIONS = [
+  { id: 'geral', label: 'Geral', items: [
+    { id: 'g1', text: 'Gerente presente', type: 'status' },
+    { id: 'g2', text: 'Resp. TI presente', type: 'status' },
+    { id: 'g3', text: 'PDVs padrão abertos', type: 'status' },
+    { id: 'g4', text: 'PDVs padrão – fila', type: 'qty', placeholder: 'Qtde' },
+    { id: 'g5', text: 'PDVs self checkout abertos', type: 'status' },
+    { id: 'g6', text: 'PDVs self checkout – fila', type: 'qty', placeholder: 'Qtde' },
+  ]},
+  { id: 'visao', label: 'Visão Geral', items: [
+    { id: 'v1', text: 'Loja segue padrão de uso dos ativos de TI', type: 'status' },
+    { id: 'v2', text: 'Não há equipamentos fora de área controlada', type: 'status' },
+    { id: 'v3', text: 'Não há acúmulo de sucata', type: 'status' },
+  ]},
+  { id: 'comp', label: 'Computadores', items: [
+    { id: 'c1', text: 'Qtde de notebooks controlada', type: 'status' },
+    { id: 'c2', text: 'Notebooks no CPD quando sem uso', type: 'status' },
+    { id: 'c3', text: 'Sem notebooks em áreas indevidas', type: 'status' },
+    { id: 'c4', text: 'CPUs no CPD identificadas', type: 'status' },
+    { id: 'c5', text: 'CPUs fora do CPD mapeadas', type: 'status' },
+    { id: 'c6', text: 'Monitores no CPD organizados', type: 'status' },
+    { id: 'c7', text: 'Equipamentos parados identificados', type: 'status' },
+  ]},
+  { id: 'imp', label: 'Impressoras', items: [
+    { id: 'i1', text: 'Qtde de impressoras condiz com contrato', type: 'status' },
+    { id: 'i2', text: 'Impressoras conferidas fisicamente', type: 'status' },
+    { id: 'i3', text: 'Impressoras PDV ativas funcionando', type: 'status' },
+    { id: 'i4', text: 'Impressoras PDV no CPD identificadas', type: 'status' },
+    { id: 'i5', text: 'Sem impressoras fora de uso sem controle', type: 'status' },
+  ]},
+  { id: 'cftv', label: 'CFTV', items: [
+    { id: 'cf1', text: 'Cobertura estacionamento adequada', type: 'status' },
+    { id: 'cf2', text: 'Cobertura entrada/saída', type: 'status' },
+    { id: 'cf3', text: 'Cobertura refrigerados', type: 'status' },
+    { id: 'cf4', text: 'Cobertura recebimento (fundos)', type: 'status' },
+    { id: 'cf5', text: 'Cobertura área de PDV', type: 'status' },
+    { id: 'cf6', text: 'Cobertura áreas críticas/gôndolas', type: 'status' },
+    { id: 'cf7', text: 'Todas as câmeras funcionando', type: 'status' },
+    { id: 'cf8', text: 'Imagem com qualidade adequada', type: 'status' },
+    { id: 'cf9', text: 'Gravação ativa', type: 'status' },
+  ]},
+  { id: 'audio', label: 'Áudio', items: [
+    { id: 'a1', text: 'Caixas/bolas funcionando', type: 'status' },
+    { id: 'a2', text: 'Volume adequado', type: 'status' },
+    { id: 'a3', text: 'Sem ruído/interferência', type: 'status' },
+    { id: 'a4', text: 'Cobertura uniforme', type: 'status' },
+  ]},
+  { id: 'ant', label: 'Antenas', items: [
+    { id: 'an1', text: 'Portal na entrada', type: 'status' },
+    { id: 'an2', text: 'Portal na saída', type: 'status' },
+    { id: 'an3', text: 'Portais ligados', type: 'status' },
+    { id: 'an4', text: 'Teste RFID realizado', type: 'status' },
+  ]},
+  { id: 'col', label: 'Coletores', items: [
+    { id: 'co1', text: 'Quantidade total conhecida', type: 'status' },
+    { id: 'co2', text: 'Quantidade no CPD', type: 'qty', placeholder: 'Qtde' },
+    { id: 'co3', text: 'Armazenamento adequado', type: 'status' },
+    { id: 'co4', text: 'Equipamentos com capa', type: 'status' },
+    { id: 'co5', text: 'Equipamentos com bandoleira', type: 'status' },
+    { id: 'co6', text: 'Estado físico adequado', type: 'status' },
+    { id: 'co7', text: 'Sem retenção por usuários', type: 'status' },
+  ]},
+  { id: 'bal', label: 'Balanças', items: [
+    { id: 'bm1', text: '[Mesa] Qtde no FLV adequada', type: 'status' },
+    { id: 'bm2', text: '[Mesa] Qtde no açougue adequada', type: 'status' },
+    { id: 'bm3', text: '[Mesa] Qtde em reserva/CPD', type: 'qty', placeholder: 'Qtde' },
+    { id: 'bm4', text: '[Mesa] Funcionamento correto', type: 'status' },
+    { id: 'bm5', text: '[Mesa] Integração com preço/etiqueta OK', type: 'status' },
+    { id: 'bm6', text: '[Mesa] Sem sinais de mau uso', type: 'status' },
+    { id: 'bp1', text: '[Piso] Quantidade controlada', type: 'status' },
+    { id: 'bp2', text: '[Piso] Estado de conservação', type: 'status' },
+    { id: 'bp3', text: '[Piso] Não usadas como apoio/armazenagem', type: 'status' },
+    { id: 'bp4', text: '[Piso] Funcionamento correto', type: 'status' },
+  ]},
+  { id: 'cel', label: 'Celulares', items: [
+    { id: 'ce1', text: 'Quantidade total controlada', type: 'status' },
+    { id: 'ce2', text: 'Todos ativos', type: 'status' },
+    { id: 'ce3', text: 'Em uso operacional', type: 'status' },
+    { id: 'ce4', text: 'Com MDM aplicado', type: 'status' },
+  ]},
+  { id: 'scan', label: 'Scanners', items: [
+    { id: 'sc1', text: 'Quantidade total', type: 'qty', placeholder: 'Qtde' },
+    { id: 'sc2', text: 'Cabos em bom estado', type: 'status' },
+    { id: 'sc3', text: 'Percentual de falha baixo', type: 'status' },
+  ]},
+  { id: 'self', label: 'Self Checkout', items: [
+    { id: 'sl1', text: 'Quantidade total', type: 'qty', placeholder: 'Qtde' },
+    { id: 'sl2', text: 'Quantidade funcionando', type: 'qty', placeholder: 'Qtde' },
+    { id: 'sl3', text: 'Equipamentos parados identificados', type: 'status' },
+    { id: 'sl4', text: 'Motivo de parada conhecido', type: 'status' },
+    { id: 'sl5', text: 'Ventilação adequada', type: 'status' },
+    { id: 'sl6', text: 'Sem problemas de pesagem', type: 'status' },
+  ]},
+  { id: 'tel', label: 'Telefonia', items: [
+    { id: 't1', text: 'Telefones funcionando', type: 'status' },
+    { id: 't2', text: 'Linhas operantes', type: 'status' },
+    { id: 't3', text: 'Sem reclamações da loja', type: 'status' },
+  ]},
+  { id: 'cpd', label: 'CPD', items: [
+    { id: 'cp1', text: 'Ambiente organizado', type: 'status' },
+    { id: 'cp2', text: 'Equipamentos identificados', type: 'status' },
+    { id: 'cp3', text: 'Sem acúmulo de sucata', type: 'status' },
+    { id: 'cp4', text: 'Controle de estoque local', type: 'status' },
+    { id: 'cp5', text: 'Acesso controlado', type: 'status' },
+  ]},
+  { id: 'rede', label: 'Rede', items: [
+    { id: 'r1', text: 'Wi-Fi funcionando', type: 'status' },
+    { id: 'r2', text: 'Rede operacional estável', type: 'status' },
+    { id: 'r3', text: 'Rack organizado', type: 'status' },
+    { id: 'r4', text: 'Cabeamento organizado', type: 'status' },
+  ]},
+  { id: 'ener', label: 'Energia', items: [
+    { id: 'en1', text: 'Nobreak funcionando', type: 'status' },
+    { id: 'en2', text: 'Equipamentos protegidos', type: 'status' },
+    { id: 'en3', text: 'Sem sobrecarga elétrica', type: 'status' },
+  ]},
+  { id: 'proc', label: 'Processo', items: [
+    { id: 'pr1', text: 'Loja abre chamados corretamente', type: 'status' },
+    { id: 'pr2', text: 'Sem atendimento fora do fluxo', type: 'status' },
+    { id: 'pr3', text: 'Equipamentos quebrados não ficam retidos', type: 'status' },
+  ]},
+  { id: 'seg', label: 'Segurança', items: [
+    { id: 's1', text: 'Equipamentos não expostos', type: 'status' },
+    { id: 's2', text: 'Sem risco de furto', type: 'status' },
+    { id: 's3', text: 'Controle de acesso ao CPD', type: 'status' },
+  ]},
 ];
 
-const app = document.getElementById("app");
+// ════════════════════════════════════════════
+// ESTADO
+// ════════════════════════════════════════════
+const state = {};
+let currentSection = SECTIONS[0].id;
 
-sections.forEach(section=>{
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Data de hoje
+  document.getElementById('inp-data').value = new Date().toISOString().split('T')[0];
 
-let html = `
-<div class="section">
-
-<div class="section-title">
-${section.title}
-</div>
-`;
-
-section.items.forEach(item=>{
-
-html += `
-
-<div class="card">
-
-<div class="item-title">
-${item}
-</div>
-
-<div class="qty-row">
-
-<span>Quantidade:</span>
-
-<input
-type="number"
-class="qty"
-placeholder="0"
->
-
-</div>
-
-<div class="buttons">
-
-<button class="btn ok">✓ OK</button>
-
-<button class="btn at">! Atenção</button>
-
-<button class="btn cr">✕ Crítico</button>
-
-<button class="btn na">N/A</button>
-
-</div>
-
-<textarea
-placeholder="Observação (opcional)"
-></textarea>
-
-</div>
-
-`;
-
+  // Verifica se já tem URL configurada
+  const savedUrl = localStorage.getItem('gas_url');
+  if (savedUrl) {
+    document.getElementById('alreadySetMsg').style.display = 'flex';
+    document.getElementById('gasUrl').value = savedUrl;
+    const savedSheet = localStorage.getItem('sheet_name');
+    if (savedSheet) document.getElementById('sheetName').value = savedSheet;
+    // Vai direto para o checklist
+    showScreen('screenChecklist');
+    initChecklist();
+  } else {
+    showScreen('screenConfig');
+  }
 });
 
-html += `</div>`;
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
-app.innerHTML += html;
+function initChecklist() {
+  renderTabs();
+  renderSection();
+  renderScore();
+}
 
-});
+// ════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════
+function saveConfig() {
+  const url = document.getElementById('gasUrl').value.trim();
+  const sheet = document.getElementById('sheetName').value.trim();
+  if (!url) { showToast('Cole a URL do Apps Script primeiro', 'error'); return; }
+  if (!url.startsWith('https://script.google.com')) {
+    showToast('URL inválida — deve começar com script.google.com', 'error'); return;
+  }
+  localStorage.setItem('gas_url', url);
+  localStorage.setItem('sheet_name', sheet || 'Checklist TI Lojas');
+  showToast('Configuração salva!', 'success');
+  setTimeout(() => {
+    showScreen('screenChecklist');
+    initChecklist();
+  }, 800);
+}
 
+function skipConfig() {
+  showScreen('screenChecklist');
+  initChecklist();
+}
+
+function goConfig() {
+  const savedUrl = localStorage.getItem('gas_url');
+  if (savedUrl) {
+    document.getElementById('alreadySetMsg').style.display = 'flex';
+    document.getElementById('gasUrl').value = savedUrl;
+  }
+  showScreen('screenConfig');
+}
+
+// ════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════
+function getStatusItems() {
+  return SECTIONS.flatMap(s => s.items.filter(i => i.type === 'status'));
+}
+
+function calcProgress() {
+  const all = getStatusItems();
+  const filled = all.filter(i => state[i.id] && state[i.id].status);
+  return { total: all.length, filled: filled.length };
+}
+
+function calcScore() {
+  const all = getStatusItems();
+  const filled = all.filter(i => state[i.id] && state[i.id].status);
+  if (!filled.length) return null;
+  const pts = { ok: 1, atencao: 0.5, critico: 0, na: null };
+  let sum = 0, n = 0;
+  filled.forEach(i => {
+    const v = pts[state[i.id].status];
+    if (v !== null) { sum += v; n++; }
+  });
+  return n ? Math.round((sum / n) * 100) : null;
+}
+
+function sectionDone(sec) {
+  const items = sec.items.filter(i => i.type === 'status');
+  if (!items.length) return 'empty';
+  const filled = items.filter(i => state[i.id] && state[i.id].status);
+  if (!filled.length) return 'none';
+  if (filled.length === items.length) return 'done';
+  return 'partial';
+}
+
+function renderTabs() {
+  const el = document.getElementById('section-tabs');
+  el.innerHTML = SECTIONS.map(s => {
+    const done = sectionDone(s);
+    const dotClass = done === 'done' ? 'done' : done === 'partial' ? 'partial' : '';
+    return `<div class="tab ${s.id === currentSection ? 'active' : ''}" onclick="switchSection('${s.id}')">${s.label}<span class="tab-dot ${dotClass}"></span></div>`;
+  }).join('');
+  // Scroll até a aba ativa
+  const activeTab = el.querySelector('.tab.active');
+  if (activeTab) activeTab.scrollIntoView({ inline: 'nearest', behavior: 'smooth' });
+}
+
+function renderSection() {
+  const sec = SECTIONS.find(s => s.id === currentSection);
+  let html = `<div class="section-header">${sec.label}</div>`;
+  sec.items.forEach(item => {
+    const s = state[item.id] || {};
+    if (item.type === 'qty') {
+      html += `<div class="item-row">
+        <span class="item-text qty-label">${item.text}</span>
+        <input class="item-qty" type="number" min="0" inputmode="numeric" placeholder="${item.placeholder || 'Nº'}" value="${s.qty || ''}" oninput="setQty('${item.id}', this.value)">
+      </div>`;
+    } else {
+      const ok = s.status === 'ok' ? 'sel' : '';
+      const at = s.status === 'atencao' ? 'sel' : '';
+      const cr = s.status === 'critico' ? 'sel' : '';
+      const na = s.status === 'na' ? 'sel' : '';
+      html += `<div class="item-row">
+        <span class="item-text">${item.text}</span>
+        <div class="status-btns">
+          <button class="sbtn ok-btn ${ok}" onclick="setStatus('${item.id}','ok')">✓</button>
+          <button class="sbtn at-btn ${at}" onclick="setStatus('${item.id}','atencao')">!</button>
+          <button class="sbtn cr-btn ${cr}" onclick="setStatus('${item.id}','critico')">✗</button>
+          <button class="sbtn na-btn ${na}" onclick="setStatus('${item.id}','na')">N/A</button>
+        </div>
+      </div>`;
+      if (s.status === 'atencao' || s.status === 'critico') {
+        html += `<div class="obs-row"><textarea class="obs-input" placeholder="Observação (opcional)..." oninput="setObs('${item.id}', this.value)">${s.obs || ''}</textarea></div>`;
+      }
+    }
+  });
+  document.getElementById('section-content').innerHTML = html;
+}
+
+function renderScore() {
+  const { total, filled } = calcProgress();
+  const pct = total ? Math.round(filled / total * 100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-txt').textContent = `${filled} de ${total} itens preenchidos`;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  const score = calcScore();
+  document.getElementById('score-num').textContent = score !== null ? score + '%' : '—';
+}
+
+// ════════════════════════════════════════════
+// INTERAÇÕES
+// ════════════════════════════════════════════
+function setStatus(id, status) {
+  if (!state[id]) state[id] = {};
+  if (state[id].status === status) { delete state[id].status; }
+  else { state[id].status = status; }
+  renderSection();
+  renderTabs();
+  renderScore();
+}
+
+function setQty(id, val) {
+  if (!state[id]) state[id] = {};
+  state[id].qty = val;
+}
+
+function setObs(id, val) {
+  if (!state[id]) state[id] = {};
+  state[id].obs = val;
+}
+
+function switchSection(id) {
+  currentSection = id;
+  renderTabs();
+  renderSection();
+  document.getElementById('section-content').scrollTop = 0;
+}
+
+// ════════════════════════════════════════════
+// SALVAR NO GOOGLE SHEETS
+// ════════════════════════════════════════════
+async function salvarChecklist() {
+  const loja = document.getElementById('inp-loja').value.trim();
+  const data = document.getElementById('inp-data').value;
+  const resp = document.getElementById('inp-resp').value.trim();
+  const reg  = document.getElementById('inp-reg').value.trim();
+
+  if (!loja) { showToast('Preencha o nome da loja', 'error'); return; }
+  if (!resp) { showToast('Preencha o responsável', 'error'); return; }
+
+  const gasUrl = localStorage.getItem('gas_url');
+  const score = calcScore();
+  const { total, filled } = calcProgress();
+
+  // Monta payload — uma linha por visita com todos os itens em JSON
+  const itensJson = {};
+  SECTIONS.forEach(sec => {
+    sec.items.forEach(item => {
+      const s = state[item.id] || {};
+      if (item.type === 'status') {
+        itensJson[item.id] = { secao: sec.label, item: item.text, status: s.status || '', obs: s.obs || '' };
+      } else {
+        itensJson[item.id] = { secao: sec.label, item: item.text, qty: s.qty || '' };
+      }
+    });
+  });
+
+  // Monta linha para o Sheets (formato flat, uma coluna por seção/status)
+  const linhas = [];
+  SECTIONS.forEach(sec => {
+    sec.items.forEach(item => {
+      const s = state[item.id] || {};
+      linhas.push([
+        loja,
+        data,
+        resp,
+        reg,
+        sec.label,
+        item.text,
+        item.type === 'status' ? (s.status || '') : '',
+        item.type === 'qty' ? (s.qty || '') : '',
+        s.obs || '',
+        score !== null ? score + '%' : '',
+        `${filled}/${total}`,
+        new Date().toLocaleString('pt-BR')
+      ]);
+    });
+  });
+
+  if (!gasUrl) {
+    // Sem integração — apenas mostra confirmação local
+    showToast('✅ Checklist concluído! (sem integração Sheets)', 'success');
+    return;
+  }
+
+  // Envia para o Google Apps Script
+  setLoading(true, 'Salvando no Sheets...');
+  document.getElementById('saveBtn').disabled = true;
+
+  try {
+    const payload = {
+      sheetName: localStorage.getItem('sheet_name') || 'Checklist TI Lojas',
+      headers: ['Loja','Data','Responsável','Regional','Seção','Item','Status','Quantidade','Observação','Score','Progresso','Salvo em'],
+      rows: linhas
+    };
+
+    const response = await fetch(gasUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.text();
+    setLoading(false);
+    document.getElementById('saveBtn').disabled = false;
+
+    if (result.includes('OK') || result.includes('ok') || response.ok) {
+      showToast('✅ Salvo no Google Sheets!', 'success');
+      // Limpa estado após salvar
+      setTimeout(() => {
+        if (confirm('Checklist salvo! Iniciar nova visita?')) {
+          resetChecklist();
+        }
+      }, 1000);
+    } else {
+      showToast('Erro ao salvar. Verifique a URL do script.', 'error');
+    }
+  } catch (e) {
+    setLoading(false);
+    document.getElementById('saveBtn').disabled = false;
+    showToast('Erro de conexão. Tente novamente.', 'error');
+    console.error(e);
+  }
+}
+
+function resetChecklist() {
+  Object.keys(state).forEach(k => delete state[k]);
+  document.getElementById('inp-loja').value = '';
+  document.getElementById('inp-resp').value = '';
+  document.getElementById('inp-reg').value = '';
+  document.getElementById('inp-data').value = new Date().toISOString().split('T')[0];
+  currentSection = SECTIONS[0].id;
+  renderTabs();
+  renderSection();
+  renderScore();
+}
+
+// ════════════════════════════════════════════
+// UTILITÁRIOS
+// ════════════════════════════════════════════
+function setLoading(show, txt = 'Carregando...') {
+  const el = document.getElementById('loadingOverlay');
+  document.getElementById('loadingTxt').textContent = txt;
+  el.classList.toggle('show', show);
+}
+
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.classList.remove('show'); }, 3000);
+}
 </script>
 
+<!-- SERVICE WORKER REGISTRATION -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
 </body>
 </html>
