@@ -194,7 +194,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Se
           <option>TA68 - Posto Itanhaém</option>
           <option>TA69 - Braganca Paulista</option>
           <option>TA70 - Jaguariúna</option>
-          <option>TA71 - Pt Sao Jose 2</option>
+          <option>TA71 - Pt São José 2</option>
           <option>TA73 - Bebedouro</option>
           <option>TA73 - Guarulhos</option>
           <option>VN03 - Ceasa</option>
@@ -224,7 +224,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Se
     <div class="legend">
       <div class="leg"><div class="leg-dot" style="background:#16a34a"></div>OK</div>
       <div class="leg"><div class="leg-dot" style="background:#d97706"></div>Atenção</div>
-      <div class="leg"><div class="leg-dot" style="background:#dc2626"></div>Crítico</div>
+      <div class="leg"><div class="leg-dot" style="background:#dc2626"></div>Critico</div>
       <div class="leg"><div class="leg-dot" style="background:#64748b"></div>N/A</div>
     </div>
     <button class="btn-save" onclick="doSave()">Salvar</button>
@@ -313,22 +313,6 @@ sections.forEach((sec,si)=>{
         const ex=document.getElementById("ex-"+k);
         if(state[k].status){b.classList.add("sel");ex.classList.add("show");card.classList.add("has-"+state[k].status);}
         else{ex.classList.remove("show");}
-    updProg();
-    return true;
-  }catch(e){return false;}
-}
-
-// Auto-save nos campos do topo
-["f-loja","f-data","f-resp","f-reg"].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el)el.addEventListener("change",saveSession);
-});
-
-// Auto-save ao fechar/minimizar
-window.addEventListener("pagehide",saveSession);
-window.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="hidden")saveSession();
-});
         updProg();
       });
     });
