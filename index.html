@@ -313,6 +313,73 @@ sections.forEach((sec,si)=>{
         const ex=document.getElementById("ex-"+k);
         if(state[k].status){b.classList.add("sel");ex.classList.add("show");card.classList.add("has-"+state[k].status);}
         else{ex.classList.remove("show");}
+        // ── PERSISTÊNCIA ─────────────────────────────────────────
+function saveSession(){
+  const session={
+    loja:document.getElementById("f-loja").value,
+    data:document.getElementById("f-data").value,
+    resp:document.getElementById("f-resp").value,
+    reg:document.getElementById("f-reg").value,
+    cur:cur,
+    state:state
+  };
+  localStorage.setItem("ti-session",JSON.stringify(session));
+}
+
+function restoreSession(){
+  try{
+    const raw=localStorage.getItem("ti-session");
+    if(!raw)return false;
+    const s=JSON.parse(raw);
+    if(s.loja)document.getElementById("f-loja").value=s.loja;
+    if(s.data)document.getElementById("f-data").value=s.data;
+    if(s.resp)document.getElementById("f-resp").value=s.resp;
+    if(s.reg)document.getElementById("f-reg").value=s.reg;
+    if(s.state){
+      Object.keys(s.state).forEach(k=>{
+        if(!state[k])return;
+        state[k].qty=s.state[k].qty||"";
+        state[k].obs=s.state[k].obs||"";
+        state[k].status=s.state[k].status||null;
+        const ex=document.getElementById("ex-"+k);
+        const qEl=document.getElementById("qty-"+k);
+        const oEl=document.getElementById("obs-"+k);
+        if(qEl)qEl.value=state[k].qty;
+        if(oEl)oEl.value=state[k].obs;
+        if(state[k].status){
+          if(ex)ex.classList.add("show");
+          const si=parseInt(k.split("-")[0]);
+          const ii=parseInt(k.split("-")[1]);
+          const slide=inner.children[si];
+          if(slide){
+            const cards=[...slide.querySelectorAll(".item-card")];
+            const card=cards[ii];
+            if(card){
+              card.className="item-card has-"+state[k].status;
+              const btn=card.querySelector("[data-s=\""+state[k].status+"\"]");
+              if(btn)btn.classList.add("sel");
+            }
+          }
+        }
+      });
+    }
+    if(typeof s.cur==="number")goTo(s.cur);
+    updProg();
+    return true;
+  }catch(e){return false;}
+}
+
+// Auto-save nos campos do topo
+["f-loja","f-data","f-resp","f-reg"].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener("change",saveSession);
+});
+
+// Auto-save ao fechar/minimizar
+window.addEventListener("pagehide",saveSession);
+window.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="hidden")saveSession();
+});
         updProg();
       });
     });
