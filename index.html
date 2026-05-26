@@ -128,11 +128,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Se
 
         const email = document.getElementById("loginEmail").value;
         const senha = document.getElementById("loginPass").value;
-        const erro = document.getElementById("loginErr");
+        const erro = document.getElementById("loginErr");  
  // senha correta
         const SenhaCorreta = "Tenda@123";
 // limpa erro anterior 
-        erro.InnerHTML = "";
+        erro.innerHTML = "";
 // validação 
 if (senha ==== senhaCorreta) { 
 
@@ -142,7 +142,7 @@ if (senha ==== senhaCorreta) {
   //mostrar sistema 
   document.GetElementById("app").style.display = "block";
 } else { 
-  erro.inner HTML = "SenhaIncorreta" 
+  erro.innerHTML = "Senha Incorreta" 
     erro.style.color  = "#ff4d4d"
     }
       }
