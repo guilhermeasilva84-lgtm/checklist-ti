@@ -121,8 +121,33 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Se
     <input class="login-input" id="loginEmail" type="email" placeholder="seu.nome@tenda.com.br" autocomplete="email">
     <label class="login-label">Senha</label>
     <input class="login-input" id="loginPass" type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" autocomplete="current-password">
-    <div class="login-err" id="loginErr"></div>
+    <div class="login-err" id="loginErr"></div> 
+    <button class="login-btn" onclick="doLogin()">
     <button class="login-btn" onclick="doLogin()">Entrar</button>
+      <script> 
+      function doLogin() { 
+
+        const email = document.getElementById("loginEmail").value;
+        const senha = document.getElementById("loginPass").value;
+        const erro = document.getElementById("loginErr").value;
+ // senha correta
+        const SenhaCorreta = "Tenda@123";
+// limpa erro anterior 
+        erro.InnerHTML = "";
+// validação 
+if (senha ==== senhaCorreta) { 
+
+  // esconder login 
+  document.GetElementById("loginPage").style.display = "none"; 
+
+  //mostrar sistema 
+  document.GetElementById("app").style.display = "block";
+} else { 
+  erro.inner HTML = "SenhaIncorreta" 
+    erro.style.color  = "#ff4d4d"
+    }
+      }
+      </script> 
     <div class="login-hint">Sistema de vistorias TI - Tenda Atacado</div>
   </div>
 </div>
