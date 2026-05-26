@@ -126,10 +126,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Se
     <div class="login-err" id="loginErr"></div> 
     <button class="login-btn" onclick="doLogin()">Entrar</button>
       <script> 
+    document.getElementById("splash").style.display = "none";
+   
       function doLogin() { 
-
-        const email = document.getElementById("loginEmail").value;
+        
         const senha = document.getElementById("loginPass").value;
+        const erro = document.getElementById("loginErr");
+
+        if (senha === "Tenda@123") { 
+        document.getElementById("loginPage").style.display = "none";
+          
+        document.getElementById("app").style.display = "flex";
         const erro = document.getElementById("loginErr");  
  // senha correta
         const SenhaCorreta = "Tenda@123";
