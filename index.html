@@ -542,20 +542,18 @@ function dismissResume() {
 // ─── LOGIN (sem senha) ────────────────────────────────────────────────────────
 function doLogin() {
   const email = document.getElementById("loginEmail").value.trim();
-  const err   = document.getElementById("loginErr");
-  err.textContent = "";
 
-  if (!email) {
-    err.textContent = "Informe o e-mail para continuar.";
+  if(email === ""){
+    alert("Digite um e-mail");
     return;
   }
-  if (!email.includes("@")) {
-    err.textContent = "Informe um e-mail válido.";
-    return;
-  }
+
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("app").style.display = "flex";
 
   sessionStorage.setItem("ti-user", email);
-  openApp(email);
+
+  document.getElementById("tb-user").innerText = email;
 }
 
 // ─── LOGOUT ───────────────────────────────────────────────────────────────────
@@ -654,11 +652,15 @@ document.getElementById("f-data").value = new Date().toISOString().split("T")[0]
 updProg();
 
 setTimeout(() => {
-  document.getElementById("splash").classList.add("hide");
+  document.getElementById("splash").style.display = "none";
+
   const savedUser = sessionStorage.getItem("ti-user");
-  if (savedUser) {
-    openApp(savedUser);
-  } else {
+
+  if(savedUser){
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("app").style.display = "flex";
+    document.getElementById("tb-user").innerText = savedUser;
+  }else{
     document.getElementById("loginPage").style.display = "flex";
   }
 }, 1800);
