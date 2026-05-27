@@ -602,11 +602,6 @@ function doLogin() {
     return;
   }
 
-  if(pass !== "Tenda"){
-    err.textContent = "Senha incorreta. Use: Tenda@123";
-    return;
-  }
-
   sessionStorage.setItem("ti-user", email);
   openApp(email);
 }
