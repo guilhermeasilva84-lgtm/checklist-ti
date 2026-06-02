@@ -16,14 +16,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Se
 /* SPLASH */
 #splash{position:fixed;inset:0;background:#ffffff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.6s ease;}
 #splash.hide{opacity:0;pointer-events:none;}
-.splash-logo-wrap{position:relative;margin-bottom:36px;}
-.splash-logo{width:180px;border-radius:18px;display:block;animation:splashPop 3s cubic-bezier(.34,1.56,.64,1) both;}
-.splash-ring{position:absolute;inset:-14px;border-radius:32px;border:3px solid rgba(255,255,255,.25);animation:pulseLogo 1.8s ease-out infinite;}
-.splash-ring2{position:absolute;inset:-26px;border-radius:40px;border:2px solid rgba(255,255,255,.12);animation:pulseLogo 1.8s ease-out 0.4s infinite;}
-@keyframes splashPop{0%{opacity:0;transform:scale(.6);}100%{opacity:1;transform:scale(1);}}
-@keyframes splashRing{0%{opacity:.7;transform:scale(1);}100%{opacity:0;transform:scale(1.15);}}
-.splash-spin{width:36px;height:36px;border:3px solid rgba(255,255,255,.25);border-top:3px solid #000000;border-radius:50%;animation:spin 0.8s linear infinite;}
-.splash-txt{margin-top:14px;font-size:13px;color:rgba(255,255,255,.8);letter-spacing:.06em;}
+.splash-logo{width:160px;border-radius:16px;margin-bottom:28px;box-shadow:0 8px 32px rgba(0,0,0,.3);}
+.splash-spin{width:40px;height:40px;border:4px solid rgba(13,71,161,.15);border-top:4px solid #0d47a1;border-radius:50%;animation:spin 0.8s linear infinite;}
+.splash-txt{margin-top:14px;font-size:13px;color:#0d47a1;letter-spacing:.05em;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* LOGIN */
@@ -31,7 +26,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Se
 #loginPage.hide{display:none;}
 .login-logo{width:140px;border-radius:14px;margin-bottom:24px;}
 .login-box{background:white;border-radius:16px;padding:28px 24px;width:100%;max-width:360px;box-shadow:0 4px 24px rgba(13,71,161,.10);}
-.login-title{font-size:18px;font-weight:700;color:#;margin-bottom:4px;}
+.login-title{font-size:18px;font-weight:700;color:#0d47a1;margin-bottom:4px;}
 .login-sub{font-size:12px;color:#64748b;margin-bottom:22px;}
 .login-label{font-size:12px;color:#374151;display:block;margin-bottom:5px;margin-top:14px;}
 .login-input{width:100%;height:42px;border:1px solid #e2e8f0;border-radius:9px;padding:0 12px;font-size:13px;font-family:inherit;outline:none;color:#111;}
@@ -39,18 +34,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Se
 .login-err{font-size:11px;color:#dc2626;margin-top:8px;min-height:16px;}
 .login-btn{width:100%;height:44px;border:none;background:#0d47a1;color:white;font-size:14px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;margin-top:20px;}
 .login-btn:active{background:#0a3d91;}
-.login-hint{font-size:10px;color:#64748b;text-align:center;margin-top:10px;}
+.login-hint{font-size:10px;color:#64748b;text-align:center;margin-top:10px;} 
+.login-hint a{color:#dc2626} text-decoration
+::target-text tb-ti
+ cd_text for ::file-selector-button{font_familiy:var(--green-bg) 
+div. /app/app for :file specificity   
 
-/* APP */
+/ SENHA DE APLICATIVO - SEEGURANÇA /
+#splash{position:fixed
+inset>2111=d
+loginhint[fontsize:10px;color:fullscreen:var(--slate) 
+/* APP */ 
 #app{width:100%;height:100vh;display:flex;flex-direction:column;overflow:hidden;background:#fff;}
 .topbar{background:#0d47a1;color:white;padding:10px 14px 9px;flex-shrink:0;}
 .tb-row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .tb-title{font-size:15px;font-weight:700;}
 .tb-sub{font-size:9px;opacity:.7;margin-top:1px;}
-.tb-right{display:flex;align-items:center;gap:8px;}
 .logo-box img{width:52px;height:32px;object-fit:contain;border-radius:6px;}
-.btn-logout{height:28px;padding:0 10px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.1);color:white;font-size:10px;font-weight:600;border-radius:6px;cursor:pointer;font-family:inherit;white-space:nowrap;}
-.btn-logout:active{background:rgba(255,255,255,.2);}
 .tb-fields{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
 .tb-field{background:rgba(255,255,255,.13);border-radius:6px;padding:5px 8px;}
 .tb-field label{font-size:9px;opacity:.7;display:block;margin-bottom:2px;}
@@ -127,53 +127,96 @@ html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Se
 .resume-dismiss{height:30px;padding:0 10px;border:1px solid #0d47a1;background:transparent;color:#0d47a1;font-size:11px;font-weight:600;border-radius:6px;cursor:pointer;font-family:inherit;}
 
 /* DARK MODE */
-body.dark{background:#0f172a;color:white;}
-body.dark #app{background:#0f172a;}
-body.dark .topbar{background:#000;}
+body.dark{
+  background:#0f172a;
+  color:white;
+}
+
+body.dark #app{
+  background:#0f172a;
+}
+
+body.dark .topbar{
+  background:#000;
+}
+
 body.dark .prog-wrap,
 body.dark .sec-nav,
-body.dark .bottom,  
+body.dark .bottom,
 body.dark .item-card,
-body.dark .cfg-box{background:#111827;border-color:#1e293b;}
+body.dark .cfg-box{
+  background:#111827;
+  border-color:#1e293b;
+}
+
 body.dark .item-label,
 body.dark .cfg-title,
 body.dark .cfg-field label,
 body.dark .prog-count,
-body.dark .nav-btn.active{color:white;}
-body.dark .nav-btn{color:#94a3b8;}
+body.dark .nav-btn.active{
+  color:white;
+}
+
+body.dark .nav-btn{
+  color:#64748
+  ;
+}
+
 body.dark .obs-in,
 body.dark .qty-in,
-body.dark .cfg-field input{background:#0f172a;color:white;border-color:#334155;}
-body.dark .btn-cfg{background:#111827;color:white;border-color:#334155;}
-body.dark #loginPage{background:#020617;}
-body.dark .login-box{background:#111827;}
+body.dark .cfg-field input{
+  background:#0f172a;
+  color:white;
+  border-color:#334155;
+}
+
+body.dark .btn-cfg{
+  background:#111827;
+  color:white;
+  border-color:#334155;
+}
+
+body.dark #loginPage{
+  background:#020617;
+}
+
+body.dark .login-box{
+  background:#111827;
+}
+
 body.dark .login-title,
 body.dark .login-sub,
-body.dark .login-label{color:white;}
-body.dark .login-input{background:#0f172a;color:white;border-color:#334155;}
+body.dark .login-label{
+  color:white;
+}
+
+body.dark .login-input{
+  background:#0f172a;
+  color:white;
+  border-color:#334155;
+}
+
 </style>
 </head>
 <body>
 
 <!-- SPLASH -->
 <div id="splash">
-  <div class="splash-logo-wrap">
-    <div class="splash-ring"></div>
-    <div class="splash-ring2"></div>
-    <img src="https://tendaatacado.my.salesforce-sites.com/resource/1603461343000/brandInverse" class="splash-logo" alt="Tenda Atacado" onerror="this.style.display='none'">
-  </div>
+  <img src="https://logodownload.org/wp-content/uploads/2021/03/tenda-atacado-logo.png" class="splash-logo" alt="Tenda Atacado">
   <div class="splash-spin"></div>
   <div class="splash-txt">Carregando checklist...</div>
 </div>
 
 <!-- LOGIN -->
 <div id="loginPage">
-  <img src="https://tendaatacado.my.salesforce-sites.com/resource/1603461343000/brandInverse" class="login-logo" alt="Tenda Atacado" onerror="this.style.display='none'">
+  <img src="https://logodownload.org/wp-content/uploads/2021/03/tenda-atacado-logo.png" class="login-logo" alt="Tenda Atacado">
   <div class="login-box">
     <div class="login-title">Acesso ao Checklist</div>
-    <div class="login-sub">Informe seu e-mail para acessar</div>
+    <div class="login-sub">Use seu e-mail e senha para acessar</div>
     <label class="login-label">E-mail</label>
     <input class="login-input" id="loginEmail" type="email" placeholder="seu.nome@tenda.com.br" autocomplete="email">
+    <label class="login-label">Senha</label>
+    <input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
     <div class="login-err" id="loginErr"></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar</button>
     <div class="login-hint">Sistema de vistorias TI - Tenda Atacado</div>
@@ -188,11 +231,8 @@ body.dark .login-input{background:#0f172a;color:white;border-color:#334155;}
         <div class="tb-title">Checklist TI Loja</div>
         <div class="tb-sub" id="tb-user">Sistema de Vistorias</div>
       </div>
-      <div class="tb-right">
-        <button class="btn-logout" onclick="doLogout()">⬡ Sair</button>
-        <div class="logo-box">
-          <img src="https://tendaatacado.my.salesforce-sites.com/resource/1603461343000/brandInverse" alt="Tenda" onerror="this.style.display='none'">
-        </div>
+      <div class="logo-box">
+        <img id="topLogo" src="https://logodownload.org/wp-content/uploads/2021/03/tenda-atacado-logo.png" alt="Tenda" onerror="this.style.display='none'">
       </div>
     </div>
     <div class="tb-fields">
@@ -273,6 +313,7 @@ body.dark .login-input{background:#0f172a;color:white;border-color:#334155;}
     </div>
   </div>
 
+  <!-- Banner de retomada de sessão -->
   <div class="resume-banner" id="resumeBanner">
     <span class="resume-txt">📋 Há um checklist em andamento. Deseja continuar?</span>
     <button class="resume-btn" onclick="restoreSession()">Continuar</button>
@@ -335,14 +376,17 @@ body.dark .login-input{background:#0f172a;color:white;border-color:#334155;}
 <div class="toast" id="toast"></div>
 
 <script>
-const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbwlNVh6I4xfELwTuui04-L0Ikzat0WbFEEjJLyvlraaKNAEg0cMtDTdaTgyAxWYiTWf/exec";
+// ─── URL DEFINITIVA ───────────────────────────────────────────────────────────
+const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbyzQBt8ScV9Ms3RLQGfqlPp3SlI3aOnYXwJjYnBQdhmXO0nDF4i9bwTOM_TF7d_25SR/exec";
 
+// Garante que a URL definitiva está sempre salva
 (function(){
   if(!localStorage.getItem("cfg-url")){
     localStorage.setItem("cfg-url", DEFAULT_URL);
   }
 })();
 
+// ─── SEÇÕES / ITENS ───────────────────────────────────────────────────────────
 const sections = [
   {title:"Geral",      items:["Resp. TI presente","PDVs padrão abertos","PDVs padrão fila","PDVs self checkout abertos","PDVs self checkout fila"]},
   {title:"Visão Geral",items:["Loja segue padrão TI","Sem equipamentos fora da área","Sem sucata acumulada"]},
@@ -362,19 +406,23 @@ const sections = [
   {title:"Segurança",   items:["Equipamentos protegidos","Sem risco furto","Acesso CPD controlado"]}
 ];
 
+// ─── ESTADO GLOBAL ────────────────────────────────────────────────────────────
 const state = {};
 let cur = 0, touchX = 0, touchY = 0;
 
-const navEl   = document.getElementById("secNav");
-const innerEl = document.getElementById("slidesInner");
+// ─── CONSTRÓI A UI ────────────────────────────────────────────────────────────
+const navEl    = document.getElementById("secNav");
+const innerEl  = document.getElementById("slidesInner");
 
 sections.forEach((sec, si) => {
+  // botão de aba
   const btn = document.createElement("button");
   btn.className = "nav-btn" + (si === 0 ? " active" : "");
   btn.textContent = sec.title;
   btn.onclick = () => goTo(si);
   navEl.appendChild(btn);
 
+  // slide
   const slide = document.createElement("div");
   slide.className = "slide";
 
@@ -430,6 +478,7 @@ sections.forEach((sec, si) => {
   innerEl.appendChild(slide);
 });
 
+// Listeners de qty/obs com auto-save
 Object.keys(state).forEach(k => {
   const q = document.getElementById("qty-" + k);
   const o = document.getElementById("obs-" + k);
@@ -437,11 +486,13 @@ Object.keys(state).forEach(k => {
   if (o) o.addEventListener("input", e => { state[k].obs = e.target.value; autoSaveDraft(); });
 });
 
+// Listeners dos campos do header
 ["f-loja","f-data","f-resp","f-reg"].forEach(id => {
   document.getElementById(id).addEventListener("change", autoSaveDraft);
   document.getElementById(id).addEventListener("input",  autoSaveDraft);
 });
 
+// ─── NAVEGAÇÃO ────────────────────────────────────────────────────────────────
 function goTo(idx) {
   cur = idx;
   innerEl.style.transform = "translateX(-" + (idx * 100) + "vw)";
@@ -449,6 +500,7 @@ function goTo(idx) {
   navEl.children[idx].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
 }
 
+// Swipe
 innerEl.addEventListener("touchstart", e => {
   touchX = e.touches[0].clientX;
   touchY = e.touches[0].clientY;
@@ -462,6 +514,7 @@ innerEl.addEventListener("touchend", e => {
   }
 }, { passive: true });
 
+// ─── PROGRESSO ────────────────────────────────────────────────────────────────
 function updProg() {
   const total = Object.keys(state).length;
   const done  = Object.values(state).filter(v => v.status !== null).length;
@@ -470,6 +523,7 @@ function updProg() {
   document.getElementById("progCount").textContent = done + " de " + total + " concluídos";
 }
 
+// ─── TOAST ────────────────────────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
@@ -477,6 +531,7 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove("show"), 3200);
 }
 
+// ─── AUTO-SAVE (rascunho) ─────────────────────────────────────────────────────
 function autoSaveDraft() {
   try {
     const draft = {
@@ -488,24 +543,27 @@ function autoSaveDraft() {
       savedAt: new Date().toISOString()
     };
     localStorage.setItem("checklist-draft", JSON.stringify(draft));
-  } catch(e) {}
+  } catch(e) { /* silencioso */ }
 }
 
+// ─── RESTAURAR RASCUNHO ───────────────────────────────────────────────────────
 function restoreSession() {
   try {
     const raw = localStorage.getItem("checklist-draft");
     if (!raw) return;
     const draft = JSON.parse(raw);
 
+    // Campos do header
     if (draft.loja) document.getElementById("f-loja").value = draft.loja;
     if (draft.data) document.getElementById("f-data").value = draft.data;
     if (draft.resp) document.getElementById("f-resp").value = draft.resp;
     if (draft.reg)  document.getElementById("f-reg").value  = draft.reg;
 
+    // Estado dos itens
     Object.keys(draft.state).forEach(k => {
       if (!state[k]) return;
       state[k] = draft.state[k];
-      const s    = state[k].status;
+      const s   = state[k].status;
       const card = document.getElementById("card-" + k);
       const ex   = document.getElementById("ex-" + k);
       const qty  = document.getElementById("qty-" + k);
@@ -539,32 +597,29 @@ function dismissResume() {
   document.getElementById("resumeBanner").classList.remove("show");
 }
 
-// ─── LOGIN (sem senha) ────────────────────────────────────────────────────────
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+
 function doLogin() {
   const email = document.getElementById("loginEmail").value.trim();
+  const pass = document.getElementById("loginPass").value;
+  const err = document.getElementById("loginErr");
+
+  err.textContent = "";
 
   if(email === ""){
-    alert("Digite um e-mail");
+    err.textContent = "Informe o e-mail.";
     return;
   }
 
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("app").style.display = "flex";
+  if(pass !== "Tenda@123"){
+    err.textContent = "Senha incorreta. Use: Tenda@123";
+    return;
+  }
 
   sessionStorage.setItem("ti-user", email);
-
-  document.getElementById("tb-user").innerText = email;
+  openApp(email);
 }
 
-// ─── LOGOUT ───────────────────────────────────────────────────────────────────
-function doLogout() {
-  if (!confirm("Deseja sair? O rascunho atual será mantido.")) return;
-  sessionStorage.removeItem("ti-user");
-  document.getElementById("app").style.display = "none";
-  document.getElementById("loginPage").classList.remove("hide");
-  document.getElementById("loginPage").style.display = "flex";
-  document.getElementById("loginEmail").value = "";
-}
 
 function openApp(email) {
   document.getElementById("loginPage").classList.add("hide");
@@ -572,12 +627,14 @@ function openApp(email) {
   document.getElementById("tb-user").textContent = email;
   document.getElementById("f-resp").value = email.split("@")[0].replace(/\./g, " ");
 
+  // Verifica rascunho salvo
   const raw = localStorage.getItem("checklist-draft");
   if (raw) {
     try {
       const draft = JSON.parse(raw);
       const d = new Date(draft.savedAt);
       const diffH = (Date.now() - d.getTime()) / 3600000;
+      // Mostra apenas se o rascunho tiver menos de 24h
       if (diffH < 24 && draft.loja) {
         const banner = document.getElementById("resumeBanner");
         banner.querySelector(".resume-txt").textContent =
@@ -585,14 +642,18 @@ function openApp(email) {
           d.toLocaleTimeString("pt-BR", {hour:"2-digit",minute:"2-digit"}) + ")";
         banner.classList.add("show");
       }
-    } catch(e) {}
+    } catch(e) { /* ignora */ }
   }
 }
 
 document.getElementById("loginEmail").addEventListener("keydown", e => {
+  if (e.key === "Enter") document.getElementById("loginPass").focus();
+});
+document.getElementById("loginPass").addEventListener("keydown", e => {
   if (e.key === "Enter") doLogin();
 });
 
+// ─── SALVAR (enviar ao Sheets) ────────────────────────────────────────────────
 function doSave() {
   const url       = localStorage.getItem("cfg-url") || DEFAULT_URL;
   const sheetName = localStorage.getItem("cfg-sheet") || "Checklist TI Lojas";
@@ -624,7 +685,7 @@ function doSave() {
     .then(d => {
       if (d.status === "OK") {
         showToast("✅ Enviado: " + d.rows + " linhas!");
-        localStorage.removeItem("checklist-draft");
+        localStorage.removeItem("checklist-draft"); // limpa rascunho após envio
       } else {
         showToast("⚠️ Erro: " + (d.message || "falha no servidor"));
       }
@@ -632,6 +693,7 @@ function doSave() {
     .catch(() => showToast("⚠️ Falha na conexão. Salvo localmente."));
 }
 
+// ─── CONFIGURAÇÕES ────────────────────────────────────────────────────────────
 function openCfg() {
   document.getElementById("cfg-url").value   = localStorage.getItem("cfg-url")   || DEFAULT_URL;
   document.getElementById("cfg-sheet").value = localStorage.getItem("cfg-sheet") || "";
@@ -648,25 +710,26 @@ function saveCfg() {
   setTimeout(() => { document.getElementById("cfgOk").textContent = ""; closeCfg(); }, 1400);
 }
 
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 document.getElementById("f-data").value = new Date().toISOString().split("T")[0];
 updProg();
 
+// Splash: aguarda 1.8s e então decide o que mostrar
 setTimeout(() => {
-  document.getElementById("splash").style.display = "none";
+  document.getElementById("splash").classList.add("hide");
 
   const savedUser = sessionStorage.getItem("ti-user");
-
-  if(savedUser){
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("app").style.display = "flex";
-    document.getElementById("tb-user").innerText = savedUser;
-  }else{
+  if (savedUser) {
+    // Sessão ativa: pula login
+    openApp(savedUser);
+  } else {
     document.getElementById("loginPage").style.display = "flex";
   }
 }, 1800);
 
 function toggleDark(){
   document.body.classList.toggle("dark");
+
   if(document.body.classList.contains("dark")){
     localStorage.setItem("dark-mode","1");
   }else{
@@ -677,6 +740,37 @@ function toggleDark(){
 if(localStorage.getItem("dark-mode")){
   document.body.classList.add("dark");
 }
+
+setTimeout(updateLogo,100);
+
+
+
+function updateLogo(){
+  const lg = document.getElementById("topLogo");
+  if(!lg) return;
+
+  if(document.body.classList.contains("dark")){
+    lg.src = "https://cdn.worldvectorlogo.com/logos/tenda-atacado-logo-monocromatico-1.svg";
+  } else {
+    lg.src = "https://logodownload.org/wp-content/uploads/2021/03/tenda-atacado-logo.png";
+  }
+}
+
+const oldToggleDark = toggleDark;
+
+toggleDark = function(){
+  oldToggleDark();
+  updateLogo();
+}
+
+updateLogo();
+
+window.addEventListener("beforeunload", function(){
+  autoSaveDraft();
+});
+
+setInterval(autoSaveDraft, 5000);
+
 </script>
 </body>
 </html>
