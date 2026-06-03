@@ -496,6 +496,8 @@ body {
   overflow: hidden;
   opacity: 0;
   transition: opacity var(--dur-slow) var(--ease-out);
+  /* Ensure flex children can compute their heights */
+  height: 100%;
 }
 #app.visible { opacity: 1; }
 
@@ -728,26 +730,42 @@ body.light .field-chip select option { background: #fff; color: #111; }
 /* ═══════════════════════════════════════════════════════════════════
    SLIDES
 ═══════════════════════════════════════════════════════════════════ */
-.slides-viewport { flex: 1; overflow: hidden; position: relative; }
+.slides-viewport {
+  flex: 1;
+  min-height: 0;        /* CRÍTICO: permite que flex:1 funcione corretamente */
+  position: relative;
+  overflow: hidden;
+}
 .slides-track {
-  display: flex; height: 100%;
+  display: flex;
+  /* NÃO usar height:100% aqui — deixar o track se expandir naturalmente */
+  height: 100%;
   will-change: transform;
   transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.slide {
-  flex-shrink: 0; width: 100vw; height: 100%;
-  overflow-y: auto; padding: 12px 12px 80px;
-  display: flex; flex-direction: column; gap: 6px;
-  scrollbar-width: none;
-}
-.slide::-webkit-scrollbar { display: none; }
+.slide,
 .slide-dashboard {
-  flex-shrink: 0; width: 100vw; height: 100%;
-  overflow-y: auto; padding: 12px 12px 80px;
-  display: flex; flex-direction: column; gap: 12px;
+  flex-shrink: 0;
+  width: 100vw;
+  /* Altura igual ao viewport pai */
+  height: 100%;
+  /* Scroll vertical independente por slide */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   scrollbar-width: none;
 }
+.slide::-webkit-scrollbar,
 .slide-dashboard::-webkit-scrollbar { display: none; }
+.slide {
+  padding: 12px 12px 80px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.slide-dashboard {
+  padding: 12px 12px 90px;
+  display: flex; flex-direction: column; gap: 10px;
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    CHECKLIST ITEM CARDS
@@ -888,72 +906,164 @@ body.light .field-chip select option { background: #fff; color: #111; }
 /* ═══════════════════════════════════════════════════════════════════
    DASHBOARD SLIDE
 ═══════════════════════════════════════════════════════════════════ */
-.dash-score-card {
+
+/* LINHA 1 — Score + Pills */
+.dash-top-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.dash-score-box {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--r-xl);
-  padding: 20px;
+  border-radius: var(--r-lg);
+  padding: 14px 12px;
   position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
 }
-.dash-score-card::before {
+.dash-score-box::before {
   content: '';
-  position: absolute; top: -40px; right: -40px;
-  width: 160px; height: 160px; border-radius: 50%;
+  position: absolute; top: -30px; right: -30px;
+  width: 100px; height: 100px; border-radius: 50%;
   background: var(--brand-gradient-glow);
-  filter: blur(30px);
+  filter: blur(24px);
   pointer-events: none;
 }
-.score-header { display: flex; align-items: center; justify-content: space-between; }
-.score-label {
-  font-size: 11px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.08em; color: var(--text-secondary);
+.dash-score-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-muted);
+}
+.dash-score-num {
+  font-size: 40px; font-weight: 800;
+  letter-spacing: -2px; line-height: 1;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin: 4px 0 2px;
+  font-feature-settings: 'tnum';
+}
+.dash-score-sub {
+  font-size: 10px; margin-top: 4px;
+  color: var(--text-muted);
 }
 .score-grade {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; border-radius: var(--r-sm);
-  font-size: 16px; font-weight: 800;
-  letter-spacing: -0.5px;
+  width: 26px; height: 26px; border-radius: 6px;
+  font-size: 13px; font-weight: 800;
+  position: absolute; top: 12px; right: 12px;
 }
 .grade-a { background: rgba(16,185,129,0.15); color: var(--score-a); }
 .grade-b { background: rgba(59,130,246,0.15); color: var(--score-b); }
 .grade-c { background: rgba(245,158,11,0.15); color: var(--score-c); }
 .grade-d { background: rgba(239,68,68,0.15); color: var(--score-d); }
-.score-number {
-  font-size: 52px; font-weight: 800;
-  letter-spacing: -3px; line-height: 1;
-  background: var(--brand-gradient);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  margin: 8px 0 4px;
-  font-feature-settings: 'tnum';
+
+/* 4 pills à direita */
+.dash-pills-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
 }
-.score-sub {
-  font-size: 12px; color: var(--text-secondary);
+.dash-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 8px 6px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px;
 }
-.score-breakdown {
-  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 6px; margin-top: 16px;
-}
-.score-mini {
-  background: var(--bg-input);
-  border-radius: var(--r-sm);
-  padding: 8px 6px; text-align: center;
-}
-.score-mini-val {
-  font-size: 18px; font-weight: 700;
+.dash-pill-val {
+  font-size: 20px; font-weight: 700;
   line-height: 1; font-feature-settings: 'tnum';
 }
-.score-mini-lbl {
-  font-size: 9px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.05em; margin-top: 3px;
+.dash-pill-lbl {
+  font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em;
 }
-.score-mini.ok .score-mini-val { color: var(--ok); }
-.score-mini.warn .score-mini-val { color: var(--warn); }
-.score-mini.crit .score-mini-val { color: var(--crit); }
-.score-mini.na .score-mini-val { color: var(--na); }
-.score-mini.ok .score-mini-lbl { color: var(--ok); }
-.score-mini.warn .score-mini-lbl { color: var(--warn); }
-.score-mini.crit .score-mini-lbl { color: var(--crit); }
-.score-mini.na .score-mini-lbl { color: var(--na); }
+.dash-pill.ok  { border-color: rgba(34,197,94,0.2); }
+.dash-pill.warn{ border-color: rgba(245,158,11,0.2); }
+.dash-pill.crit{ border-color: rgba(239,68,68,0.2); }
+.dash-pill.ok   .dash-pill-val { color: var(--ok); }
+.dash-pill.warn .dash-pill-val { color: var(--warn); }
+.dash-pill.crit .dash-pill-val { color: var(--crit); }
+.dash-pill.na   .dash-pill-val { color: var(--na); }
+.dash-pill.ok   .dash-pill-lbl { color: var(--ok); }
+.dash-pill.warn .dash-pill-lbl { color: var(--warn); }
+.dash-pill.crit .dash-pill-lbl { color: var(--crit); }
+.dash-pill.na   .dash-pill-lbl { color: var(--na); }
+
+/* PROGRESSO */
+.dash-prog-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 12px 14px;
+  flex-shrink: 0;
+}
+.dash-prog-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 8px;
+}
+.dash-prog-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+.dash-prog-pct   { font-size: 13px; font-weight: 700; color: var(--brand); font-feature-settings: 'tnum'; }
+.dash-prog-track {
+  height: 6px; background: var(--border);
+  border-radius: var(--r-full); overflow: hidden;
+}
+.dash-prog-fill {
+  height: 100%; border-radius: var(--r-full);
+  background: var(--brand-gradient);
+  transition: width 0.5s var(--ease-out);
+}
+.dash-prog-sub {
+  font-size: 10px; color: var(--text-muted); margin-top: 6px;
+}
+
+/* CHART */
+.dash-chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 12px 12px 8px;
+  flex-shrink: 0;
+}
+.dash-chart-title {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-secondary); margin-bottom: 10px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.dash-bars-wrap { display: flex; flex-direction: column; gap: 4px; }
+.dash-bars {
+  display: flex; align-items: flex-end;
+  gap: 3px; height: 56px;
+}
+.dash-bars-labels {
+  display: flex; gap: 3px;
+}
+.chart-bar-wrap { flex: 1; }
+.chart-bar {
+  width: 100%; border-radius: 3px 3px 0 0;
+  background: var(--border-strong);
+  transition: height 0.5s var(--ease-out), background var(--dur-mid);
+  position: relative; cursor: pointer; min-height: 3px;
+}
+.chart-bar:active { filter: brightness(1.2); }
+.chart-bar-tooltip {
+  position: absolute; bottom: calc(100% + 5px); left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 3px 7px;
+  font-size: 10px; font-weight: 600; white-space: nowrap;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-fast);
+  z-index: 5;
+}
+.chart-bar:hover .chart-bar-tooltip,
+.chart-bar:active .chart-bar-tooltip { opacity: 1; }
+.chart-bar-lbl {
+  flex: 1; font-size: 8px; color: var(--text-muted);
+  text-align: center; overflow: hidden; white-space: nowrap;
+}
 
 /* SECTION HEALTH */
 .section-health-card {
@@ -961,15 +1071,16 @@ body.light .field-chip select option { background: #fff; color: #111; }
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
   overflow: hidden;
+  flex-shrink: 0;
 }
 .section-health-header {
-  padding: 14px 16px 10px;
+  padding: 12px 14px 8px;
   display: flex; align-items: center; justify-content: space-between;
 }
-.section-health-title { font-size: 13px; font-weight: 600; }
-.section-health-list { padding: 0 16px 14px; display: flex; flex-direction: column; gap: 8px; }
+.section-health-title { font-size: 12px; font-weight: 600; }
+.section-health-list { padding: 0 14px 12px; display: flex; flex-direction: column; gap: 6px; }
 .sh-row {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 8px;
 }
 .sh-label { font-size: 12px; font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sh-bar-wrap { width: 80px; flex-shrink: 0; }
@@ -988,8 +1099,9 @@ body.light .field-chip select option { background: #fff; color: #111; }
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
-  padding: 16px;
+  padding: 14px;
   position: relative; overflow: hidden;
+  flex-shrink: 0;
 }
 .ai-card::before {
   content: '';
@@ -1000,7 +1112,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
 }
 .ai-header {
   display: flex; align-items: center; gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .ai-badge {
   display: inline-flex; align-items: center; gap: 4px;
@@ -1048,6 +1160,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
   border: 1px solid rgba(239,68,68,0.2);
   border-radius: var(--r-xl);
   overflow: hidden;
+  flex-shrink: 0;
 }
 .critical-header {
   background: linear-gradient(135deg, rgba(239,68,68,0.08), transparent);
@@ -1074,49 +1187,12 @@ body.light .field-chip select option { background: #fff; color: #111; }
 .critical-item:hover { background: var(--bg-card-hover); }
 .critical-item-sec { font-size: 10px; color: var(--text-muted); margin-left: auto; white-space: nowrap; }
 
-/* CHARTS */
-.chart-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--r-xl);
-  padding: 16px;
-}
-.chart-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; }
-.chart-bars { display: flex; align-items: flex-end; gap: 4px; height: 80px; }
-.chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.chart-bar {
-  width: 100%; border-radius: 4px 4px 0 0;
-  background: var(--bg-badge);
-  transition: height 0.6s var(--ease-out), background var(--dur-mid);
-  position: relative; cursor: pointer;
-  min-height: 4px;
-}
-.chart-bar:hover { filter: brightness(1.2); }
-.chart-bar-tooltip {
-  position: absolute; bottom: calc(100% + 6px); left: 50%;
-  transform: translateX(-50%) scale(0.9);
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 4px 8px;
-  font-size: 10px; font-weight: 600; white-space: nowrap;
-  opacity: 0; pointer-events: none;
-  transition: opacity var(--dur-fast), transform var(--dur-fast);
-}
-.chart-bar:hover .chart-bar-tooltip { opacity: 1; transform: translateX(-50%) scale(1); }
-.chart-bar-lbl { font-size: 9px; color: var(--text-muted); text-align: center; }
-
-/* DOUGHNUT */
+/* DOUGHNUT (kept for potential future use) */
 .doughnut-wrap { display: flex; align-items: center; gap: 16px; }
 .doughnut-svg { width: 80px; height: 80px; flex-shrink: 0; }
 .doughnut-legend { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-.doughnut-legend-item {
-  display: flex; align-items: center; gap: 7px;
-  font-size: 11px;
-}
-.doughnut-legend-dot {
-  width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0;
-}
+.doughnut-legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; }
+.doughnut-legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 .doughnut-legend-label { color: var(--text-secondary); flex: 1; }
 .doughnut-legend-val { font-weight: 600; color: var(--text-primary); font-feature-settings: 'tnum'; }
 
@@ -1938,39 +2014,76 @@ function buildDashboardSlide() {
   const slide = document.createElement('div');
   slide.className = 'slide-dashboard';
   slide.id = 'slide-dashboard';
+
   slide.innerHTML = `
-    <div class="dash-score-card" id="dashScoreCard">
-      <div class="score-header">
-        <span class="score-label">Score Geral</span>
+    <!-- LINHA 1: Score + 4 pills -->
+    <div class="dash-top-row">
+      <div class="dash-score-box" id="dashScoreCard">
+        <div class="dash-score-label">Score</div>
+        <div class="dash-score-num" id="dashScore">—</div>
         <span class="score-grade grade-b" id="dashGrade">B</span>
+        <div class="dash-score-sub" id="dashScoreSub">Sem dados</div>
       </div>
-      <div class="score-number" id="dashScore">0</div>
-      <div class="score-sub" id="dashScoreSub">Inicie o checklist para calcular o score</div>
-      <div class="score-breakdown">
-        <div class="score-mini ok"><div class="score-mini-val" id="dOk">0</div><div class="score-mini-lbl">OK</div></div>
-        <div class="score-mini warn"><div class="score-mini-val" id="dWarn">0</div><div class="score-mini-lbl">Atenção</div></div>
-        <div class="score-mini crit"><div class="score-mini-val" id="dCrit">0</div><div class="score-mini-lbl">Crítico</div></div>
-        <div class="score-mini na"><div class="score-mini-val" id="dNa">0</div><div class="score-mini-lbl">N/A</div></div>
+      <div class="dash-pills-col">
+        <div class="dash-pill ok">
+          <span class="dash-pill-val" id="dOk">0</span>
+          <span class="dash-pill-lbl">OK</span>
+        </div>
+        <div class="dash-pill warn">
+          <span class="dash-pill-val" id="dWarn">0</span>
+          <span class="dash-pill-lbl">Atenção</span>
+        </div>
+        <div class="dash-pill crit">
+          <span class="dash-pill-val" id="dCrit">0</span>
+          <span class="dash-pill-lbl">Crítico</span>
+        </div>
+        <div class="dash-pill na">
+          <span class="dash-pill-val" id="dNa">0</span>
+          <span class="dash-pill-lbl">N/A</span>
+        </div>
       </div>
     </div>
-    <div class="chart-card" id="dashChart">
-      <div class="chart-title">Health por Categoria</div>
-      <div class="chart-bars" id="dashBars"></div>
+
+    <!-- LINHA 2: Progresso -->
+    <div class="dash-prog-card">
+      <div class="dash-prog-header">
+        <span class="dash-prog-label">Progresso</span>
+        <span class="dash-prog-pct" id="dashProgressPct">0%</span>
+      </div>
+      <div class="dash-prog-track">
+        <div class="dash-prog-fill" id="dashProgressFill" style="width:0%"></div>
+      </div>
+      <div class="dash-prog-sub" id="dashProgressSub">0 de 0 itens avaliados</div>
     </div>
+
+    <!-- LINHA 3: Críticos (oculto por padrão) -->
     <div id="criticalCard" class="critical-card hidden">
       <div class="critical-header">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span style="font-size:13px;font-weight:600;color:var(--crit);flex:1">Itens Críticos</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span style="font-size:12px;font-weight:600;color:var(--crit);flex:1">Itens Críticos</span>
         <span class="critical-count-badge" id="critCountBadge">0</span>
       </div>
       <div class="critical-list" id="criticalList"></div>
     </div>
+
+    <!-- LINHA 4: Gráfico de barras -->
+    <div class="dash-chart-card">
+      <div class="dash-chart-title">Saúde por Categoria</div>
+      <div class="dash-bars-wrap">
+        <div class="dash-bars" id="dashBars"></div>
+        <div class="dash-bars-labels" id="dashBarLabels"></div>
+      </div>
+    </div>
+
+    <!-- LINHA 5: Saúde por seção -->
     <div class="section-health-card">
       <div class="section-health-header">
-        <span class="section-health-title">Saúde por Seção</span>
+        <span class="section-health-title">Detalhe por Seção</span>
       </div>
       <div class="section-health-list" id="sectionHealthList"></div>
     </div>
+
+    <!-- LINHA 6: IA Insights -->
     <div class="ai-card" id="aiInsightsCard">
       <div class="ai-header">
         <span class="ai-badge">IA</span>
@@ -1981,11 +2094,12 @@ function buildDashboardSlide() {
           <div class="ai-insight-icon">💡</div>
           <div class="ai-insight-body">
             <div class="ai-insight-title">Aguardando dados</div>
-            <div class="ai-insight-desc">Complete o checklist para receber insights automáticos sobre a loja.</div>
+            <div class="ai-insight-desc">Complete o checklist para receber insights.</div>
           </div>
         </div>
       </div>
     </div>`;
+
   DOM.slidesTrack.appendChild(slide);
 }
 
@@ -2202,45 +2316,67 @@ function updateDashboard() {
   const critC = State.countBy('crit');
   const naC   = State.countBy('na');
   const done  = State.doneItems();
+  const total = State.totalItems();
+  const pct   = State.pct();
 
-  // Score card
-  document.getElementById('dashScore').textContent = score;
+  // Score box
+  const scoreEl = document.getElementById('dashScore');
   const gradeEl = document.getElementById('dashGrade');
-  gradeEl.textContent = grade;
-  gradeEl.className = `score-grade grade-${grade.toLowerCase()}`;
-  document.getElementById('dOk').textContent   = okC;
-  document.getElementById('dWarn').textContent  = warnC;
-  document.getElementById('dCrit').textContent  = critC;
-  document.getElementById('dNa').textContent    = naC;
-
-  const subEl = document.getElementById('dashScoreSub');
-  if (!done) {
-    subEl.textContent = 'Inicie o checklist para calcular o score';
-  } else {
-    const pct = State.pct();
-    subEl.textContent = `${pct}% concluído · ${critC > 0 ? `⚠️ ${critC} crítico${critC > 1 ? 's' : ''}` : 'Sem itens críticos'}`;
+  const subEl   = document.getElementById('dashScoreSub');
+  if (scoreEl) scoreEl.textContent = done ? score : '—';
+  if (gradeEl) { gradeEl.textContent = done ? grade : '—'; gradeEl.className = `score-grade grade-${grade.toLowerCase()}`; }
+  if (subEl)   {
+    subEl.textContent = !done ? 'Sem dados' : critC > 0 ? `${critC} crítico${critC>1?'s':''}` : 'Sem críticos';
+    subEl.style.color = critC > 0 ? 'var(--crit)' : done ? 'var(--ok)' : 'var(--text-muted)';
   }
 
+  // Pills
+  const okEl   = document.getElementById('dOk');
+  const warnEl = document.getElementById('dWarn');
+  const critEl = document.getElementById('dCrit');
+  const naEl   = document.getElementById('dNa');
+  if (okEl)   okEl.textContent   = okC;
+  if (warnEl) warnEl.textContent = warnC;
+  if (critEl) critEl.textContent = critC;
+  if (naEl)   naEl.textContent   = naC;
+
+  // Progress
+  const ppEl = document.getElementById('dashProgressPct');
+  const pfEl = document.getElementById('dashProgressFill');
+  const psEl = document.getElementById('dashProgressSub');
+  if (ppEl) ppEl.textContent = pct + '%';
+  if (pfEl) pfEl.style.width = pct + '%';
+  if (psEl) psEl.textContent = `${done} de ${total} itens avaliados`;
+
   // Bar chart
-  const barsEl = document.getElementById('dashBars');
+  const barsEl   = document.getElementById('dashBars');
+  const labelsEl = document.getElementById('dashBarLabels');
   if (barsEl) {
     barsEl.innerHTML = '';
+    if (labelsEl) labelsEl.innerHTML = '';
     SECTIONS.forEach((sec, si) => {
-      const keys = sec.items.map((_, ii) => `${si}-${ii}`);
-      const ok   = keys.filter(k => State.items[k]?.status === 'ok').length;
-      const crit = keys.filter(k => State.items[k]?.status === 'crit').length;
-      const total= keys.length;
-      const ht   = Math.max(4, Math.round((ok / total) * 72));
-      const color = crit > 0 ? 'var(--crit)' : ok > 0 ? 'var(--ok)' : 'var(--border-strong)';
+      const keys  = sec.items.map((_, ii) => `${si}-${ii}`);
+      const okN   = keys.filter(k => State.items[k]?.status === 'ok').length;
+      const critN = keys.filter(k => State.items[k]?.status === 'crit').length;
+      const warnN = keys.filter(k => State.items[k]?.status === 'warn').length;
+      const total = keys.length;
+      const ht    = Math.max(3, Math.round((okN / total) * 56));
+      const color = critN > 0 ? 'var(--crit)' : warnN > 0 ? 'var(--warn)' : okN > 0 ? 'var(--ok)' : 'var(--border-strong)';
 
-      const wrap = document.createElement('div');
-      wrap.className = 'chart-bar-wrap';
-      wrap.innerHTML = `
+      const bar = document.createElement('div');
+      bar.className = 'chart-bar-wrap';
+      bar.innerHTML = `
         <div class="chart-bar" style="height:${ht}px;background:${color}" onclick="goToTab(${si})">
-          <div class="chart-bar-tooltip">${sec.title}: ${Math.round(ok/total*100)}%</div>
-        </div>
-        <div class="chart-bar-lbl">${sec.title.substring(0,4)}</div>`;
-      barsEl.appendChild(wrap);
+          <div class="chart-bar-tooltip">${sec.title}: ${Math.round(okN/total*100)}%</div>
+        </div>`;
+      barsEl.appendChild(bar);
+
+      if (labelsEl) {
+        const lbl = document.createElement('div');
+        lbl.className = 'chart-bar-lbl';
+        lbl.textContent = sec.title.substring(0, 4);
+        labelsEl.appendChild(lbl);
+      }
     });
   }
 
