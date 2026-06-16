@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Sistema corporativo de vistorias TI — Tenda Atacado">
-<meta name="application-name" content="Checklist TI - Tenda">
-<title>Checklist TI - Tenda</title>
+<meta name="application-name" content="Tenda TI Inspector">
+<title>Tenda TI · Inspector</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -1796,14 +1796,10 @@ body.light .field-chip select option { background: #fff; color: #111; }
     </div>
     <div class="modal-body">
       <div>
-        <div class="modal-section-label">Google Sheets</div>
+        <div class="modal-section-label">Power Automate</div>
         <div class="cfg-field">
-          <label class="cfg-label" for="cfgUrl">URL do Web App (Apps Script)</label>
-          <input class="cfg-input" id="cfgUrl" type="url" placeholder="https://script.google.com/macros/s/...">
-        </div>
-        <div class="cfg-field" style="margin-top:10px">
-          <label class="cfg-label" for="cfgSheet">Nome da aba</label>
-          <input class="cfg-input" id="cfgSheet" type="text" placeholder="Vistorias">
+          <label class="cfg-label" for="cfgUrl">URL do fluxo (HTTP trigger)</label>
+          <input class="cfg-input" id="cfgUrl" type="url" placeholder="https://...environment.api.powerplatform.com/powerautomate/automations/direct/workflows/.../triggers/manual/paths/invoke?api-version=1">
         </div>
       </div>
       <div>
@@ -1898,7 +1894,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
    Architecture: Module pattern, event-driven, offline-first
 ═══════════════════════════════════════════════════════════════════════ */
 
-const DEFAULT_URL = "https://script.google.com/macros/s/AKfycbwlNVh6I4xfELwTuui04-L0Ikzat0WbFEEjJLyvlraaKNAEg0cMtDTdaTgyAxWYiTWf/exec";
+const DEFAULT_URL = "https://defaultd685b1be26d44fc289b26333f4469d.11.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8d132a623ef64376b6392fd620b80610/triggers/manual/paths/invoke?api-version=1";
 
 /* ─── DATA MODEL ──────────────────────────────────────────────────── */
 const SECTIONS = [
@@ -2657,7 +2653,6 @@ function closeModal(id) {
 
 function openSettings() {
   document.getElementById('cfgUrl').value   = localStorage.getItem('cfg-url')   || DEFAULT_URL;
-  document.getElementById('cfgSheet').value = localStorage.getItem('cfg-sheet') || '';
   document.getElementById('cfgEmail').value = localStorage.getItem('cfg-email') || '';
   openModal('settingsModal');
 }
@@ -2665,7 +2660,6 @@ function openSettings() {
 function saveSettings() {
   const url = document.getElementById('cfgUrl').value.trim() || DEFAULT_URL;
   localStorage.setItem('cfg-url',   url);
-  localStorage.setItem('cfg-sheet', document.getElementById('cfgSheet').value);
   localStorage.setItem('cfg-email', document.getElementById('cfgEmail').value);
   showToast('✅ Configurações salvas!', 'success');
   setTimeout(() => closeModal('settingsModal'), 800);
@@ -2835,25 +2829,33 @@ Gerado em: ${new Date().toLocaleString('pt-BR')}`;
   }
 }
 
-/* ─── SAVE TO SHEETS ──────────────────────────────────────────────── */
+/* ─── SAVE TO POWER AUTOMATE / EXCEL ──────────────────────────────── */
 function buildPayload() {
   const loja = document.getElementById('fLoja').value;
   const data = document.getElementById('fData').value;
   const resp = document.getElementById('fResp').value;
   const reg  = document.getElementById('fReg').value;
-  const now  = new Date().toLocaleString('pt-BR');
-  const sheetName = localStorage.getItem('cfg-sheet') || 'Checklist TI Lojas';
 
-  const headers = ['Loja','Data','Responsável','Regional','Seção','Item','Status','Quantidade','Observação','Score','Progresso','Salvo em'];
-  const rows = [];
+  const itens = [];
   SECTIONS.forEach((sec, si) => {
     sec.items.forEach((item, ii) => {
       const s = State.items[`${si}-${ii}`];
-      rows.push([loja, data, resp, reg, sec.title, item, s.status || '', s.qty || '', s.obs || '', State.overallScore(), State.pct() + '%', now]);
+      if (!s || !s.status) return; // só envia itens já preenchidos
+      itens.push({
+        loja: loja || '',
+        data: data || '',
+        responsavel: resp || '',
+        regional: reg || '',
+        secao: sec.title,
+        item: item,
+        status: s.status || '',
+        quantidade: s.qty || '',
+        observacao: s.obs || ''
+      });
     });
   });
 
-  return { sheetName, headers, rows };
+  return { itens };
 }
 
 function doSave() {
@@ -2867,19 +2869,29 @@ function doSave() {
   localStorage.setItem('checklist-data', JSON.stringify(payload));
   autoSave();
 
+  if (!payload.itens.length) {
+    showToast('⚠️ Nenhum item preenchido para enviar.', 'error');
+    btn.classList.remove('loading');
+    btn.innerHTML = `<svg class="save-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar Vistoria`;
+    return;
+  }
+
   showToast('⬆️ Enviando dados...', 'info');
 
-  fetch(url, { method: 'POST', body: JSON.stringify(payload) })
-    .then(r => r.json())
-    .then(d => {
-      if (d.status === 'OK') {
-        showToast(`✅ Salvo! ${d.rows} linhas enviadas`, 'success');
-        localStorage.removeItem('checklist-draft');
-      } else {
-        showToast('⚠️ Erro no servidor. Salvo localmente.', 'error');
-      }
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
     })
-    .catch(() => showToast('⚠️ Offline. Dados salvos localmente.', 'error'))
+    .then(() => {
+      showToast(`✅ Salvo! ${payload.itens.length} linhas enviadas`, 'success');
+      localStorage.removeItem('checklist-draft');
+    })
+    .catch(() => showToast('⚠️ Erro ao enviar. Dados salvos localmente.', 'error'))
     .finally(() => {
       btn.classList.remove('loading');
       btn.innerHTML = `<svg class="save-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar Vistoria`;
