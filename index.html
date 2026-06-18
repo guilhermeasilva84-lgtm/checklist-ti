@@ -11,10 +11,16 @@
 <title>Checklist TI - Tenda</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<!-- MSAL.js — biblioteca oficial da Microsoft para login com conta corporativa (Entra ID) -->
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<!-- MSAL.js — biblioteca oficial da Microsoft para login com conta corporativa (Entra ID).
+     Carregamos via jsDelivr (espelho oficial do pacote npm, CDN global muito estável) e,
+     se por algum motivo falhar, caímos para os CDNs diretos da Microsoft como reserva. -->
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"></script>
 <script>
-  // Fallback automático para o mirror europeu, caso o CDN principal falhe
+  if (typeof msal === 'undefined') {
+    document.write('<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"><\/script>');
+  }
+</script>
+<script>
   if (typeof msal === 'undefined') {
     document.write('<script src="https://alcdn.msftauth.net/browser/2.38.3/js/msal-browser.min.js"><\/script>');
   }
@@ -3111,7 +3117,8 @@ function doMsLogin() {
 
   const pca = getMsalInstance();
   if (!pca) {
-    errEl.textContent = '⚠️ Não foi possível carregar o login da Microsoft. Verifique sua conexão e tente novamente.';
+    console.error('[MSAL] Biblioteca não carregada. typeof msal =', typeof msal, '| isMsalConfigured =', isMsalConfigured());
+    errEl.textContent = '⚠️ Não foi possível carregar a biblioteca de login da Microsoft (msal.js). Recarregue a página (puxe para atualizar) e tente de novo. Se persistir, pode ser bloqueio de rede/extensão do navegador.';
     return;
   }
 
