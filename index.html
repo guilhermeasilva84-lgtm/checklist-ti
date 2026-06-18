@@ -2380,10 +2380,10 @@ function handleStatusClick(key, newStatus) {
 function updateProgress() {
   const total = State.totalItems();
   const done  = State.doneItems();
-  const okC   = State.countBy('ok');
-  const warnC = State.countBy('warn');
-  const critC = State.countBy('crit');
-  const naC   = State.countBy('na');
+  const okC   = State.countBy('OK');
+  const warnC = State.countBy('ATENÇÃO');
+  const critC = State.countBy('CRÍTICO');
+  const naC   = State.countBy('N/A');
   const pct   = State.pct();
 
   DOM.progressFill.style.width = pct + '%';
