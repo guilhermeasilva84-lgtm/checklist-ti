@@ -11,29 +11,15 @@
 <title>Checklist TI - Tenda</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  <script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
-<button onclick="window.location.href='https://login.microsoftonline.com/'">
-    Entrar com Microsoft
-</button>
-<button onclick="login()">Entrar com Microsoft</button>
-
+<!-- MSAL.js — biblioteca oficial da Microsoft para login com conta corporativa (Entra ID) -->
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
 <script>
-const msalConfig = {
-    auth: {
-        clientId: "583ecb85-0864-4f6d-85f3-9ce48b5ab9cd",
-        redirectUri: window.location.origin
-    }
-};
-
-const msalInstance = new msal.PublicClientApplication(msalConfig);
-
-function login() {
-    msalInstance.loginRedirect({
-        scopes: ["openid", "profile", "email"]
-    });
-}
+  // Fallback automático para o mirror europeu, caso o CDN principal falhe
+  if (typeof msal === 'undefined') {
+    document.write('<script src="https://alcdn.msftauth.net/browser/2.38.3/js/msal-browser.min.js"><\/script>');
+  }
 </script>
+<style>
 /* PWA Install Banner */
 .pwa-banner {
   position: fixed; bottom: 0; left: 0; right: 0;
@@ -499,6 +485,21 @@ body {
   box-shadow: var(--shadow-brand);
 }
 .login-btn:active { opacity: 0.9; transform: scale(0.98); }
+.ms-login-btn {
+  background: #fff; color: #1b1b1b;
+  border: 1px solid #8c8c8c;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+.ms-login-btn:hover { background: #f6f6f6; }
+.ms-login-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+.ms-login-btn .spinner {
+  width: 16px; height: 16px; margin-right: 8px;
+  border: 2px solid rgba(0,0,0,0.15); border-top-color: #1b1b1b;
+  border-radius: 50%; display: inline-block;
+  animation: spin 0.7s linear infinite; vertical-align: -3px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 .login-error {
   font-size: 12px; color: var(--crit);
   margin-top: 8px; min-height: 16px;
@@ -1661,22 +1662,17 @@ body.light .field-chip select option { background: #fff; color: #111; }
       <div class="login-sub">Inspeções TI — Tenda Atacado</div>
     </div>
     <div class="login-card">
-      <div class="form-group">
-        <label class="form-label" for="loginEmail">E-mail corporativo</label>
-        <input class="form-input" id="loginEmail" type="email"
-          placeholder="seu.nome@tenda.com.br" autocomplete="email"
-          autocapitalize="off">
-        <div class="login-error" id="loginError" aria-live="polite"></div>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="loginName">Nome completo</label>
-        <input class="form-input" id="loginName" type="text"
-          placeholder="Seu nome completo" autocomplete="name">
-      </div>
-      <button class="login-btn" id="loginBtn" onclick="doLogin()">
-        Acessar sistema
+      <button class="login-btn ms-login-btn" id="loginBtn" onclick="doMsLogin()">
+        <svg width="18" height="18" viewBox="0 0 21 21" style="margin-right:8px;vertical-align:-3px">
+          <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+          <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+          <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+          <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+        </svg>
+        Entrar com Microsoft
       </button>
-      <div class="login-footer">Acesso restrito · Tenda Atacado TI</div>
+      <div class="login-error" id="loginError" aria-live="polite"></div>
+      <div class="login-footer">Acesso restrito · contas @tendaatacado.com.br · Tenda Atacado TI</div>
     </div>
   </div>
 </div>
@@ -1884,8 +1880,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
         <div class="modal-section-label">Notificações</div>
         <div class="cfg-field">
           <label class="cfg-label" for="cfgEmail">E-mail para alertas críticos</label>
-          <input class="cfg-input" id="cfgEmail" type="email" value="guilherme.silva@tendaatacado.com.br"
-          reandoly> 
+          <input class="cfg-input" id="cfgEmail" type="email" placeholder="ti@tenda.com.br">
         </div>
       </div>
       <div>
@@ -1964,11 +1959,41 @@ body.light .field-chip select option { background: #fff; color: #111; }
 <script>
 "use strict";
 /* ═══════════════════════════════════════════════════════════════════════
-   CHECKLIST TENDA TI· ENGINE v3.0
+   TENDA TI INSPECTOR · ENGINE v3.0
    Architecture: Module pattern, event-driven, offline-first
 ═══════════════════════════════════════════════════════════════════════ */
 
 const DEFAULT_URL = "https://defaultd685b1be26d44fc289b26333f4469d.11.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8d132a623ef64376b6392fd620b80610/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=m99ubwzbeHbjhPto-135KY1zl1x5q9PG67oJXPlYaJI";
+
+/* ─── LOGIN MICROSOFT (MSAL / Entra ID) ──────────────────────────────
+   Configurado para o tenant Tenda Atacado. App registration:
+   "Checklist TI Tenda" no Azure Entra ID (Single-page application).
+   Acesso restrito a contas @tendaatacado.com.br (ver allowedDomain). */
+const MSAL_CONFIG = {
+  clientId: "583ecb85-0864-4f6d-85f3-9ce48b5ab9cd",
+  tenantId: "d685b1be-26d4-4fc2-89b2-6333f4469d11",
+  redirectUri: window.location.origin + window.location.pathname,
+  allowedDomain: "tendaatacado.com.br" // domínio real das contas @tendaatacado
+};
+
+let msalInstance = null;
+function isMsalConfigured() {
+  return MSAL_CONFIG.clientId && !MSAL_CONFIG.clientId.startsWith("COLOQUE_AQUI")
+      && MSAL_CONFIG.tenantId && !MSAL_CONFIG.tenantId.startsWith("COLOQUE_AQUI");
+}
+function getMsalInstance() {
+  if (!msalInstance && typeof msal !== 'undefined' && isMsalConfigured()) {
+    msalInstance = new msal.PublicClientApplication({
+      auth: {
+        clientId: MSAL_CONFIG.clientId,
+        authority: `https://login.microsoftonline.com/${MSAL_CONFIG.tenantId}`,
+        redirectUri: MSAL_CONFIG.redirectUri
+      },
+      cache: { cacheLocation: "localStorage", storeAuthStateInCookie: false }
+    });
+  }
+  return msalInstance;
+}
 
 /* ─── DATA MODEL ──────────────────────────────────────────────────── */
 const SECTIONS = [
@@ -3073,24 +3098,53 @@ function dismissResume() {
   document.getElementById('resumeBanner').classList.remove('show');
 }
 
-/* ─── LOGIN / LOGOUT ──────────────────────────────────────────────── */
-function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const name  = document.getElementById('loginName').value.trim();
+/* ─── LOGIN / LOGOUT (Microsoft / Entra ID via MSAL) ─────────────── */
+function doMsLogin() {
   const errEl = document.getElementById('loginError');
-
-  if (!email || !email.includes('@')) {
-    errEl.textContent = 'Por favor, informe um e-mail corporativo válido.';
-    document.getElementById('loginEmail').classList.add('touched');
-    return;
-  }
+  const btn   = document.getElementById('loginBtn');
   errEl.textContent = '';
 
-  State.user = { email, name: name || email.split('@')[0] };
-  sessionStorage.setItem('ti-user', JSON.stringify(State.user));
+  if (!isMsalConfigured()) {
+    errEl.textContent = '⚠️ Login Microsoft ainda não configurado. Veja as instruções no código (CLIENT_ID / TENANT_ID).';
+    return;
+  }
 
+  const pca = getMsalInstance();
+  if (!pca) {
+    errEl.textContent = '⚠️ Não foi possível carregar o login da Microsoft. Verifique sua conexão e tente novamente.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Conectando…';
+
+  pca.loginRedirect({
+    scopes: ["User.Read"],
+    prompt: "select_account"
+  }).catch(err => {
+    btn.disabled = false;
+    btn.innerHTML = 'Entrar com Microsoft';
+    errEl.textContent = 'Não foi possível iniciar o login: ' + (err?.errorMessage || err?.message || 'erro desconhecido.');
+  });
+}
+
+function applyMsAccount(account) {
+  const email = (account.username || '').toLowerCase();
+  const name  = account.name || email.split('@')[0];
+
+  // Restringe ao domínio corporativo (@tendaatacado / domínio configurado)
+  if (MSAL_CONFIG.allowedDomain && !email.endsWith('@' + MSAL_CONFIG.allowedDomain.toLowerCase())) {
+    const errEl = document.getElementById('loginError');
+    if (errEl) errEl.textContent = `Acesso restrito a contas @${MSAL_CONFIG.allowedDomain}. Você entrou com ${email}.`;
+    getMsalInstance()?.logoutRedirect({ postLogoutRedirectUri: MSAL_CONFIG.redirectUri });
+    return false;
+  }
+
+  State.user = { email, name };
+  sessionStorage.setItem('ti-user', JSON.stringify(State.user));
   document.getElementById('loginPage').classList.add('hidden');
   openApp();
+  return true;
 }
 
 function openApp() {
@@ -3135,10 +3189,16 @@ function doLogout() {
     app.style.display = 'none';
     const lp = document.getElementById('loginPage');
     lp.classList.remove('hidden');
-    document.getElementById('loginEmail').value = '';
-    document.getElementById('loginName').value  = '';
     document.getElementById('loginError').textContent = '';
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 21 21" style="margin-right:8px;vertical-align:-3px"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>Entrar com Microsoft`;
   }, 350);
+
+  const pca = getMsalInstance();
+  if (pca) {
+    pca.logoutRedirect({ postLogoutRedirectUri: MSAL_CONFIG.redirectUri });
+  }
 }
 
 /* ─── TOAST ───────────────────────────────────────────────────────── */
@@ -3171,12 +3231,6 @@ document.querySelectorAll('.modal-backdrop').forEach(el => {
 });
 
 /* ─── KEYBOARD ────────────────────────────────────────────────────── */
-document.getElementById('loginEmail').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('loginName').focus();
-});
-document.getElementById('loginName').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.querySelectorAll('.modal-backdrop.open').forEach(m => closeModal(m.id));
@@ -3213,29 +3267,56 @@ document.head.appendChild(spinStyle);
   // Build UI
   buildUI();
 
-  // Hide splash, show login or app
-  setTimeout(() => {
+  function finishBoot() {
     const splash = document.getElementById('splash');
     splash.classList.add('hidden');
 
+    // 1) Sessão já aberta nesta aba (sessionStorage)
     const saved = sessionStorage.getItem('ti-user');
     if (saved) {
       try {
         State.user = JSON.parse(saved);
         document.getElementById('loginPage').classList.add('hidden');
         openApp();
-      } catch(e) {
-        showLoginPage();
-      }
-    } else {
-      showLoginPage();
+        return;
+      } catch(e) { /* cai para verificar conta MSAL */ }
     }
-  }, 1800);
+
+    // 2) Conta Microsoft já autenticada no navegador (cache do MSAL)
+    const pca = getMsalInstance();
+    if (pca) {
+      const accounts = pca.getAllAccounts();
+      if (accounts.length > 0) {
+        if (applyMsAccount(accounts[0])) return;
+      }
+    }
+
+    showLoginPage();
+  }
 
   function showLoginPage() {
     const lp = document.getElementById('loginPage');
     lp.classList.remove('hidden');
   }
+
+  // Aguarda o MSAL processar o retorno do login (loginRedirect) antes de
+  // decidir se mostra a tela de login ou já abre o app.
+  setTimeout(() => {
+    const pca = getMsalInstance();
+    if (pca) {
+      pca.handleRedirectPromise()
+        .then(response => {
+          if (response?.account) applyMsAccount(response.account);
+        })
+        .catch(err => {
+          const errEl = document.getElementById('loginError');
+          if (errEl) errEl.textContent = 'Falha no login Microsoft: ' + (err?.errorMessage || err?.message || 'erro desconhecido.');
+        })
+        .finally(finishBoot);
+    } else {
+      finishBoot();
+    }
+  }, 1800);
 })();
 </script>
 </body>
@@ -3578,6 +3659,6 @@ window.shareReport = async function() {
   }
 };
 
-console.log('%c CHECKLIST TENDA TI v3.0 ', 'background:#3B82F6;color:white;font-size:14px;font-weight:bold;padding:6px 12px;border-radius:6px;');
+console.log('%c Tenda TI Inspector v3.0 ', 'background:#3B82F6;color:white;font-size:14px;font-weight:bold;padding:6px 12px;border-radius:6px;');
 console.log('%c Arquitetura: Module pattern | Offline-first | PWA | 43 functions | 16 sections ', 'color:#6B7280;font-size:11px;');
 </script>
