@@ -1856,7 +1856,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
     </button>
     <button class="save-btn" id="saveBtn" onclick="doSave()">
       <svg class="save-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      Salvar Vistoria
+       Vistoria
     </button>
     <button class="icon-btn" onclick="showExport()" title="Exportar" aria-label="Exportar relatório">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1907,6 +1907,13 @@ body.light .field-chip select option { background: #fff; color: #111; }
       <div class="cfg-hint">
              </div>
       <button class="cfg-save-btn" onclick="saveSettings()">Salvar Configurações</button>
+         <button class="cfg-save-btn" onclick="saveSettings()">
+  Salvar Configurações
+</button>
+
+<button class="cfg-save-btn" onclick="abrirTeams()">
+  Abrir Teams
+</button>
     </div>
   </div>
 </div>
@@ -2793,10 +2800,11 @@ function openSettings() {
  document.getElementById('cfgEmail').value = 'guilherme.silva@tendaatacado.com.br';
   openModal('settingsModal');
 }
-
+function abrirTeams() {
+  window.open("https://teams.microsoft.com", "_blank");
 function saveSettings() {
   localStorage.setItem('cfg-email', document.getElementById('cfgEmail').value);
-  showToast('✅ Configurações salvas!', 'success');
+  showToast('✅ salvas!', 'success');
   setTimeout(() => closeModal('settingsModal'), 800);
 }
 
