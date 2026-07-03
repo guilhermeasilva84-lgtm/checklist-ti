@@ -350,7 +350,7 @@ body.light {
 
 /* RESET & BASE */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 body {
   height: 100%; width: 100%;
   background: var(--bg-app);
@@ -766,6 +766,10 @@ body.light .field-chip select option { background: #fff; color: #111; }
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
   scrollbar-width: none;
+  /* Slides fora da tela (outras abas) não são renderizados/pintados.
+     Como height já é fixo (100%), não há salto de layout. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1000px;
 }
 .slide::-webkit-scrollbar,
 .slide-dashboard::-webkit-scrollbar { display: none; }
@@ -824,8 +828,14 @@ body.light .field-chip select option { background: #fff; color: #111; }
   overflow: hidden;
   transition: border-color var(--dur-fast), background var(--dur-fast),
               transform var(--dur-fast), box-shadow var(--dur-fast);
-  will-change: transform;
+  /* will-change fixo em TODO card força uma camada de composição por
+     card, permanentemente, mesmo parado. Com dezenas de cards isso
+     consome memória/GPU e derruba o fps. As animações pontuais
+     (card-reveal, card-pulse) já promovem a própria camada sozinhas. */
   flex-shrink: 0;
+  /* Isola o layout/paint de cada card: abrir/fechar detalhes de UM
+     item não força recálculo de reflow na lista inteira. */
+  contain: layout style paint;
 }
 .item-card.has-ok {
   border-color: rgba(34,197,94,0.25);
@@ -3454,11 +3464,17 @@ const fabHtml = `<button class="fab-top" id="fabTop" onclick="scrollToTop()" ari
 </button>`;
 document.querySelector('.slides-viewport').insertAdjacentHTML('beforeend', fabHtml);
 
-document.querySelector('.slides-viewport').addEventListener('scroll', () => {}, { passive: true });
+let fabTicking = false;
 document.getElementById('slidesTrack').addEventListener('scroll', e => {
-  const fab = document.getElementById('fabTop');
-  if (fab) fab.classList.toggle('visible', e.target.scrollTop > 200);
-}, true);
+  if (fabTicking) return;
+  fabTicking = true;
+  const scrollTop = e.target.scrollTop;
+  requestAnimationFrame(() => {
+    const fab = document.getElementById('fabTop');
+    if (fab) fab.classList.toggle('visible', scrollTop > 200);
+    fabTicking = false;
+  });
+}, { passive: true, capture: true });
 
 function scrollToTop() {
   const activeSlide = document.querySelector('.slides-track > *:not(.slide-dashboard)');
