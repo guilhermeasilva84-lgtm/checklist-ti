@@ -1984,23 +1984,23 @@ function getMsalInstance() {
 
 /* DATA MODEL */
 const SECTIONS = [
-  { id: "geral",    title: "Geral",    icon: "🏪", items: ["Resp. TI presente", "PDVs padrão abertos", "PDVs padrão fila", "PDVs self checkout abertos", "PDVs self checkout fila"] },   
-  { id: "visao",   title: "Visão",    icon: "🔍", items: ["Loja segue padrão TI", "Sem equipamentos fora da área", "Sem sucata acumulada"] },
-  { id: "PDVs",   title: "pdvS",    icon: "🔍", items: ["Loja segue padrão TI", "Sem equipamentos fora da área", "Sem sucata acumulada"] },  
-  { id: "comput",  title: "PCs",      icon: "💻", items: ["Notebooks controlados", "Notebooks no CPD", "Sem notebooks indevidos", "CPUs identificadas", "Monitores organizados", "Equipamentos mapeados"] },
-  { id: "impr",    title: "Impressoras",  icon: "🖨️", items: ["Quantidade co", "Funcionando", "Conferidas", "Impressoras no CPD", "Sem impressoras sem controle"] },
-  { id: "cftv",    title: "CFTV",     icon: "📹", items: ["Câmeras funcionando", "Imagem adequada", "Gravação ativa", "Cobertura PDV", "Cobertura estacionamento", "Cobertura recebimento"] },
-  { id: "audio",   title: "Áudio",    icon: "🔊", items: ["Caixas funcionando", "Volume adequado", "Sem ruídos", "Cobertura uniforme"] },
-  { id: "ant",     title: "Antenas",  icon: "📡", items: ["Portal entrada", "Portal saída", "RFID funcionando", "Portais ligados"] },
-  { id: "colet",   title: "Coletores",icon: "📱", items: ["Quantidade correta", "Coletores no CPD", "Equipamentos com capa", "Bandoleiras", "Estado físico"] },
-  { id: "balanc",  title: "Balanças", icon: "⚖️", items: ["Balanças funcionando", "Sem avarias", "Quantidade correta", "Integração funcionando"] },
-  { id: "cell",    title: "Celulares",icon: "📲", items: ["Celulares controlados", "Todos ativos", "MDM aplicado", "Em uso operacional"] },
-  { id: "scan",    title: "Scanners", icon: "🔎", items: ["Quantidade correta", "Cabos bons", "Funcionando"] },
-  { id: "self",    title: "Self CK",  icon: "🛒", items: ["Quantidade correta", "Funcionando", "Pesagem OK", "Ventilação adequada"] },
-  { id: "cpd",     title: "CPD",      icon: "🖥️", items: ["Ambiente organizado", "Sem sucata", "Acesso controlado", "Equipamentos identificados"] },
-  { id: "rede",    title: "Rede",     icon: "🌐", items: ["WiFi funcionando", "Rack organizado", "Cabeamento organizado", "Rede estável"] },
-  { id: "proc",    title: "Processos",icon: "📋", items: ["Abertura correta chamados", "Sem fluxo indevido", "Equipamentos sem retenção"] },
-  { id: "seg",     title: "Segurança",icon: "🔒", items: ["Equipamentos protegidos", "Sem risco furto", "Acesso CPD controlado"] }
+  { id: "geral",   title: "Geral",     items: [ "Gerente presente?", "Resp. TI presente", "PDVs padrão abertos", "Quantidade pdv", "PDVs self checkout abertos", "PDVs self checkout fila"] },   
+  { id: "visao",   title: "Visão",     items: ["Loja segue padrão TI", "Sem equipamentos fora da área", "Sem sucata acumulada"] },
+  { id: "PDVs",    title: "pdvS",      items: ["Loja segue padrão TI", "Sem equipamentos fora da área", "Sem sucata acumulada"] },  
+  { id: "comput",  title: "PCs",       items: ["Notebooks controlados", "Notebooks no CPD", "Sem notebooks indevidos", "CPUs identificadas", "Monitores organizados", "Equipamentos mapeados"] },
+  { id: "impr",    title: "Impressoras", items: ["Quantidade co", "Funcionando", "Conferidas", "Impressoras no CPD", "Sem impressoras sem controle"] },
+  { id: "cftv",    title: "CFTV",      items: ["Câmeras funcionando", "Imagem adequada", "Gravação ativa", "Cobertura PDV", "Cobertura estacionamento", "Cobertura recebimento"] },
+  { id: "audio",   title: "Áudio",     items: ["Caixas funcionando", "Volume adequado", "Sem ruídos", "Cobertura uniforme"] },
+  { id: "ant",     title: "Antenas",   items: ["Portal entrada", "Portal saída", "RFID funcionando", "Portais ligados"] },
+  { id: "colet",   title: "Coletores", items: ["Quantidade correta", "Coletores no CPD", "Equipamentos com capa", "Bandoleiras", "Estado físico"] },
+  { id: "balanc",  title: "Balanças",  items: ["Balanças funcionando", "Sem avarias", "Quantidade correta", "Integração funcionando"] },
+  { id: "cell",    title: "Celulares", items: ["Celulares controlados", "Todos ativos", "MDM aplicado", "Em uso operacional"] },
+  { id: "scan",    title: "Scanners",  items: ["Quantidade correta", "Cabos bons", "Funcionando"] },
+  { id: "self",    title: "Self CK",   items: ["Quantidade correta", "Funcionando", "Pesagem OK", "Ventilação adequada"] },
+  { id: "cpd",     title: "CPD",       items: ["Ambiente organizado", "Sem sucata", "Acesso controlado", "Equipamentos identificados"] },
+  { id: "rede",    title: "Rede",      items: ["WiFi funcionando", "Rack organizado", "Cabeamento organizado", "Rede estável"] },
+  { id: "proc",    title: "Processos", items: ["Abertura correta chamados", "Sem fluxo indevido", "Equipamentos sem retenção"] },
+  { id: "seg",     title: "Segurança", items: ["Equipamentos protegidos", "Sem risco furto", "Acesso CPD controlado"] }
 ];
 
 /* STATE */
