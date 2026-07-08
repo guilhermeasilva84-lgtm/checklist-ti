@@ -2195,7 +2195,7 @@ function buildChecklistSlides() {
 
     const header = document.createElement('div');
     header.className = 'slide-section-header';
-    header.innerHTML = `<span class="slide-section-title">${sec.icon} ${sec.title}</span><span class="slide-section-count">${sec.items.length} itens</span>`;
+    header.innerHTML = `<span class="slide-section-title">${sec.title}</span><span class="slide-section-count">${sec.items.length} itens</span>`;
     slide.appendChild(header);
 
     sec.items.forEach((item, ii) => {
