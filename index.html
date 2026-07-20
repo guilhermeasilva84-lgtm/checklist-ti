@@ -1653,7 +1653,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
         Entrar com Microsoft
       </button>
       <div class="login-error" id="loginError" aria-live="polite"></div>
-      <div class="login-footer">Acesso restrito · contas @tendaatacado.com.br · Tenda Atacado TI</div>
+      <div class="login-footer">Acesso restrito · contas @tendaatacado.com.br e @alimentaangola.co.ao · Tenda Atacado TI</div>
     </div>
   </div>
 </div>
@@ -1955,12 +1955,12 @@ const DEFAULT_URL = "https://defaultd685b1be26d44fc289b26333f4469d.11.environmen
 
 /* Login Microsoft (MSAL / Entra ID), configurado para o tenant Tenda Atacado.
    App registration: "Checklist TI Tenda" no Azure Entra ID (Single-page application).
-   Acesso restrito a contas @tendaatacado.com.br (ver allowedDomain). */
+   Acesso restrito às contas dos domínios listados em allowedDomains. */
 const MSAL_CONFIG = {
   clientId: "583ecb85-0864-4f6d-85f3-9ce48b5ab9cd",
   tenantId: "d685b1be-26d4-4fc2-89b2-6333f4469d11",
   redirectUri: window.location.origin + window.location.pathname,
-  allowedDomain: "tendaatacado.com.br" // domínio real das contas @tendaatacado
+  allowedDomains: ["tendaatacado.com.br", "alimentaangola.co.ao"] // domínios permitidos para login
 };
 
 let msalInstance = null;
@@ -3121,10 +3121,12 @@ function applyMsAccount(account) {
   const email = (account.username || '').toLowerCase();
   const name  = account.name || email.split('@')[0];
 
-  // Restringe ao domínio corporativo (@tendaatacado / domínio configurado)
-  if (MSAL_CONFIG.allowedDomain && !email.endsWith('@' + MSAL_CONFIG.allowedDomain.toLowerCase())) {
+  // Restringe aos domínios corporativos permitidos (ver MSAL_CONFIG.allowedDomains)
+  const domains = MSAL_CONFIG.allowedDomains || [];
+  const isAllowed = domains.length === 0 || domains.some(d => email.endsWith('@' + d.toLowerCase()));
+  if (!isAllowed) {
     const errEl = document.getElementById('loginError');
-    if (errEl) errEl.textContent = `Acesso restrito a contas @${MSAL_CONFIG.allowedDomain}. Você entrou com ${email}.`;
+    if (errEl) errEl.textContent = `Acesso restrito a contas @${domains.join(' ou @')}. Você entrou com ${email}.`;
     getMsalInstance()?.logoutRedirect({ postLogoutRedirectUri: MSAL_CONFIG.redirectUri });
     return false;
   }
