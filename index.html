@@ -507,6 +507,19 @@ body {
   text-align: center; margin-top: 16px;
   font-size: 11px; color: var(--text-muted);
 }
+.login-admin-note {
+  text-align: center; margin-top: 6px;
+  font-size: 11px; color: var(--accent, #7C3AED);
+  opacity: 0.85;
+}
+.admin-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 600;
+  color: #7C3AED; background: rgba(124,58,237,0.12);
+  border: 1px solid rgba(124,58,237,0.35);
+  border-radius: 20px; padding: 2px 8px;
+  margin-top: 2px; width: fit-content;
+}
 
 /* APP SHELL */
 #app {
@@ -1654,6 +1667,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
       </button>
       <div class="login-error" id="loginError" aria-live="polite"></div>
       <div class="login-footer">Acesso restrito · contas @tendaatacado.com.br e @alimentaangola.co.ao · Tenda Atacado TI</div>
+      <div class="login-admin-note">🛡️ Contas administradoras podem editar as seções do checklist direto pelo app</div>
     </div>
   </div>
 </div>
@@ -1670,6 +1684,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
       <div class="brand-info">
         <div class="brand-name brand-text-fallback">Checklist TI - Tenda</div>
         <div class="brand-user" id="brandUser">Sistema de Vistorias</div>
+        <span class="admin-badge" id="adminBadge" style="display:none">🛡️ Administrador</span>
       </div>
       <div class="nav-actions">
         <button class="icon-btn" id="searchToggle" onclick="toggleSearch()" title="Buscar" aria-label="Abrir busca">
@@ -1678,6 +1693,9 @@ body.light .field-chip select option { background: #fff; color: #111; }
         <button class="icon-btn" id="aiBtn" onclick="openAI()" title="Análise IA" aria-label="Análise inteligente" style="position:relative">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20"/><path d="M12 6v6l4 2"/><path d="M22 12a4 4 0 0 1-4 4"/><path d="M18 22l4-4-4-4"/></svg>
           <div class="notif-dot" id="aiNotifDot" style="display:none"></div>
+        </button>
+        <button class="icon-btn" id="adminBtn" onclick="openAdminPanel()" title="Administração" aria-label="Editar seções do checklist (administrador)" style="display:none;position:relative">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </button>
         <button class="icon-btn" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar modo claro/escuro" id="themeBtn">
           <svg id="themeIconMoon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1731,11 +1749,6 @@ body.light .field-chip select option { background: #fff; color: #111; }
           <option>VN05 - Ceasa</option><option>VNAT - Operacao Atacado</option>
           <option>VNDV</option><option>VNEX - Exportação</option>
           <option>VNOD - Operação Drive</option>
-          <option>AR01 - VIANA</option>
-          <option>AR02 - CAMAMA</option>
-          <option>AR03 - ZANGO</option>
-          <option>AR04 - BITA SAPU</option>
-          <option>AR05 - IMPERIO</option>
         </select>
       </div>
       <div class="field-chip">
@@ -1949,6 +1962,46 @@ body.light .field-chip select option { background: #fff; color: #111; }
   </div>
 </div>
 
+<!-- ADMIN MODAL -->
+<div class="modal-backdrop" id="adminModal" role="dialog" aria-modal="true" aria-label="Administração do Checklist">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">🛡️ Administração</span>
+      <button class="modal-close" onclick="closeModal('adminModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="cfg-hint" style="margin-bottom:12px">
+        Aqui você adiciona ou remove seções do checklist diretamente pelo app, sem precisar mexer no código. Alterar as seções reinicia o progresso da vistoria atual.
+      </div>
+
+      <div class="modal-section-label">Seções atuais</div>
+      <div id="adminSectionsList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px"></div>
+
+      <div class="modal-section-label">Nova seção</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
+        <input type="text" id="adminNewSectionTitle" class="detail-input" placeholder="Nome da seção (ex: Roteadores)" style="width:100%">
+        <textarea id="adminNewSectionItems" class="detail-input" placeholder="Um item por linha (ex: Item 1&#10;Item 2&#10;Item 3)" style="width:100%;min-height:80px"></textarea>
+        <button type="button" class="cfg-save-btn" onclick="adminAddSection()" style="background:linear-gradient(135deg,#059669,#10B981)">
+          ➕ Adicionar Seção
+        </button>
+      </div>
+
+      <div class="modal-section-label" style="margin-top:16px">Administradores extras</div>
+      <div class="cfg-hint" style="margin-bottom:8px">guilherme.silva@tendaatacado.com.br é administrador fixo. Adicione outros e-mails abaixo para dar acesso de edição a mais pessoas.</div>
+      <div id="adminExtraList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+      <div style="display:flex;gap:8px">
+        <input type="email" id="adminNewEmail" class="detail-input" placeholder="email@tendaatacado.com.br" style="flex:1">
+        <button type="button" class="cfg-save-btn" style="width:auto;padding:0 16px" onclick="adminAddEmail()">Adicionar</button>
+      </div>
+
+      <button type="button" class="cfg-save-btn" style="margin-top:20px;background:linear-gradient(135deg,#6B7280,#9CA3AF)" onclick="adminResetSections()">
+        ↺ Restaurar seções padrão
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
@@ -1988,7 +2041,7 @@ function getMsalInstance() {
 }
 
 /* DATA MODEL */
-const SECTIONS = [
+const DEFAULT_SECTIONS = [
   { id: "geral",   title: "Geral",     items: [ "Gerente presente?", "Resp. TI presente", "PDVs padrão abertos", "Quantidade pdv", "PDVs self checkout abertos", "PDVs self checkout fila"] },   
   { id: "visao",   title: "Visão",     items: ["Loja segue padrão TI", "Equipamentos fora da área", "Não há acúmulo de sucata"] },
   { id: "PDVs",    title: "PDVs",      items: ["Quantidade de PDVs", "Scanner de Mão", "Scanner torre", "Monitor", "Teclado", "Leitor Biométrico", "Pinpad", "CPU", "Cancela"] },  
@@ -2008,6 +2061,52 @@ const SECTIONS = [
   { id: "seg",     title: "Segurança", items: ["Equipamentos protegidos", "Sem risco furto", "Acesso CPD controlado"] }
 ];
 
+/* SEÇÕES DO CHECKLIST — editáveis por administradores direto pelo app.
+   Persistidas em localStorage neste navegador/dispositivo (ver ADMIN_SECTIONS_KEY). */
+const ADMIN_SECTIONS_KEY = 'ti-sections-custom';
+
+function loadSections() {
+  try {
+    const raw = localStorage.getItem(ADMIN_SECTIONS_KEY);
+    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_SECTIONS));
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length) return parsed;
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_SECTIONS));
+}
+
+function saveSections() {
+  try { localStorage.setItem(ADMIN_SECTIONS_KEY, JSON.stringify(SECTIONS)); } catch(e) {}
+}
+
+let SECTIONS = loadSections();
+
+/* ADMINISTRADORES — guilherme.silva é admin fixo (definido no código).
+   Outros e-mails podem ser adicionados pelo próprio app (ver ADMIN_EXTRA_KEY)
+   por quem já é administrador, sem precisar editar o código. */
+const ADMIN_EMAILS_BASE = ["guilherme.silva@tendaatacado.com.br"];
+const ADMIN_EXTRA_KEY = 'ti-admin-extra';
+
+function loadExtraAdmins() {
+  try {
+    const raw = localStorage.getItem(ADMIN_EXTRA_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch(e) { return []; }
+}
+
+function saveExtraAdmins(list) {
+  try { localStorage.setItem(ADMIN_EXTRA_KEY, JSON.stringify(list)); } catch(e) {}
+}
+
+function getAllAdminEmails() {
+  return [...ADMIN_EMAILS_BASE, ...loadExtraAdmins()];
+}
+
+function isAdminEmail(email) {
+  return getAllAdminEmails().includes((email || '').toLowerCase());
+}
+
 /* STATE */
 const State = {
   items: {},       // "si-ii" → { status, qty, obs, ts }
@@ -2020,7 +2119,7 @@ const State = {
     lightMode: false,
     initialized: false,
   },
-  user: { email: '', name: '' },
+  user: { email: '', name: '', isAdmin: false },
   draft: null,
 
   totalItems() { return Object.keys(this.items).length; },
@@ -2096,6 +2195,26 @@ function buildUI() {
   setupFieldListeners();
   setupSwipe();
   goToTab(0);
+}
+
+/* Reconstrói o app inteiro (dashboard, abas e cartões) a partir do array
+   SECTIONS atual. Usado depois que um administrador adiciona/remove uma
+   seção pela tela — o progresso da vistoria atual é reiniciado porque a
+   estrutura de itens mudou. */
+function rebuildApp() {
+  State.items = {};
+  SECTIONS.forEach((sec, si) => {
+    sec.items.forEach((_, ii) => {
+      State.items[`${si}-${ii}`] = { status: null, qty: '', obs: '', ts: null };
+    });
+  });
+  DOM.slidesTrack.innerHTML = '';
+  buildDashboardSlide();
+  buildChecklistSlides();
+  buildTabNav();
+  updateProgress();
+  goToTab(0);
+  if (typeof upgradeQtyInputs === 'function') upgradeQtyInputs();
 }
 
 function buildDashboardSlide() {
@@ -3091,6 +3210,133 @@ function dismissResume() {
   document.getElementById('resumeBanner').classList.remove('show');
 }
 
+/* PAINEL DE ADMINISTRAÇÃO (edição de seções pela tela, sem tocar no código) */
+function updateAdminUI() {
+  const isAdmin = !!State.user.isAdmin;
+  const btn = document.getElementById('adminBtn');
+  const badge = document.getElementById('adminBadge');
+  if (btn) btn.style.display = isAdmin ? '' : 'none';
+  if (badge) badge.style.display = isAdmin ? '' : 'none';
+}
+
+function openAdminPanel() {
+  if (!State.user.isAdmin) return;
+  renderAdminSectionsList();
+  renderAdminExtraList();
+  openModal('adminModal');
+}
+
+function renderAdminSectionsList() {
+  const wrap = document.getElementById('adminSectionsList');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  SECTIONS.forEach((sec, si) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface-2,rgba(255,255,255,0.04));border-radius:10px';
+    row.innerHTML = `
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600">${sec.title}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${sec.items.length} itens</div>
+      </div>
+      <button type="button" class="icon-btn" title="Excluir seção" aria-label="Excluir seção ${sec.title}" style="color:var(--crit)" onclick="adminDeleteSection(${si})">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </button>`;
+    wrap.appendChild(row);
+  });
+}
+
+function adminAddSection() {
+  const titleEl = document.getElementById('adminNewSectionTitle');
+  const itemsEl = document.getElementById('adminNewSectionItems');
+  const title = (titleEl.value || '').trim();
+  const items = (itemsEl.value || '').split('\n').map(s => s.trim()).filter(Boolean);
+
+  if (!title) { showToast('Digite um nome para a seção', 'error'); return; }
+  if (!items.length) { showToast('Adicione pelo menos um item', 'error'); return; }
+
+  const id = title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `sec-${Date.now()}`;
+  SECTIONS.push({ id, title, items });
+  saveSections();
+
+  titleEl.value = '';
+  itemsEl.value = '';
+  renderAdminSectionsList();
+  rebuildApp();
+  showToast(`✅ Seção "${title}" adicionada`, 'success');
+}
+
+function adminDeleteSection(si) {
+  const sec = SECTIONS[si];
+  if (!sec) return;
+  if (!confirm(`Excluir a seção "${sec.title}"? O progresso da vistoria atual será reiniciado.`)) return;
+
+  SECTIONS.splice(si, 1);
+  saveSections();
+  renderAdminSectionsList();
+  rebuildApp();
+  showToast(`🗑️ Seção "${sec.title}" removida`, 'info');
+}
+
+function adminResetSections() {
+  if (!confirm('Restaurar as seções padrão do sistema? Suas seções personalizadas serão perdidas e o progresso da vistoria atual será reiniciado.')) return;
+  SECTIONS = JSON.parse(JSON.stringify(DEFAULT_SECTIONS));
+  saveSections();
+  renderAdminSectionsList();
+  rebuildApp();
+  showToast('↺ Seções padrão restauradas', 'info');
+}
+
+function renderAdminExtraList() {
+  const wrap = document.getElementById('adminExtraList');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const extras = loadExtraAdmins();
+  if (!extras.length) {
+    wrap.innerHTML = `<div class="cfg-hint">Nenhum administrador extra cadastrado.</div>`;
+    return;
+  }
+  extras.forEach(email => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--surface-2,rgba(255,255,255,0.04));border-radius:10px';
+    row.innerHTML = `
+      <div style="flex:1;min-width:0;font-size:12px;word-break:break-all">${email}</div>
+      <button type="button" class="icon-btn" title="Remover administrador" aria-label="Remover ${email}" style="color:var(--crit)" onclick="adminRemoveEmail('${email.replace(/'/g, "\\'")}')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>`;
+    wrap.appendChild(row);
+  });
+}
+
+function adminAddEmail() {
+  const el = document.getElementById('adminNewEmail');
+  const email = (el.value || '').trim().toLowerCase();
+  if (!email || !email.includes('@')) { showToast('Digite um e-mail válido', 'error'); return; }
+
+  const extras = loadExtraAdmins();
+  if (getAllAdminEmails().includes(email)) { showToast('Este e-mail já é administrador', 'info'); el.value = ''; return; }
+
+  extras.push(email);
+  saveExtraAdmins(extras);
+  el.value = '';
+  renderAdminExtraList();
+  showToast(`✅ ${email} agora é administrador`, 'success');
+
+  // Se for o usuário logado agora, atualiza a UI dele na hora
+  if (State.user.email === email) {
+    State.user.isAdmin = true;
+    sessionStorage.setItem('ti-user', JSON.stringify(State.user));
+    updateAdminUI();
+  }
+}
+
+function adminRemoveEmail(email) {
+  if (!confirm(`Remover ${email} da lista de administradores?`)) return;
+  const extras = loadExtraAdmins().filter(e => e !== email);
+  saveExtraAdmins(extras);
+  renderAdminExtraList();
+  showToast('Administrador removido', 'info');
+}
+
 /* LOGIN / LOGOUT (Microsoft / Entra ID via MSAL) */
 function doMsLogin() {
   const errEl = document.getElementById('loginError');
@@ -3136,7 +3382,7 @@ function applyMsAccount(account) {
     return false;
   }
 
-  State.user = { email, name };
+  State.user = { email, name, isAdmin: isAdminEmail(email) };
   sessionStorage.setItem('ti-user', JSON.stringify(State.user));
   document.getElementById('loginPage').classList.add('hidden');
   openApp();
@@ -3149,6 +3395,7 @@ function openApp() {
   requestAnimationFrame(() => app.classList.add('visible'));
 
   document.getElementById('brandUser').textContent = State.user.email;
+  updateAdminUI();
 
   const nameVal = State.user.name || State.user.email.split('@')[0].replace(/\./g, ' ');
   const respEl  = document.getElementById('fResp');
@@ -3177,7 +3424,8 @@ function openApp() {
 function doLogout() {
   if (!confirm('Deseja sair? O rascunho local será mantido.')) return;
   sessionStorage.removeItem('ti-user');
-  State.user = { email: '', name: '' };
+  State.user = { email: '', name: '', isAdmin: false };
+  updateAdminUI();
 
   const app = document.getElementById('app');
   app.classList.remove('visible');
