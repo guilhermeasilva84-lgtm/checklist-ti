@@ -1749,11 +1749,6 @@ body.light .field-chip select option { background: #fff; color: #111; }
           <option>VN05 - Ceasa</option><option>VNAT - Operacao Atacado</option>
           <option>VNDV</option><option>VNEX - Exportação</option>
           <option>VNOD - Operação Drive</option>
-          <option>AR01 - VIANA</option>
-          <option>AR02 - CAMAMA</option>
-          <option>AR03 - ZANGO</option>
-          <option>AR04 - BITA SAPU</option>
-          <option>AR05 - IMPERIO</option>   
         </select>
       </div>
       <div class="field-chip">
@@ -1894,7 +1889,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
           onclick="window.open('https://teams.microsoft.com/l/chat/0/0?users=guilherme.silva@tendaatacado.com.br','_blank')">👥 Abrir Teams
     </button>
 </div></button>  
-        </div>
+        </div>"
         </div>
       </div>
       <div>
@@ -1983,12 +1978,15 @@ body.light .field-chip select option { background: #fff; color: #111; }
       <div class="modal-section-label">Seções atuais</div>
       <div id="adminSectionsList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px"></div>
 
-      <div class="modal-section-label">Nova seção</div>
+      <div class="modal-section-label" id="adminFormLabel">Nova seção</div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
         <input type="text" id="adminNewSectionTitle" class="detail-input" placeholder="Nome da seção (ex: Roteadores)" style="width:100%">
         <textarea id="adminNewSectionItems" class="detail-input" placeholder="Um item por linha (ex: Item 1&#10;Item 2&#10;Item 3)" style="width:100%;min-height:80px"></textarea>
-        <button type="button" class="cfg-save-btn" onclick="adminAddSection()" style="background:linear-gradient(135deg,#059669,#10B981)">
+        <button type="button" class="cfg-save-btn" id="adminFormSaveBtn" onclick="adminSaveSection()" style="background:linear-gradient(135deg,#059669,#10B981)">
           ➕ Adicionar Seção
+        </button>
+        <button type="button" class="cfg-save-btn" id="adminFormCancelBtn" onclick="adminCancelEdit()" style="display:none;background:linear-gradient(135deg,#6B7280,#9CA3AF)">
+          Cancelar edição
         </button>
       </div>
 
@@ -3226,6 +3224,7 @@ function updateAdminUI() {
 
 function openAdminPanel() {
   if (!State.user.isAdmin) return;
+  adminCancelEdit();
   renderAdminSectionsList();
   renderAdminExtraList();
   openModal('adminModal');
@@ -3243,6 +3242,9 @@ function renderAdminSectionsList() {
         <div style="font-size:13px;font-weight:600">${sec.title}</div>
         <div style="font-size:11px;color:var(--text-muted)">${sec.items.length} itens</div>
       </div>
+      <button type="button" class="icon-btn" title="Editar seção" aria-label="Editar seção ${sec.title}" onclick="adminEditSection(${si})">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
       <button type="button" class="icon-btn" title="Excluir seção" aria-label="Excluir seção ${sec.title}" style="color:var(--crit)" onclick="adminDeleteSection(${si})">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
       </button>`;
@@ -3250,7 +3252,33 @@ function renderAdminSectionsList() {
   });
 }
 
-function adminAddSection() {
+/* Índice da seção em edição no formulário (null = modo "criar nova seção") */
+let adminEditIndex = null;
+
+function adminEditSection(si) {
+  const sec = SECTIONS[si];
+  if (!sec) return;
+  adminEditIndex = si;
+
+  document.getElementById('adminNewSectionTitle').value = sec.title;
+  document.getElementById('adminNewSectionItems').value = sec.items.join('\n');
+  document.getElementById('adminFormLabel').textContent = `Editando "${sec.title}"`;
+  document.getElementById('adminFormSaveBtn').innerHTML = '💾 Salvar alterações';
+  document.getElementById('adminFormCancelBtn').style.display = '';
+
+  document.getElementById('adminNewSectionTitle').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function adminCancelEdit() {
+  adminEditIndex = null;
+  document.getElementById('adminNewSectionTitle').value = '';
+  document.getElementById('adminNewSectionItems').value = '';
+  document.getElementById('adminFormLabel').textContent = 'Nova seção';
+  document.getElementById('adminFormSaveBtn').innerHTML = '➕ Adicionar Seção';
+  document.getElementById('adminFormCancelBtn').style.display = 'none';
+}
+
+function adminSaveSection() {
   const titleEl = document.getElementById('adminNewSectionTitle');
   const itemsEl = document.getElementById('adminNewSectionItems');
   const title = (titleEl.value || '').trim();
@@ -3258,6 +3286,20 @@ function adminAddSection() {
 
   if (!title) { showToast('Digite um nome para a seção', 'error'); return; }
   if (!items.length) { showToast('Adicione pelo menos um item', 'error'); return; }
+
+  if (adminEditIndex !== null) {
+    // Editando seção existente: mantém o id, atualiza título e itens
+    const sec = SECTIONS[adminEditIndex];
+    if (!confirm(`Salvar alterações em "${sec.title}"? O progresso da vistoria atual será reiniciado.`)) return;
+    sec.title = title;
+    sec.items = items;
+    saveSections();
+    adminCancelEdit();
+    renderAdminSectionsList();
+    rebuildApp();
+    showToast(`✅ Seção "${title}" atualizada`, 'success');
+    return;
+  }
 
   const id = title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `sec-${Date.now()}`;
   SECTIONS.push({ id, title, items });
