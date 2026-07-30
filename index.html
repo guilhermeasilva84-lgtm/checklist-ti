@@ -154,11 +154,35 @@
 
 /* SMOOTH SECTION REVEAL */
 .item-card {
-  animation: card-reveal 0.25s var(--ease-out) both;
+  animation: card-reveal 0.28s var(--ease-out) both;
 }
 @keyframes card-reveal {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ENTRADA E FLUIDEZ EXTRA */
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes soft-glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(59,130,246,0); }
+  50% { box-shadow: 0 0 18px rgba(59,130,246,0.14); }
+}
+.topnav, .progress-bar-wrap, .filter-row, .section-tabs, .bottom-bar, .modal-sheet, .resume-banner {
+  animation: float-in 0.35s var(--ease-out);
+}
+.item-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.status-btn:hover, .icon-btn:hover, .save-btn:hover, .cfg-save-btn:hover, .filter-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+.status-btn.sel, .filter-chip.active, .tab-btn.active {
+  animation: soft-glow 0.5s ease-out;
 }
 
 /* TIME-BASED GREETING */
@@ -888,7 +912,8 @@ body.light .field-chip select option { background: #fff; color: #111; }
   border-radius: var(--r-lg);
   overflow: hidden;
   transition: border-color var(--dur-fast), background var(--dur-fast),
-              transform var(--dur-fast), box-shadow var(--dur-fast);
+              transform var(--dur-fast), box-shadow var(--dur-fast),
+              filter var(--dur-fast);
   /* will-change fixo em TODO card força uma camada de composição por
      card, permanentemente, mesmo parado. Com dezenas de cards isso
      consome memória/GPU e derruba o fps. As animações pontuais
@@ -963,7 +988,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
   display: flex; align-items: center; justify-content: center;
   transition: background var(--dur-fast), border-color var(--dur-fast),
               color var(--dur-fast), transform var(--dur-fast),
-              box-shadow var(--dur-fast);
+              box-shadow var(--dur-fast), filter var(--dur-fast);
   position: relative; overflow: hidden;
   flex-shrink: 0;
 }
@@ -988,12 +1013,16 @@ body.light .field-chip select option { background: #fff; color: #111; }
   overflow: hidden;
   max-height: 0;
   transition: max-height var(--dur-slow) var(--ease-out),
-              opacity var(--dur-mid);
+              opacity var(--dur-mid), transform var(--dur-mid) var(--ease-out);
   opacity: 0;
 }
 .item-details.open {
   max-height: 320px;
   opacity: 1;
+  transform: translateY(0);
+}
+.item-details:not(.open) {
+  transform: translateY(-4px);
 }
 .item-details-inner {
   padding: 0 14px 14px;
