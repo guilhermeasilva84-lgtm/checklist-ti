@@ -1221,66 +1221,6 @@ body.light .field-chip select option { background: #fff; color: #111; }
 }
 .sh-pct { font-size: 11px; font-weight: 600; min-width: 30px; text-align: right; font-feature-settings: 'tnum'; }
 
-/* AI INSIGHTS */
-.ai-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--r-xl);
-  padding: 14px;
-  position: relative; overflow: hidden;
-  flex-shrink: 0;
-}
-.ai-card::before {
-  content: '';
-  position: absolute; bottom: -20px; left: -20px;
-  width: 100px; height: 100px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-.ai-header {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 10px;
-}
-.ai-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 8px; border-radius: var(--r-full);
-  background: rgba(139,92,246,0.15);
-  color: #A78BFA;
-  font-size: 10px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.08em;
-}
-.ai-badge::before {
-  content: '';
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #A78BFA;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.7); }
-}
-.ai-title { font-size: 13px; font-weight: 600; flex: 1; }
-.ai-insights { display: flex; flex-direction: column; gap: 8px; }
-.ai-insight {
-  display: flex; gap: 10px; align-items: flex-start;
-  padding: 10px 12px;
-  background: var(--bg-input);
-  border-radius: var(--r-md);
-  border: 1px solid var(--border);
-}
-.ai-insight-icon {
-  width: 28px; height: 28px; border-radius: var(--r-sm);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
-}
-.ai-insight.positive .ai-insight-icon { background: var(--ok-dim); }
-.ai-insight.warning .ai-insight-icon { background: var(--warn-dim); }
-.ai-insight.critical .ai-insight-icon { background: var(--crit-dim); }
-.ai-insight.info .ai-insight-icon { background: var(--brand-dim); }
-.ai-insight-body { flex: 1; min-width: 0; }
-.ai-insight-title { font-size: 12px; font-weight: 600; }
-.ai-insight-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; }
-
 /* CRITICAL ITEMS LIST */
 .critical-card {
   background: var(--bg-card);
@@ -1718,7 +1658,7 @@ const APP_MARKUP = `
       </button>
       <div class="login-error" id="loginError" aria-live="polite"></div>
       <div class="login-footer">Acesso restrito · contas @tendaatacado.com.br e @alimentaangola.co.ao · Tenda Atacado TI</div>
-      <div class="login-admin-note">🛡️ Contas administradoras podem editar as seções do checklist direto pelo app</div>
+      <div class="login-admin-note">Contas administradoras podem editar as seções do checklist direto pelo app</div>
     </div>
   </div>
 </div>
@@ -1735,15 +1675,11 @@ const APP_MARKUP = `
       <div class="brand-info">
         <div class="brand-name brand-text-fallback">Checklist TI - Tenda</div>
         <div class="brand-user" id="brandUser">Sistema de Vistorias</div>
-        <span class="admin-badge" id="adminBadge" style="display:none">🛡️ Administrador</span>
+        <span class="admin-badge" id="adminBadge" style="display:none">Administrador</span>
       </div>
       <div class="nav-actions">
         <button class="icon-btn" id="searchToggle" onclick="toggleSearch()" title="Buscar" aria-label="Abrir busca">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </button>
-        <button class="icon-btn" id="aiBtn" onclick="openAI()" title="Análise IA" aria-label="Análise inteligente" style="position:relative">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20"/><path d="M12 6v6l4 2"/><path d="M22 12a4 4 0 0 1-4 4"/><path d="M18 22l4-4-4-4"/></svg>
-          <div class="notif-dot" id="aiNotifDot" style="display:none"></div>
         </button>
         <button class="icon-btn" id="adminBtn" onclick="openAdminPanel()" title="Administração" aria-label="Editar seções do checklist (administrador)" style="display:none;position:relative;flex-shrink:0">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -1825,7 +1761,7 @@ const APP_MARKUP = `
 
   <!-- RESUME BANNER -->
   <div class="resume-banner" id="resumeBanner">
-    <span class="resume-banner-text" id="resumeText">📋 Checklist em andamento — deseja continuar?</span>
+    <span class="resume-banner-text" id="resumeText">Checklist em andamento — deseja continuar?</span>
     <button class="resume-btn" onclick="restoreSession()">Continuar</button>
     <button class="resume-dismiss" onclick="dismissResume()">Novo</button>
   </div>
@@ -1856,7 +1792,7 @@ const APP_MARKUP = `
       <input class="search-input" id="searchInput" type="text"
         placeholder="Buscar itens do checklist..." autocomplete="off"
         oninput="handleSearch(this.value)">
-      <button class="search-clear" onclick="clearSearch()" aria-label="Limpar busca">✕</button>
+      <button class="search-clear" onclick="clearSearch()" aria-label="Limpar busca">x</button>
     </div>
   </div>
 
@@ -1914,7 +1850,7 @@ const APP_MARKUP = `
     <div class="modal-handle"></div>
     <div class="modal-header">
       <span class="modal-title">Configurações</span>
-      <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
+      <button class="modal-close" onclick="closeModal('settingsModal')">x</button>
     </div>
     <div class="modal-body">
       <div>
@@ -1934,10 +1870,10 @@ const APP_MARKUP = `
                value="guilherme.silva@tendaatacado.com.br"
              readonly> 
         <div style="margin-top:10px; display:flex; gap:8px;"> 
-            <button type="button" class="cfg-save-btn" onclick="window.location.href='mailto:guilherme.silva@tendaatacado.com.br'">📧 Enviar E-mail 
+            <button type="button" class="cfg-save-btn" onclick="window.location.href='mailto:guilherme.silva@tendaatacado.com.br'">Enviar E-mail 
           </button>
           <button type="button" class="cfg-save-btn"
-          onclick="window.open('https://teams.microsoft.com/l/chat/0/0?users=guilherme.silva@tendaatacado.com.br','_blank')">👥 Abrir Teams
+          onclick="window.open('https://teams.microsoft.com/l/chat/0/0?users=guilherme.silva@tendaatacado.com.br','_blank')">Abrir Teams
     </button>
 </div></button>  
         </div>"
@@ -1963,49 +1899,24 @@ const APP_MARKUP = `
   </div>
 </div>
 
-<!-- AI MODAL -->
-<div class="modal-backdrop ai-summary-modal" id="aiModal" role="dialog" aria-modal="true" aria-label="Análise Inteligente">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <span class="modal-title" style="display:flex;align-items:center;gap:8px">
-        <span class="ai-badge">IA</span>
-        Análise Inteligente
-      </span>
-      <button class="modal-close" onclick="closeModal('aiModal')">✕</button>
-    </div>
-    <div class="modal-body" id="aiModalBody">
-      <div class="ai-loading" id="aiLoading">
-        <div class="ai-loading-dots">
-          <div class="ai-loading-dot"></div>
-          <div class="ai-loading-dot"></div>
-          <div class="ai-loading-dot"></div>
-        </div>
-        <div class="ai-loading-text">Analisando dados da vistoria...</div>
-      </div>
-      <div id="aiContent" class="hidden"></div>
-    </div>
-  </div>
-</div>
-
 <!-- EXPORT MODAL -->
 <div class="modal-backdrop" id="exportModal" role="dialog" aria-modal="true" aria-label="Exportar Relatório">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-header">
       <span class="modal-title">Exportar Relatório</span>
-      <button class="modal-close" onclick="closeModal('exportModal')">✕</button>
+      <button class="modal-close" onclick="closeModal('exportModal')">x</button>
     </div>
     <div class="modal-body">
       <div style="display:flex;flex-direction:column;gap:8px">
         <button class="cfg-save-btn" onclick="exportCSV()" style="background:linear-gradient(135deg,#059669,#10B981)">
-          📊 Exportar CSV (Google Sheets)
+          Exportar CSV (Google Sheets)
         </button>
         <button class="cfg-save-btn" onclick="exportJSON()" style="background:linear-gradient(135deg,#D97706,#F59E0B)">
-          📦 Exportar JSON
+          Exportar JSON
         </button>
         <button class="cfg-save-btn" onclick="copyReport()" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6)">
-          📋 Copiar Resumo Executivo
+          Copiar Resumo Executivo
         </button>
       </div>
       <div class="cfg-hint">Os dados são exportados com todas as observações, quantidades e carimbos de data/hora registrados durante a vistoria.</div>
@@ -2018,8 +1929,8 @@ const APP_MARKUP = `
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <span class="modal-title">🛡️ Administração</span>
-      <button class="modal-close" onclick="closeModal('adminModal')">✕</button>
+      <span class="modal-title">Administração</span>
+      <button class="modal-close" onclick="closeModal('adminModal')">x</button>
     </div>
     <div class="modal-body">
       <div class="cfg-hint" style="margin-bottom:12px">
@@ -2034,7 +1945,7 @@ const APP_MARKUP = `
         <input type="text" id="adminNewSectionTitle" class="detail-input" placeholder="Nome da seção (ex: Roteadores)" style="width:100%">
         <textarea id="adminNewSectionItems" class="detail-input" placeholder="Um item por linha (ex: Item 1&#10;Item 2&#10;Item 3)" style="width:100%;min-height:80px"></textarea>
         <button type="button" class="cfg-save-btn" id="adminFormSaveBtn" onclick="adminSaveSection()" style="background:linear-gradient(135deg,#059669,#10B981)">
-          ➕ Adicionar Seção
+          Adicionar Seção
         </button>
         <button type="button" class="cfg-save-btn" id="adminFormCancelBtn" onclick="adminCancelEdit()" style="display:none;background:linear-gradient(135deg,#6B7280,#9CA3AF)">
           Cancelar edição
@@ -2050,7 +1961,7 @@ const APP_MARKUP = `
       </div>
 
       <button type="button" class="cfg-save-btn" style="margin-top:20px;background:linear-gradient(135deg,#6B7280,#9CA3AF)" onclick="adminResetSections()">
-        ↺ Restaurar seções padrão
+        Restaurar seções padrão
       </button>
     </div>
   </div>
@@ -2347,22 +2258,7 @@ function buildDashboardSlide() {
       <div class="section-health-list" id="sectionHealthList"></div>
     </div>
 
-    <!-- LINHA 6: IA Insights -->
-    <div class="ai-card" id="aiInsightsCard">
-      <div class="ai-header">
-        <span class="ai-badge">IA</span>
-        <span class="ai-title">Insights Automáticos</span>
-      </div>
-      <div class="ai-insights" id="aiInsightsList">
-        <div class="ai-insight info">
-          <div class="ai-insight-icon">💡</div>
-          <div class="ai-insight-body">
-            <div class="ai-insight-title">Aguardando dados</div>
-            <div class="ai-insight-desc">Complete o checklist para receber insights.</div>
-          </div>
-        </div>
-      </div>
-    </div>`;
+    `;
 
   DOM.slidesTrack.appendChild(slide);
 }
@@ -2532,11 +2428,6 @@ function handleStatusClick(key, newStatus) {
   updateTabBadges();
   autoSave();
 
-  // Show AI notif if criticals
-  if (s.status === 'crit') {
-    const dot = document.getElementById('aiNotifDot');
-    if (dot) dot.style.display = 'block';
-  }
 }
 
 /* PROGRESS */
@@ -2703,58 +2594,10 @@ function updateDashboard() {
     });
   }
 
-  // AI Insights
-  generateAIInsights();
 }
 
 function generateAIInsights() {
-  const list = document.getElementById('aiInsightsList');
-  if (!list) return;
-
-  const critC  = State.countBy('crit');
-  const warnC  = State.countBy('warn');
-  const okC    = State.countBy('ok');
-  const done   = State.doneItems();
-  const total  = State.totalItems();
-  const score  = State.overallScore();
-  const insights = [];
-
-  if (!done) {
-    insights.push({ type: 'info', icon: '💡', title: 'Aguardando dados', desc: 'Complete o checklist para receber insights automáticos.' });
-  } else {
-    if (critC === 0 && done > 10) {
-      insights.push({ type: 'positive', icon: '✅', title: 'Nenhum item crítico', desc: `Excelente! A loja não apresenta falhas críticas até o momento.` });
-    }
-    if (critC > 0) {
-      const critSecs = SECTIONS.filter((sec, si) => sec.items.some((_, ii) => State.items[`${si}-${ii}`]?.status === 'crit'));
-      insights.push({ type: 'critical', icon: '🚨', title: `${critC} item${critC > 1 ? 's' : ''} crítico${critC > 1 ? 's' : ''}`, desc: `Ação imediata necessária em: ${critSecs.map(s => s.title).join(', ')}.` });
-    }
-    if (warnC > 3) {
-      insights.push({ type: 'warning', icon: '⚠️', title: `${warnC} pontos de atenção`, desc: 'Alto volume de itens em atenção. Considere priorizar as categorias com mais ocorrências.' });
-    }
-    const pct = done / total;
-    if (pct < 0.4 && done > 0) {
-      insights.push({ type: 'info', icon: '⏱️', title: 'Vistoria em andamento', desc: `${Math.round(pct * 100)}% concluído. Complete todas as seções para um relatório completo.` });
-    }
-    if (score >= 90) {
-      insights.push({ type: 'positive', icon: '🏆', title: 'Performance excelente', desc: `Score de ${score}/100 — loja dentro dos padrões TI Tenda.` });
-    }
-    if (score >= 75 && score < 90) {
-      insights.push({ type: 'info', icon: '📊', title: `Score ${score}/100`, desc: 'Bom desempenho. Atenção aos itens em amarelo para melhorar o índice.' });
-    }
-    if (done === total) {
-      insights.push({ type: 'positive', icon: '🎯', title: 'Vistoria concluída', desc: 'Todos os itens foram avaliados. Salve o relatório agora.' });
-    }
-  }
-
-  list.innerHTML = insights.map(i => `
-    <div class="ai-insight ${i.type}">
-      <div class="ai-insight-icon">${i.icon}</div>
-      <div class="ai-insight-body">
-        <div class="ai-insight-title">${i.title}</div>
-        <div class="ai-insight-desc">${i.desc}</div>
-      </div>
-    </div>`).join('');
+  // IA removida da interface.
 }
 
 /* SEARCH & FILTER */
@@ -2957,87 +2800,15 @@ function openSettings() {
 
 function saveSettings() {
   localStorage.setItem('cfg-email', document.getElementById('cfgEmail').value);
-  showToast('✅ Configurações salvas!', 'success');
+  showToast('Configurações salvas!', 'success');
   setTimeout(() => closeModal('settingsModal'), 800);
 }
 
 function showExport() { openModal('exportModal'); }
 
-/* AI MODAL */
+/* IA removida da interface */
 function openAI() {
-  const dot = document.getElementById('aiNotifDot');
-  if (dot) dot.style.display = 'none';
-  openModal('aiModal');
-  generateExecutiveSummary();
-}
-
-function generateExecutiveSummary() {
-  const loading = document.getElementById('aiLoading');
-  const content = document.getElementById('aiContent');
-  if (!loading || !content) return;
-
-  loading.classList.remove('hidden');
-  content.classList.add('hidden');
-
-  setTimeout(() => {
-    const loja   = document.getElementById('fLoja').value || 'Loja não selecionada';
-    const resp   = document.getElementById('fResp').value || 'Responsável não informado';
-    const data   = document.getElementById('fData').value ? new Date(document.getElementById('fData').value + 'T12:00:00').toLocaleDateString('pt-BR') : 'Data não informada';
-    const score  = State.overallScore();
-    const grade  = State.grade();
-    const done   = State.doneItems();
-    const total  = State.totalItems();
-    const critC  = State.countBy('crit');
-    const warnC  = State.countBy('warn');
-    const okC    = State.countBy('ok');
-    const pct    = State.pct();
-
-    const critItems = [];
-    SECTIONS.forEach((sec, si) => {
-      sec.items.forEach((item, ii) => {
-        if (State.items[`${si}-${ii}`]?.status === 'crit') critItems.push(`${sec.title}: ${item}`);
-      });
-    });
-
-    const warnSecs = SECTIONS.filter((sec, si) =>
-      sec.items.some((_, ii) => State.items[`${si}-${ii}`]?.status === 'warn')
-    ).map(s => s.title);
-
-    const gradeText = { A: 'Excelente', B: 'Bom', C: 'Regular', D: 'Crítico' }[grade] || 'N/A';
-    const action = critC > 0
-      ? 'AÇÃO IMEDIATA necessária nos itens críticos identificados.'
-      : score >= 80 ? 'Loja dentro dos padrões. Monitorar itens de atenção.'
-      : 'Acompanhamento recomendado nos pontos de atenção.';
-
-    content.innerHTML = `
-      <div class="ai-insight info" style="margin-bottom:10px">
-        <div class="ai-insight-icon">📄</div>
-        <div class="ai-insight-body">
-          <div class="ai-insight-title">Resumo Executivo — ${loja}</div>
-          <div class="ai-insight-desc">${data} · Responsável: ${resp}</div>
-        </div>
-      </div>
-      <div class="ai-exec-summary">
-        <strong>Score Geral:</strong> ${score}/100 (Conceito ${grade} — ${gradeText})<br><br>
-        <strong>Cobertura:</strong> ${done} de ${total} itens avaliados (${pct}%)<br><br>
-        <strong>Distribuição:</strong> ✅ ${okC} OK · ⚠️ ${warnC} Atenção · 🚨 ${critC} Crítico<br><br>
-        ${critItems.length ? `<strong>Itens Críticos:</strong><br>${critItems.map(i => `• ${i}`).join('<br>')}<br><br>` : ''}
-        ${warnSecs.length ? `<strong>Seções com Atenção:</strong> ${warnSecs.join(', ')}<br><br>` : ''}
-        <strong>Recomendação:</strong> ${action}
-      </div>
-      ${critC > 0 ? `
-      <div class="ai-insight critical">
-        <div class="ai-insight-icon">🚨</div>
-        <div class="ai-insight-body">
-          <div class="ai-insight-title">Escalamento necessário</div>
-          <div class="ai-insight-desc">Registre os ${critC} itens críticos no sistema de chamados e notifique o gestor regional em até 2 horas.</div>
-        </div>
-      </div>` : ''}
-      <button class="cfg-save-btn" style="margin-top:8px" onclick="copyReport();closeModal('aiModal')">📋 Copiar Resumo</button>`;
-
-    loading.classList.add('hidden');
-    content.classList.remove('hidden');
-  }, 1200);
+  // IA removida da interface.
 }
 
 /* EXPORT */
@@ -3064,7 +2835,7 @@ function exportCSV() {
   a.href = url; a.download = `vistoria-${loja || 'ti'}-${data || 'sem-data'}.csv`;
   a.click(); URL.revokeObjectURL(url);
   closeModal('exportModal');
-  showToast('📊 CSV exportado com sucesso!', 'success');
+  showToast('CSV exportado com sucesso!', 'success');
 }
 
 function exportJSON() {
@@ -3077,7 +2848,7 @@ function exportJSON() {
   a.href = url; a.download = `vistoria-${loja}-${data}.json`;
   a.click(); URL.revokeObjectURL(url);
   closeModal('exportModal');
-  showToast('📦 JSON exportado!', 'success');
+  showToast('JSON exportado!', 'success');
 }
 
 function copyReport() {
@@ -3108,9 +2879,9 @@ Responsável: ${resp}
 SCORE: ${score}/100 (${grade})
 Progresso: ${done}/${total} itens (${State.pct()}%)
 
-✅ OK:       ${okC}
-⚠️ Atenção:  ${warnC}
-🚨 Crítico:  ${critC}
+OK: ${okC}
+Atenção: ${warnC}
+Crítico: ${critC}
 
 ${critItems.length ? `ITENS CRÍTICOS:\n${critItems.join('\n')}` : 'Sem itens críticos.'}
 
@@ -3118,9 +2889,8 @@ Gerado em: ${new Date().toLocaleString('pt-BR')}`;
 
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
-      showToast('📋 Resumo copiado!', 'success');
+      showToast('Resumo copiado!', 'success');
       closeModal('exportModal');
-      closeModal('aiModal');
     });
   }
 }
@@ -3167,13 +2937,13 @@ function doSave() {
   autoSave();
 
   if (!payload.itens.length) {
-    showToast('⚠️ Nenhum item preenchido para enviar.', 'error');
+    showToast('Nenhum item preenchido para enviar.', 'error');
     btn.classList.remove('loading');
     btn.innerHTML = `<svg class="save-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar Vistoria`;
     return;
   }
 
-  showToast('⬆️ Enviando dados...', 'info');
+  showToast('Enviando dados...', 'info');
 
   fetch(url, {
     method: 'POST',
@@ -3185,10 +2955,10 @@ function doSave() {
       return r.text();
     })
     .then(() => {
-      showToast(`✅ Salvo! ${payload.itens.length} linhas enviadas`, 'success');
+      showToast(`Salvo! ${payload.itens.length} linhas enviadas`, 'success');
       localStorage.removeItem('checklist-draft');
     })
-    .catch(() => showToast('⚠️ Erro ao enviar. Dados salvos localmente.', 'error'))
+    .catch(() => showToast('Erro ao enviar. Dados salvos localmente.', 'error'))
     .finally(() => {
       btn.classList.remove('loading');
       btn.innerHTML = `<svg class="save-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar Vistoria`;
@@ -3255,7 +3025,7 @@ function restoreSession() {
     updateProgress();
     updateTabBadges();
     document.getElementById('resumeBanner').classList.remove('show');
-    showToast('✅ Checklist restaurado!', 'success');
+    showToast('Checklist restaurado!', 'success');
   } catch(e) {
     showToast('Erro ao restaurar. Iniciando novo.', 'error');
     dismissResume();
@@ -3317,7 +3087,7 @@ function adminEditSection(si) {
   document.getElementById('adminNewSectionTitle').value = sec.title;
   document.getElementById('adminNewSectionItems').value = sec.items.join('\n');
   document.getElementById('adminFormLabel').textContent = `Editando "${sec.title}"`;
-  document.getElementById('adminFormSaveBtn').innerHTML = '💾 Salvar alterações';
+  document.getElementById('adminFormSaveBtn').innerHTML = 'Salvar alterações';
   document.getElementById('adminFormCancelBtn').style.display = '';
 
   document.getElementById('adminNewSectionTitle').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -3328,7 +3098,7 @@ function adminCancelEdit() {
   document.getElementById('adminNewSectionTitle').value = '';
   document.getElementById('adminNewSectionItems').value = '';
   document.getElementById('adminFormLabel').textContent = 'Nova seção';
-  document.getElementById('adminFormSaveBtn').innerHTML = '➕ Adicionar Seção';
+  document.getElementById('adminFormSaveBtn').innerHTML = 'Adicionar Seção';
   document.getElementById('adminFormCancelBtn').style.display = 'none';
 }
 
@@ -3351,7 +3121,7 @@ function adminSaveSection() {
     adminCancelEdit();
     renderAdminSectionsList();
     rebuildApp();
-    showToast(`✅ Seção "${title}" atualizada`, 'success');
+    showToast(`Seção "${title}" atualizada`, 'success');
     return;
   }
 
@@ -3363,7 +3133,7 @@ function adminSaveSection() {
   itemsEl.value = '';
   renderAdminSectionsList();
   rebuildApp();
-  showToast(`✅ Seção "${title}" adicionada`, 'success');
+  showToast(`Seção "${title}" adicionada`, 'success');
 }
 
 function adminDeleteSection(si) {
@@ -3384,7 +3154,7 @@ function adminResetSections() {
   saveSections();
   renderAdminSectionsList();
   rebuildApp();
-  showToast('↺ Seções padrão restauradas', 'info');
+  showToast('Seções padrão restauradas', 'info');
 }
 
 function renderAdminExtraList() {
@@ -3420,7 +3190,7 @@ function adminAddEmail() {
   saveExtraAdmins(extras);
   el.value = '';
   renderAdminExtraList();
-  showToast(`✅ ${email} agora é administrador`, 'success');
+  showToast(`${email} agora é administrador`, 'success');
 
   // Se for o usuário logado agora, atualiza a UI dele na hora
   if (State.user.email === email) {
@@ -3445,14 +3215,14 @@ function doMsLogin() {
   errEl.textContent = '';
 
   if (!isMsalConfigured()) {
-    errEl.textContent = '⚠️ Login Microsoft ainda não configurado. Veja as instruções no código (CLIENT_ID / TENANT_ID).';
+    errEl.textContent = 'Login Microsoft ainda não configurado. Veja as instruções no código (CLIENT_ID / TENANT_ID).';
     return;
   }
 
   const pca = getMsalInstance();
   if (!pca) {
     console.error('[MSAL] Biblioteca não carregada. typeof msal =', typeof msal, '| isMsalConfigured =', isMsalConfigured());
-    errEl.textContent = '⚠️ Não foi possível carregar a biblioteca de login da Microsoft (msal.js). Recarregue a página (puxe para atualizar) e tente de novo. Se persistir, pode ser bloqueio de rede/extensão do navegador.';
+    errEl.textContent = 'Não foi possível carregar a biblioteca de login da Microsoft (msal.js). Recarregue a página (puxe para atualizar) e tente de novo. Se persistir, pode ser bloqueio de rede/extensão do navegador.';
     return;
   }
 
@@ -3515,7 +3285,7 @@ function openApp() {
         const banner = document.getElementById('resumeBanner');
         const textEl = document.getElementById('resumeText');
         const time   = d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
-        textEl.textContent = `📋 Checklist em andamento: ${draft.loja} · ${time}`;
+        textEl.textContent = `Checklist em andamento: ${draft.loja} · ${time}`;
         banner.classList.add('show');
       }
     }
@@ -3552,8 +3322,8 @@ function showToast(msg, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
 
-  const icons = { success: '✅', error: '⚠️', info: 'ℹ️' };
-  toast.innerHTML = `<span class="toast-icon">${icons[type] || 'ℹ️'}</span><span class="toast-text">${msg}</span>`;
+  const icons = { success: 'OK', error: '!', info: 'i' };
+  toast.innerHTML = `<span class="toast-icon">${icons[type] || 'i'}</span><span class="toast-text">${msg}</span>`;
 
   container.insertBefore(toast, container.firstChild);
   setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 3600);
@@ -3677,7 +3447,7 @@ document.head.appendChild(spinStyle);
     <div class="pwa-banner-sub">Acesse offline, como app nativo</div>
   </div>
   <button class="pwa-install-btn" id="pwaInstallBtn">Instalar</button>
-  <button class="pwa-dismiss-btn" onclick="dismissPWA()">✕</button>
+  <button class="pwa-dismiss-btn" onclick="dismissPWA()">x</button>
 </div>
 
 <script>
@@ -3702,7 +3472,7 @@ document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
   deferredInstallPrompt.prompt();
   const { outcome } = await deferredInstallPrompt.userChoice;
   if (outcome === 'accepted') {
-    showToast('✅ App instalado com sucesso!', 'success');
+    showToast('App instalado com sucesso!', 'success');
   }
   deferredInstallPrompt = null;
   document.getElementById('pwaBanner').classList.remove('show');
@@ -3861,7 +3631,7 @@ function checkCompletion() {
   if (isNow && !wasComplete) {
     wasComplete = true;
     haptic('success');
-    showToast('🎯 Vistoria 100% concluída! Salve o relatório.', 'success');
+    showToast('Vistoria 100% concluída! Salve o relatório.', 'success');
     const scoreCard = document.getElementById('dashScoreCard');
     if (scoreCard) scoreCard.classList.add('completion-pulse');
     setTimeout(() => scoreCard && scoreCard.classList.remove('completion-pulse'), 600);
