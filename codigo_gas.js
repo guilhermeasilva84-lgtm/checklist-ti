@@ -1,29 +1,42 @@
 function doPost(e) {
   try {
     const payload = JSON.parse(e.postData.contents);
+
+    if (payload.action === 'sendEmailPdf') {
+      const ss = getOrCreateSpreadsheet('Checklist TI Lojas - Respostas');
+      const sheet = getOrCreateSheet(ss, 'Envios por E-mail');
+      const headers = ['Data', 'Destinatários', 'Assunto', 'Resumo', 'Status'];
+      if (sheet.getLastRow() === 0) {
+        sheet.appendRow(headers);
+        const headerRange = sheet.getRange(1, 1, 1, headers.length);
+        headerRange.setBackground('#1a56db');
+        headerRange.setFontColor('#ffffff');
+        headerRange.setFontWeight('bold');
+        sheet.setFrozenRows(1);
+      }
+      const row = [
+        new Date().toLocaleString('pt-BR'),
+        (payload.to || []).join(', '),
+        payload.subject || '',
+        payload.summary ? `${payload.summary.loja} · ${payload.summary.conformidade}%` : '',
+        'Enviado'
+      ];
+      sheet.appendRow(row);
+      sheet.autoResizeColumns(1, headers.length);
+      return ContentService
+        .createTextOutput(JSON.stringify({ status: 'OK', action: 'sendEmailPdf' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     const sheetName = payload.sheetName || 'Checklist TI Lojas';
     const headers   = payload.headers || [];
     const rows      = payload.rows || [];
 
-    // Abre ou cria a planilha
-    let ss;
-    const files = DriveApp.getFilesByName('Checklist TI Lojas - Respostas');
-    if (files.hasNext()) {
-      ss = SpreadsheetApp.open(files.next());
-    } else {
-      ss = SpreadsheetApp.create('Checklist TI Lojas - Respostas');
-    }
+    const ss = getOrCreateSpreadsheet('Checklist TI Lojas - Respostas');
+    const sheet = getOrCreateSheet(ss, sheetName);
 
-    // Abre ou cria a aba
-    let sheet = ss.getSheetByName(sheetName);
-    if (!sheet) {
-      sheet = ss.insertSheet(sheetName);
-    }
-
-    // Cria cabeçalho se a aba estiver vazia
     if (sheet.getLastRow() === 0) {
       sheet.appendRow(headers);
-      // Formata cabeçalho
       const headerRange = sheet.getRange(1, 1, 1, headers.length);
       headerRange.setBackground('#1a56db');
       headerRange.setFontColor('#ffffff');
@@ -31,10 +44,7 @@ function doPost(e) {
       sheet.setFrozenRows(1);
     }
 
-    // Adiciona as linhas
     rows.forEach(row => sheet.appendRow(row));
-
-    // Auto-resize colunas
     sheet.autoResizeColumns(1, headers.length);
 
     return ContentService
@@ -46,6 +56,20 @@ function doPost(e) {
       .createTextOutput(JSON.stringify({ status: 'ERROR', message: err.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+function getOrCreateSpreadsheet(name) {
+  const files = DriveApp.getFilesByName(name);
+  if (files.hasNext()) return SpreadsheetApp.open(files.next());
+  return SpreadsheetApp.create(name);
+}
+
+function getOrCreateSheet(ss, sheetName) {
+  let sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+  }
+  return sheet;
 }
 
 // Teste manual: execute esta função para verificar se o script funciona
