@@ -15,6 +15,7 @@
      Carregamos via jsDelivr (espelho oficial do pacote npm, CDN global muito estável) e,
      se por algum motivo falhar, caímos para os CDNs diretos da Microsoft como reserva. -->
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
   if (typeof msal === 'undefined') {
     document.write('<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"><\/script>');
@@ -277,6 +278,41 @@ body.light .brand-logo-color { display: none !important; }
 
 </style>
 <style>
+.email-modal .modal-body { gap: 14px; }
+.email-field { display: flex; flex-direction: column; gap: 6px; }
+.email-label { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+.email-input, .email-textarea, .email-attachment-input {
+  width: 100%; border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: var(--bg-input); color: var(--text-primary); padding: 10px 12px;
+  font: inherit;
+}
+.email-input:focus, .email-textarea:focus, .email-attachment-input:focus {
+  outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+.email-textarea { min-height: 88px; resize: vertical; }
+.email-suggestion-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.email-pill {
+  border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary);
+  border-radius: var(--r-full); padding: 6px 10px; font-size: 12px; cursor: pointer;
+}
+.email-pill:hover { border-color: var(--border-focus); color: var(--text-primary); }
+.email-attach-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.email-attach-preview {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
+}
+.email-attach-preview .mini-chip {
+  padding: 6px 10px; border-radius: var(--r-sm); background: var(--bg-badge); color: var(--text-secondary);
+  font-size: 11px; border: 1px solid var(--border);
+}
+.toggle-row.small { padding: 10px 0; }
+.history-list { display: flex; flex-direction: column; gap: 8px; }
+.history-item {
+  padding: 10px 12px; border-radius: var(--r-sm); background: var(--bg-card); border: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.history-item strong { font-size: 12px; color: var(--text-primary); }
+.history-item span { font-size: 11px; color: var(--text-secondary); }
+
 /* DESIGN TOKENS — DARK FIRST, LIGHT OVERRIDE */
 :root {
   --bg-app: #0A0A0F;
@@ -1877,6 +1913,9 @@ const APP_MARKUP = `
       <svg class="save-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Salvar Vistoria
     </button>
+    <button class="icon-btn" onclick="openEmailModal()" title="Enviar por E-mail" aria-label="Enviar por e-mail">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
+    </button>
     <button class="icon-btn" onclick="showExport()" title="Exportar" aria-label="Exportar relatório">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </button>
@@ -1959,6 +1998,54 @@ const APP_MARKUP = `
         </button>
       </div>
       <div class="cfg-hint">Os dados são exportados com todas as observações, quantidades e carimbos de data/hora registrados durante a vistoria.</div>
+    </div>
+  </div>
+</div>
+
+<!-- E-MAIL MODAL -->
+<div class="modal-backdrop email-modal" id="emailModal" role="dialog" aria-modal="true" aria-label="Enviar por E-mail">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">Enviar por E-mail</span>
+      <button class="modal-close" onclick="closeModal('emailModal')">x</button>
+    </div>
+    <div class="modal-body">
+      <div class="email-field">
+        <label class="email-label" for="emailRecipients">Destinatário(s)</label>
+        <input class="email-input" id="emailRecipients" type="text" placeholder="nome@empresa.com.br, outro@empresa.com.br" list="emailRecipientsList">
+        <datalist id="emailRecipientsList"></datalist>
+        <div class="email-suggestion-row" id="emailSuggestions"></div>
+      </div>
+      <div class="email-field">
+        <label class="email-label" for="emailSubject">Assunto</label>
+        <input class="email-input" id="emailSubject" type="text">
+      </div>
+      <div class="email-field">
+        <label class="email-label" for="emailBody">Mensagem</label>
+        <textarea class="email-textarea" id="emailBody"></textarea>
+      </div>
+      <div class="email-field">
+        <label class="email-label" for="emailAttachments">Anexos</label>
+        <div class="email-attach-row">
+          <input class="email-attachment-input" id="emailAttachments" type="file" accept="image/*" multiple>
+          <button type="button" class="cfg-save-btn" style="width:auto;padding:0 12px" onclick="clearEmailAttachments()">Limpar</button>
+        </div>
+        <div class="email-attach-preview" id="emailAttachPreview"></div>
+      </div>
+      <div class="toggle-row small">
+        <div class="toggle-info">
+          <div class="toggle-label">Enviar automaticamente quando houver reprovações</div>
+          <div class="toggle-desc">O relatório é disparado ao salvar o checklist, sem nova ação manual.</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="emailAutoSend">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <button id="emailSendBtn" class="cfg-save-btn" onclick="sendEmailReport()" style="background:linear-gradient(135deg,#2563EB,#3B82F6)">Enviar por E-mail</button>
+      <div class="modal-section-label">Histórico de envios</div>
+      <div class="history-list" id="emailHistoryList"></div>
     </div>
   </div>
 </div>
@@ -2845,6 +2932,357 @@ function saveSettings() {
 
 function showExport() { openModal('exportModal'); }
 
+let selectedEmailAttachments = [];
+const EMAIL_HISTORY_KEY = 'checklist-email-history';
+const EMAIL_AUTO_KEY = 'email-auto-send';
+
+function loadEmailHistory() {
+  try {
+    const raw = localStorage.getItem(EMAIL_HISTORY_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveEmailHistory(list) {
+  try { localStorage.setItem(EMAIL_HISTORY_KEY, JSON.stringify(list)); } catch (e) {}
+}
+
+function renderEmailHistory() {
+  const wrap = document.getElementById('emailHistoryList');
+  if (!wrap) return;
+  const history = loadEmailHistory().slice(0, 6);
+  if (!history.length) {
+    wrap.innerHTML = '<div class="history-item"><strong>Nenhum envio registrado ainda.</strong><span>Os relatórios enviados aparecerão aqui.</span></div>';
+    return;
+  }
+  wrap.innerHTML = history.map(item => `
+    <div class="history-item">
+      <strong>${item.to}</strong>
+      <span>${item.subject}</span>
+      <span>${item.timestamp}</span>
+    </div>
+  `).join('');
+}
+
+function openEmailModal() {
+  const recipientsInput = document.getElementById('emailRecipients');
+  const subjectInput = document.getElementById('emailSubject');
+  const bodyInput = document.getElementById('emailBody');
+  const autoInput = document.getElementById('emailAutoSend');
+  const suggestionsWrap = document.getElementById('emailSuggestions');
+  const list = document.getElementById('emailRecipientsList');
+  const store = loadEmailHistory();
+  const recentRecipients = store.map(item => item.to).filter(Boolean);
+  const suggested = Array.from(new Set([
+    State.user.email,
+    'guilherme.silva@tendaatacado.com.br',
+    'gestor.loja@tendaatacado.com.br',
+    'supervisor.regional@tendaatacado.com.br',
+    ...recentRecipients
+  ].filter(Boolean)));
+
+  suggestionsWrap.innerHTML = suggested.slice(0, 6).map(value => `<button type="button" class="email-pill" onclick="selectEmailRecipient('${value}')">${value}</button>`).join('');
+  list.innerHTML = suggested.map(value => `<option value="${value}"></option>`).join('');
+
+  const loja = document.getElementById('fLoja').value || 'Loja';
+  const data = document.getElementById('fData').value || new Date().toLocaleDateString('pt-BR');
+  const subject = `Checklist TI – ${loja} – ${data}`;
+  recipientsInput.value = recentRecipients[0] || '';
+  subjectInput.value = subject;
+  bodyInput.value = `Segue o relatório do checklist TI da loja ${loja}. O anexo em PDF contém o resumo completo da inspeção.`;
+  autoInput.checked = localStorage.getItem(EMAIL_AUTO_KEY) === '1';
+  selectedEmailAttachments = [];
+  renderEmailAttachmentPreview();
+  renderEmailHistory();
+  openModal('emailModal');
+}
+
+function selectEmailRecipient(value) {
+  const input = document.getElementById('emailRecipients');
+  input.value = value;
+}
+
+function handleEmailAttachmentSelection(files) {
+  Array.from(files || []).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function() {
+      selectedEmailAttachments.push({ name: file.name, dataUrl: reader.result, type: file.type || 'image/jpeg' });
+      renderEmailAttachmentPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function clearEmailAttachments() {
+  selectedEmailAttachments = [];
+  renderEmailAttachmentPreview();
+}
+
+function renderEmailAttachmentPreview() {
+  const wrap = document.getElementById('emailAttachPreview');
+  if (!wrap) return;
+  if (!selectedEmailAttachments.length) {
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.innerHTML = selectedEmailAttachments.map(item => `<div class="mini-chip">${item.name}</div>`).join('');
+}
+
+function buildEmailReportData() {
+  const loja = document.getElementById('fLoja').value || 'Loja';
+  const data = document.getElementById('fData').value || new Date().toLocaleDateString('pt-BR');
+  const resp = document.getElementById('fResp').value || 'Responsável';
+  const reg = document.getElementById('fReg').value || 'Regional';
+  const now = new Date();
+  const total = State.totalItems();
+  const done = State.doneItems();
+  const crit = State.countBy('crit');
+  const warn = State.countBy('warn');
+  const ok = State.countBy('ok');
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const summary = {
+    loja,
+    data,
+    responsavel: resp,
+    regional: reg,
+    total,
+    concluido: done,
+    conformidade: pct,
+    crit,
+    warn,
+    ok,
+    geradoEm: now.toLocaleString('pt-BR')
+  };
+  return { summary, rows: buildPayload().itens };
+}
+
+function buildPdfReport() {
+  const { jsPDF } = window.jspdf;
+  const report = buildEmailReportData();
+  const doc = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  let y = 40;
+
+  doc.setFillColor(15, 23, 42);
+  doc.rect(40, 30, pageWidth - 80, 70, 'F');
+  doc.setFillColor(59, 130, 246);
+  doc.roundedRect(60, 46, 44, 32, 8, 8, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.text('TA', 82, 67);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.text('Checklist TI', 120, 58);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Tenda Atacado', 120, 80);
+  doc.text(`Loja: ${report.summary.loja}`, 360, 58);
+  doc.text(`Data: ${report.summary.data}`, 360, 74);
+  doc.text(`Responsável: ${report.summary.responsavel}`, 360, 90);
+
+  y = 122;
+  doc.setTextColor(15, 23, 42);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.text('Resumo Geral', 40, y);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  y += 16;
+  doc.text(`Itens avaliados: ${report.summary.concluido}/${report.summary.total}`, 40, y);
+  y += 14;
+  doc.text(`Conformidade: ${report.summary.conformidade}%`, 40, y);
+  y += 14;
+  doc.text(`Reprovações: ${report.summary.crit}`, 40, y);
+  y += 14;
+  doc.text(`Atenções: ${report.summary.warn}`, 40, y);
+  y += 14;
+  doc.text(`OK: ${report.summary.ok}`, 40, y);
+  y += 24;
+
+  const groups = {};
+  SECTIONS.forEach((sec, si) => {
+    groups[sec.title] = sec.items.map((item, ii) => {
+      const s = State.items[`${si}-${ii}`];
+      return { item, status: s?.status || 'pending', qty: s?.qty || '', obs: s?.obs || '' };
+    });
+  });
+
+  Object.entries(groups).forEach(([sectionTitle, items]) => {
+    if (y > 690) {
+      doc.addPage();
+      y = 40;
+    }
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(30, 41, 69);
+    doc.text(sectionTitle, 40, y);
+    y += 14;
+    doc.setDrawColor(223, 225, 232);
+    doc.line(40, y, pageWidth - 40, y);
+    y += 10;
+
+    items.forEach(itemData => {
+      if (y > 760) {
+        doc.addPage();
+        y = 40;
+      }
+      const statusLabel = itemData.status === 'ok' ? 'OK' : itemData.status === 'warn' ? 'Reprovado' : itemData.status === 'crit' ? 'Reprovado' : 'N/A';
+      const statusColor = itemData.status === 'ok' ? [34, 197, 94] : itemData.status === 'warn' || itemData.status === 'crit' ? [239, 68, 68] : [107, 114, 128];
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
+      doc.text(statusLabel, 40, y);
+      doc.setTextColor(15, 23, 42);
+      doc.setFont('helvetica', 'normal');
+      const titleText = `${itemData.item}${itemData.qty ? ` · Qty: ${itemData.qty}` : ''}`;
+      const lines = doc.splitTextToSize(titleText, 420);
+      doc.text(lines, 90, y);
+      y += Math.max(12, lines.length * 12);
+      if (itemData.obs) {
+        const obsLines = doc.splitTextToSize(`Observação: ${itemData.obs}`, 420);
+        doc.setFontSize(9);
+        doc.setTextColor(80, 89, 110);
+        doc.text(obsLines, 90, y);
+        y += Math.max(12, obsLines.length * 11);
+      }
+      y += 4;
+    });
+    y += 10;
+  });
+
+  if (selectedEmailAttachments.length) {
+    doc.addPage();
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(30, 41, 69);
+    doc.text('Anexos', 40, 40);
+    let attachY = 60;
+    selectedEmailAttachments.forEach((item, index) => {
+      if (attachY > 720) {
+        doc.addPage();
+        attachY = 40;
+      }
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(15, 23, 42);
+      doc.text(`${index + 1}. ${item.name}`, 40, attachY);
+      attachY += 16;
+      try {
+        const imageType = item.type && item.type.includes('png') ? 'PNG' : 'JPEG';
+        doc.addImage(item.dataUrl, imageType, 40, attachY, 220, 140);
+      } catch (e) {
+        doc.text('Imagem não pôde ser incluída no PDF.', 40, attachY + 70);
+      }
+      attachY += 160;
+    });
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(93, 103, 120);
+    doc.text(`Gerado em ${report.summary.geradoEm}`, pageWidth - 120, pageHeight - 24);
+    doc.text(`Página ${i}/${pageCount}`, pageWidth - 60, pageHeight - 24);
+  }
+
+  return doc.output('datauristring');
+}
+
+function sendEmailReport() {
+  const recipientsInput = document.getElementById('emailRecipients');
+  const subjectInput = document.getElementById('emailSubject');
+  const bodyInput = document.getElementById('emailBody');
+  const autoInput = document.getElementById('emailAutoSend');
+  const recipients = (recipientsInput.value || '').split(/[,;]+/).map(v => v.trim()).filter(Boolean);
+  const subject = subjectInput.value || 'Checklist TI';
+  const body = bodyInput.value || 'Segue o relatório.';
+
+  if (!recipients.length) {
+    showToast('Informe ao menos um destinatário.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('emailSendBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Gerando PDF...';
+  }
+
+  try {
+    const dataUri = buildPdfReport();
+    const payload = {
+      action: 'sendEmailPdf',
+      to: recipients,
+      subject,
+      body,
+      pdfName: `checklist-${Date.now()}.pdf`,
+      pdfBase64: dataUri.split(',')[1],
+      summary: buildEmailReportData().summary,
+      checklist: buildPayload()
+    };
+
+    fetch(DEFAULT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(() => {
+        const history = loadEmailHistory();
+        history.unshift({
+          to: recipients.join(', '),
+          subject,
+          timestamp: new Date().toLocaleString('pt-BR')
+        });
+        saveEmailHistory(history.slice(0, 12));
+        renderEmailHistory();
+        localStorage.setItem(EMAIL_AUTO_KEY, autoInput.checked ? '1' : '0');
+        showToast('E-mail enviado com sucesso.', 'success');
+        closeModal('emailModal');
+      })
+      .catch(() => {
+        showToast('Não foi possível enviar o e-mail. Tente novamente.', 'error');
+      })
+      .finally(() => {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Enviar por E-mail';
+        }
+      });
+  } catch (e) {
+    showToast('Não foi possível gerar o PDF.', 'error');
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Enviar por E-mail';
+    }
+  }
+}
+
+function maybeAutoSendEmailFromSave() {
+  if (localStorage.getItem(EMAIL_AUTO_KEY) !== '1') return;
+  const hasReproval = State.countBy('crit') + State.countBy('warn') > 0;
+  if (!hasReproval) return;
+  const recipientsInput = document.getElementById('emailRecipients');
+  const subjectInput = document.getElementById('emailSubject');
+  const bodyInput = document.getElementById('emailBody');
+  if (!recipientsInput || !subjectInput || !bodyInput) return;
+  recipientsInput.value = recipientsInput.value || State.user.email || 'guilherme.silva@tendaatacado.com.br';
+  subjectInput.value = subjectInput.value || `Checklist TI – ${document.getElementById('fLoja').value || 'Loja'} – ${document.getElementById('fData').value || new Date().toLocaleDateString('pt-BR')}`;
+  bodyInput.value = bodyInput.value || `Checklist com reprovações registrado. O PDF com o relatório completo segue em anexo.`;
+  sendEmailReport();
+}
+
 /* IA removida da interface */
 function openAI() {
   // IA removida da interface.
@@ -2996,6 +3434,7 @@ function doSave() {
     .then(() => {
       showToast(`Salvo! ${payload.itens.length} linhas enviadas`, 'success');
       localStorage.removeItem('checklist-draft');
+      maybeAutoSendEmailFromSave();
     })
     .catch(() => showToast('Erro ao enviar. Dados salvos localmente.', 'error'))
     .finally(() => {
@@ -3375,6 +3814,14 @@ function debounce(fn, delay) {
     clearTimeout(timer);
     timer = setTimeout(() => fn.apply(this, args), delay);
   };
+}
+
+const emailAttachmentInput = document.getElementById('emailAttachments');
+if (emailAttachmentInput) {
+  emailAttachmentInput.addEventListener('change', function(e) {
+    handleEmailAttachmentSelection(e.target.files);
+    e.target.value = '';
+  });
 }
 
 /* BACKDROP CLICK TO CLOSE */
