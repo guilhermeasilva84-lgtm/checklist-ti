@@ -2003,7 +2003,7 @@ const APP_MARKUP = `
           Copiar Resumo Executivo
         </button>
       </div>
-      <div class="cfg-hint">Os dados são exportados com todas as observações, quantidades e carimbos de data/hora registrados durante a vistoria. O botão "Enviar planilha atual" envia apenas os itens preenchidos no checklist atual.</div>
+      <div class="cfg-hint">Os dados são exportados com todas as observações, quantidades e carimbos de data/hora registrados durante a vistoria. O botão "Enviar planilha atual" envia apenas os itens preenchidos no checklist atual para o e-mail configurado em Configurações.</div>
     </div>
   </div>
 </div>
@@ -2087,7 +2087,7 @@ const APP_MARKUP = `
         Aqui você adiciona ou remove seções do checklist diretamente pelo app, sem precisar mexer no código. Alterar as seções reinicia o progresso da vistoria atual.
       </div>
 
-      <button type="button" class="cfg-save-btn" onclick="openSavedSubmissionsModal()" style="margin-bottom:12px;background:linear-gradient(135deg,#7C3AED,#8B5CF6)">Ver Salvamentos</button>
+      <button type="button" class="cfg-save-btn" onclick="openSavedSubmissionsModal()" style="margin-bottom:12px;background:linear-gradient(135deg,#7C3AED,#8B5CF6)">Histórico de Salvamentos</button>
 
       <div class="modal-section-label">Seções atuais</div>
       <div id="adminSectionsList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px"></div>
@@ -3570,10 +3570,12 @@ function sendCurrentChecklistExcel() {
     excelBase64,
     checklist: payload,
     loja,
-    data
+    data,
+    to: [document.getElementById('cfgEmail')?.value || 'guilherme.silva@tendaatacado.com.br']
   };
 
-  showToast('Enviando planilha atual...', 'info');
+  const recipientEmail = request.to[0];
+  showToast(`Enviando planilha para ${recipientEmail}...`, 'info');
   fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
