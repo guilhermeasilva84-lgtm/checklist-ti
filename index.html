@@ -1934,9 +1934,8 @@ const APP_MARKUP = `
       <div>
         <div class="modal-section-label">Power Automate</div>
         <div class="cfg-field">
-          <label class="cfg-label" for="cfgUrl">URL do fluxo (fixa para todos os aparelhos)</label>
-          <input class="cfg-input" id="cfgUrl" type="url" readonly disabled
-            style="opacity:0.7;cursor:not-allowed"
+          <label class="cfg-label" for="cfgUrl">URL do fluxo</label>
+          <input class="cfg-input" id="cfgUrl" type="url"
             value="https://defaultd685b1be26d44fc289b26333f4469d.11.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8d132a623ef64376b6392fd620b80610/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=m99ubwzbeHbjhPto-135KY1zl1x5q9PG67oJXPlYaJI">
         </div>
       </div>
@@ -2043,9 +2042,27 @@ const APP_MARKUP = `
           <span class="toggle-track"></span>
         </label>
       </div>
-      <button id="emailSendBtn" class="cfg-save-btn" onclick="sendEmailReport()" style="background:linear-gradient(135deg,#2563EB,#3B82F6)">Enviar por E-mail</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button id="emailPreviewBtn" class="cfg-save-btn" onclick="previewEmailPdf()" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6);flex:1">Pré-visualizar PDF</button>
+        <button id="emailSendBtn" class="cfg-save-btn" onclick="sendEmailReport()" style="background:linear-gradient(135deg,#2563EB,#3B82F6);flex:1">Enviar por E-mail</button>
+      </div>
       <div class="modal-section-label">Histórico de envios</div>
       <div class="history-list" id="emailHistoryList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SAVED SUBMISSIONS MODAL -->
+<div class="modal-backdrop" id="savesModal" role="dialog" aria-modal="true" aria-label="Salvamentos do Checklist">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">Salvamentos</span>
+      <button class="modal-close" onclick="closeModal('savesModal')">x</button>
+    </div>
+    <div class="modal-body">
+      <div class="cfg-hint">Consulta todos os salvamentos do checklist, edite observações e status diretamente aqui.</div>
+      <div class="history-list" id="savedSubmissionsList"></div>
     </div>
   </div>
 </div>
@@ -2062,6 +2079,8 @@ const APP_MARKUP = `
       <div class="cfg-hint" style="margin-bottom:12px">
         Aqui você adiciona ou remove seções do checklist diretamente pelo app, sem precisar mexer no código. Alterar as seções reinicia o progresso da vistoria atual.
       </div>
+
+      <button type="button" class="cfg-save-btn" onclick="openSavedSubmissionsModal()" style="margin-bottom:12px;background:linear-gradient(135deg,#7C3AED,#8B5CF6)">Ver Salvamentos</button>
 
       <div class="modal-section-label">Seções atuais</div>
       <div id="adminSectionsList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px"></div>
@@ -2920,7 +2939,7 @@ function closeModal(id) {
 
 function openSettings() {
   document.getElementById('cfgUrl').value   = DEFAULT_URL;
- document.getElementById('cfgEmail').value = 'guilherme.silva@tendaatacado.com.br';
+  document.getElementById('cfgEmail').value = 'guilherme.silva@tendaatacado.com.br';
   openModal('settingsModal');
 }
 
@@ -2935,6 +2954,7 @@ function showExport() { openModal('exportModal'); }
 let selectedEmailAttachments = [];
 const EMAIL_HISTORY_KEY = 'checklist-email-history';
 const EMAIL_AUTO_KEY = 'email-auto-send';
+const SAVED_SUBMISSIONS_KEY = 'checklist-saved-submissions';
 
 function loadEmailHistory() {
   try {
@@ -3029,6 +3049,145 @@ function renderEmailAttachmentPreview() {
     return;
   }
   wrap.innerHTML = selectedEmailAttachments.map(item => `<div class="mini-chip">${item.name}</div>`).join('');
+}
+
+function dataUriToBlob(dataUri) {
+  const parts = dataUri.split(',');
+  const mimeMatch = parts[0].match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : 'application/pdf';
+  const binary = atob(parts[1]);
+  const array = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) array[i] = binary.charCodeAt(i);
+  return new Blob([array], { type: mime });
+}
+
+function previewEmailPdf() {
+  const btn = document.getElementById('emailPreviewBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Gerando PDF...';
+  }
+  try {
+    const dataUri = buildPdfReport();
+    const blob = dataUriToBlob(dataUri);
+    const url = URL.createObjectURL(blob);
+    const previewWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (previewWindow) {
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
+    showToast('PDF aberto para visualização.', 'success');
+  } catch (e) {
+    showToast('Não foi possível gerar a pré-visualização do PDF.', 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Pré-visualizar PDF';
+    }
+  }
+}
+
+function loadSavedSubmissions() {
+  try {
+    const raw = localStorage.getItem(SAVED_SUBMISSIONS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveSavedSubmissions(list) {
+  try { localStorage.setItem(SAVED_SUBMISSIONS_KEY, JSON.stringify(list)); } catch (e) {}
+}
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, match => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match]));
+}
+
+function persistSavedSubmission(payload, status = 'Salvo') {
+  const summary = buildEmailReportData().summary;
+  const record = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    timestamp: new Date().toISOString(),
+    loja: summary.loja,
+    data: summary.data,
+    responsavel: summary.responsavel,
+    regional: summary.regional,
+    status,
+    notes: '',
+    from: State.user.email || 'sem-login',
+    summary,
+    itens: payload.itens || []
+  };
+  const list = loadSavedSubmissions();
+  list.unshift(record);
+  saveSavedSubmissions(list.slice(0, 200));
+  return record;
+}
+
+function updateSavedSubmission(id, updates) {
+  const list = loadSavedSubmissions();
+  const item = list.find(entry => entry.id === id);
+  if (!item) return;
+  Object.assign(item, updates);
+  saveSavedSubmissions(list);
+}
+
+function renderSavedSubmissions() {
+  const wrap = document.getElementById('savedSubmissionsList');
+  if (!wrap) return;
+  const list = loadSavedSubmissions();
+  if (!list.length) {
+    wrap.innerHTML = '<div class="history-item"><strong>Nenhum salvamento encontrado.</strong><span>Os registros aparecerão aqui quando houver novas vistorias salvas.</span></div>';
+    return;
+  }
+  wrap.innerHTML = list.map(item => `
+    <div class="history-item">
+      <strong>${escapeHtml(item.loja || 'Sem loja')} · ${escapeHtml(item.data || '')}</strong>
+      <span>${escapeHtml(item.responsavel || 'Sem responsável')} · ${escapeHtml(item.regional || '')}</span>
+      <span>${escapeHtml(item.summary?.loja || '')} · conformidade ${escapeHtml(item.summary?.conformidade || 0)}% · ${escapeHtml(item.status || 'Salvo')}</span>
+      <textarea id="notes-${item.id}" class="email-textarea" style="min-height:70px">${escapeHtml(item.notes || '')}</textarea>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select id="status-${item.id}" class="email-input" style="flex:1;min-width:140px">
+          <option value="Salvo" ${item.status === 'Salvo' ? 'selected' : ''}>Salvo</option>
+          <option value="Enviado" ${item.status === 'Enviado' ? 'selected' : ''}>Enviado</option>
+          <option value="Pendente" ${item.status === 'Pendente' ? 'selected' : ''}>Pendente</option>
+          <option value="Falha no envio" ${item.status === 'Falha no envio' ? 'selected' : ''}>Falha no envio</option>
+        </select>
+        <button type="button" class="cfg-save-btn" style="width:auto;padding:0 12px" onclick="saveSubmissionRecord('${item.id}')">Salvar</button>
+        <button type="button" class="cfg-save-btn" style="width:auto;padding:0 12px;background:linear-gradient(135deg,#6B7280,#9CA3AF)" onclick="deleteSubmissionRecord('${item.id}')">Excluir</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function saveSubmissionRecord(id) {
+  const notesEl = document.getElementById(`notes-${id}`);
+  const statusEl = document.getElementById(`status-${id}`);
+  const list = loadSavedSubmissions();
+  const item = list.find(entry => entry.id === id);
+  if (!item) return;
+  item.notes = notesEl ? notesEl.value : item.notes;
+  item.status = statusEl ? statusEl.value : item.status;
+  saveSavedSubmissions(list);
+  renderSavedSubmissions();
+  showToast('Registro atualizado.', 'success');
+}
+
+function deleteSubmissionRecord(id) {
+  const list = loadSavedSubmissions().filter(entry => entry.id !== id);
+  saveSavedSubmissions(list);
+  renderSavedSubmissions();
+  showToast('Registro removido.', 'info');
+}
+
+function openSavedSubmissionsModal() {
+  if (!State.user.isAdmin) {
+    showToast('Acesso restrito a administradores.', 'error');
+    return;
+  }
+  renderSavedSubmissions();
+  openModal('savesModal');
 }
 
 function buildEmailReportData() {
@@ -3213,7 +3372,7 @@ function sendEmailReport() {
   const btn = document.getElementById('emailSendBtn');
   if (btn) {
     btn.disabled = true;
-    btn.textContent = 'Gerando PDF...';
+    btn.textContent = 'Enviando...';
   }
 
   try {
@@ -3226,12 +3385,14 @@ function sendEmailReport() {
       pdfName: `checklist-${Date.now()}.pdf`,
       pdfBase64: dataUri.split(',')[1],
       summary: buildEmailReportData().summary,
-      checklist: buildPayload()
+      checklist: buildPayload(),
+      powerAutomateUrl: document.getElementById('cfgUrl')?.value || DEFAULT_URL
     };
+    const submission = persistSavedSubmission(buildPayload(), 'Enviando...');
 
-    fetch(DEFAULT_URL, {
+    fetch(payload.powerAutomateUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(payload)
     })
       .then(r => {
@@ -3239,6 +3400,7 @@ function sendEmailReport() {
         return r.text();
       })
       .then(() => {
+        updateSavedSubmission(submission.id, { status: 'Enviado' });
         const history = loadEmailHistory();
         history.unshift({
           to: recipients.join(', '),
@@ -3252,7 +3414,8 @@ function sendEmailReport() {
         closeModal('emailModal');
       })
       .catch(() => {
-        showToast('Não foi possível enviar o e-mail. Tente novamente.', 'error');
+        updateSavedSubmission(submission.id, { status: 'Falha no envio' });
+        showToast('Não foi possível completar o envio remoto. O PDF foi registrado para revisão e pode ser visualizado novamente.', 'error');
       })
       .finally(() => {
         if (btn) {
@@ -3403,14 +3566,14 @@ function buildPayload() {
 
 function doSave() {
   const btn = document.getElementById('saveBtn');
-  // URL do fluxo é fixa para TODOS os dispositivos — não é mais lida do localStorage
-  const url = DEFAULT_URL;
+  const url = document.getElementById('cfgUrl')?.value || DEFAULT_URL;
 
   btn.classList.add('loading');
   btn.innerHTML = `<svg class="save-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Enviando...`;
 
   const payload = buildPayload();
   localStorage.setItem('checklist-data', JSON.stringify(payload));
+  persistSavedSubmission(payload, 'Salvo');
   autoSave();
 
   if (!payload.itens.length) {
