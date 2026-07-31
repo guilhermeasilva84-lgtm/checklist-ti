@@ -9,6 +9,10 @@
 <meta name="description" content="Sistema corporativo de vistorias TI — Tenda Atacado">
 <meta name="application-name" content="Checklist TI - Tenda">
 <title>Checklist TI - Tenda</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="tenda-logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="tenda-logo.svg">
+<meta name="msapplication-TileImage" content="tenda-logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- MSAL.js — biblioteca oficial da Microsoft para login com conta corporativa (Entra ID).
@@ -1734,7 +1738,7 @@ const APP_MARKUP = `
       </button>
       <div class="login-error" id="loginError" aria-live="polite"></div>
       <div class="login-footer">Acesso restrito · contas @tendaatacado.com.br e @alimentaangola.co.ao · Tenda Atacado TI</div>
-      <div class="login-admin-note">Contas administradoras podem editar as seções do checklist direto pelo app</div>
+      <div class="login-admin-note">Administradores podem editar as seções do checklist pelo app</div>
     </div>
   </div>
 </div>
@@ -1943,18 +1947,15 @@ const APP_MARKUP = `
       <div>
         <div class="modal-section-label">Notificações</div>
         <div class="cfg-field">
-          <label class="cfg-label" for="cfgEmail">E-mail para alertas críticos</label>
+          <label class="cfg-label" for="cfgEmail">E-mail de alerta</label>
           <input class="cfg-input" id="cfgEmail" type="email" 
                value="guilherme.silva@tendaatacado.com.br"
              readonly> 
         <div style="margin-top:10px; display:flex; gap:8px;"> 
-            <button type="button" class="cfg-save-btn" onclick="window.location.href='mailto:guilherme.silva@tendaatacado.com.br'">Enviar E-mail 
-          </button>
-          <button type="button" class="cfg-save-btn"
-          onclick="window.open('https://teams.microsoft.com/l/chat/0/0?users=guilherme.silva@tendaatacado.com.br','_blank')">Abrir Teams
-    </button>
-</div></button>  
-        </div>"
+            <button type="button" class="cfg-save-btn" onclick="window.location.href='mailto:guilherme.silva@tendaatacado.com.br'">Abrir e-mail</button>
+            <button type="button" class="cfg-save-btn" onclick="window.open('https://teams.microsoft.com/l/chat/0/0?users=guilherme.silva@tendaatacado.com.br','_blank')">Abrir no Teams</button>
+          </div>
+        </div>
         </div>
       </div>
       <div>
@@ -1962,7 +1963,7 @@ const APP_MARKUP = `
         <div class="toggle-row">
           <div class="toggle-info">
             <div class="toggle-label">Modo Claro</div>
-            <div class="toggle-desc">Alternar entre dark e light</div>
+            <div class="toggle-desc">Use o tema claro ou escuro conforme preferir</div>
           </div>
           <label class="toggle-switch">
             <input type="checkbox" id="themeToggle" onchange="handleThemeToggle(this.checked)">
@@ -1971,7 +1972,8 @@ const APP_MARKUP = `
         </div>
       </div>
       <div class="cfg-hint">
-             </div>
+        As mudanças ficam salvas no navegador e aparecem na próxima vez.
+      </div>
       <button class="cfg-save-btn" onclick="saveSettings()">Salvar Configurações</button>
     </div>
   </div>
@@ -2003,7 +2005,7 @@ const APP_MARKUP = `
           Copiar Resumo Executivo
         </button>
       </div>
-      <div class="cfg-hint">Os dados são exportados com todas as observações, quantidades e carimbos de data/hora registrados durante a vistoria. O botão "Enviar planilha atual" envia apenas os itens preenchidos no checklist atual para o e-mail configurado em Configurações.</div>
+      <div class="cfg-hint">Inclui observações, quantidades e horários registrados na vistoria. 'Enviar planilha atual' manda só os itens preenchidos para o e-mail definido em Configurações.</div>
     </div>
   </div>
 </div>
@@ -2041,8 +2043,8 @@ const APP_MARKUP = `
       </div>
       <div class="toggle-row small">
         <div class="toggle-info">
-          <div class="toggle-label">Enviar automaticamente quando houver reprovações</div>
-          <div class="toggle-desc">O relatório é disparado ao salvar o checklist, sem nova ação manual.</div>
+          <div class="toggle-label">Enviar automaticamente em caso de reprovação</div>
+          <div class="toggle-desc">O relatório é enviado automaticamente ao salvar se houver reprovações.</div>
         </div>
         <label class="toggle-switch">
           <input type="checkbox" id="emailAutoSend">
@@ -2068,7 +2070,7 @@ const APP_MARKUP = `
       <button class="modal-close" onclick="closeModal('savesModal')">x</button>
     </div>
     <div class="modal-body">
-      <div class="cfg-hint">Consulta todos os salvamentos do checklist, edite observações e status diretamente aqui.</div>
+      <div class="cfg-hint">A lista mostra todos os salvamentos; atualize notas ou status quando precisar.</div>
       <div class="history-list" id="savedSubmissionsList"></div>
     </div>
   </div>
@@ -2084,7 +2086,7 @@ const APP_MARKUP = `
     </div>
     <div class="modal-body">
       <div class="cfg-hint" style="margin-bottom:12px">
-        Aqui você adiciona ou remove seções do checklist diretamente pelo app, sem precisar mexer no código. Alterar as seções reinicia o progresso da vistoria atual.
+        Ajuste as seções do checklist no app. Isso reinicia o progresso atual.
       </div>
 
       <button type="button" class="cfg-save-btn" onclick="openSavedSubmissionsModal()" style="margin-bottom:12px;background:linear-gradient(135deg,#7C3AED,#8B5CF6)">Histórico de Salvamentos</button>
@@ -2105,7 +2107,7 @@ const APP_MARKUP = `
       </div>
 
       <div class="modal-section-label" style="margin-top:16px">Administradores extras</div>
-      <div class="cfg-hint" style="margin-bottom:8px">guilherme.silva@tendaatacado.com.br é administrador fixo. Adicione outros e-mails abaixo para dar acesso de edição a mais pessoas.</div>
+      <div class="cfg-hint" style="margin-bottom:8px">guilherme.silva@tendaatacado.com.br é administrador fixo. Adicione outros e-mails para dar acesso de edição.</div>
       <div id="adminExtraList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
       <div style="display:flex;gap:8px">
         <input type="email" id="adminNewEmail" class="detail-input" placeholder="email@tendaatacado.com.br" style="flex:1">
