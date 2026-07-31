@@ -3228,22 +3228,29 @@ function buildPdfReport() {
 
   doc.setFillColor(15, 23, 42);
   doc.rect(40, 30, pageWidth - 80, 70, 'F');
-  doc.setFillColor(59, 130, 246);
-  doc.roundedRect(60, 46, 44, 32, 8, 8, 'F');
-  doc.setTextColor(255, 255, 255);
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(60, 46, 54, 34, 8, 8, 'F');
+  doc.setTextColor(15, 23, 42);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.text('TA', 82, 67);
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.text('Checklist TI', 120, 58);
-  doc.setFontSize(11);
+  doc.setFontSize(22);
+  doc.text('T', 80, 68);
+  doc.setFontSize(12);
+  doc.text('enda', 90, 68);
   doc.setFont('helvetica', 'normal');
-  doc.text('Tenda Atacado', 120, 80);
-  doc.text(`Loja: ${report.summary.loja}`, 360, 58);
-  doc.text(`Data: ${report.summary.data}`, 360, 74);
-  doc.text(`Responsável: ${report.summary.responsavel}`, 360, 90);
+  doc.setFontSize(10);
+  doc.text('Atacado', 90, 80);
+
+  const infoLeft = 140;
+  const infoTop = 50;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(255, 255, 255);
+  doc.text('CHECKLIST TI', infoLeft, infoTop);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.text(`Loja: ${report.summary.loja}`, infoLeft, infoTop + 14);
+  doc.text(`Data: ${report.summary.data}`, infoLeft, infoTop + 28);
+  doc.text(`Responsável: ${report.summary.responsavel}`, infoLeft, infoTop + 42);
 
   y = 122;
   doc.setTextColor(15, 23, 42);
