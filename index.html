@@ -16,6 +16,7 @@
      se por algum motivo falhar, caímos para os CDNs diretos da Microsoft como reserva. -->
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
   if (typeof msal === 'undefined') {
     document.write('<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"><\/script>');
@@ -1989,6 +1990,12 @@ const APP_MARKUP = `
         <button class="cfg-save-btn" onclick="exportCSV()" style="background:linear-gradient(135deg,#059669,#10B981)">
           Exportar CSV (Google Sheets)
         </button>
+        <button class="cfg-save-btn" onclick="downloadCurrentChecklistExcel()" style="background:linear-gradient(135deg,#0F766E,#14B8A6)">
+          Exportar Excel local
+        </button>
+        <button class="cfg-save-btn" onclick="sendCurrentChecklistExcel()" style="background:linear-gradient(135deg,#2563EB,#3B82F6)">
+          Enviar planilha atual
+        </button>
         <button class="cfg-save-btn" onclick="exportJSON()" style="background:linear-gradient(135deg,#D97706,#F59E0B)">
           Exportar JSON
         </button>
@@ -1996,7 +2003,7 @@ const APP_MARKUP = `
           Copiar Resumo Executivo
         </button>
       </div>
-      <div class="cfg-hint">Os dados são exportados com todas as observações, quantidades e carimbos de data/hora registrados durante a vistoria.</div>
+      <div class="cfg-hint">Os dados são exportados com todas as observações, quantidades e carimbos de data/hora registrados durante a vistoria. O botão "Enviar planilha atual" envia apenas os itens preenchidos no checklist atual.</div>
     </div>
   </div>
 </div>
@@ -3483,6 +3490,104 @@ function exportCSV() {
   a.click(); URL.revokeObjectURL(url);
   closeModal('exportModal');
   showToast('CSV exportado com sucesso!', 'success');
+}
+
+function downloadCurrentChecklistExcel() {
+  const payload = buildPayload();
+  if (!payload.itens.length) {
+    showToast('Nenhum item preenchido para exportar.', 'error');
+    return;
+  }
+
+  try {
+    const base64 = buildChecklistExcelBase64(payload);
+    const binary = atob(base64);
+    const array = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) {
+      array[i] = binary.charCodeAt(i);
+    }
+    const blob = new Blob([array], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const a = document.createElement('a');
+    const loja = document.getElementById('fLoja').value || 'ti';
+    const data = document.getElementById('fData').value || 'sem-data';
+    a.href = URL.createObjectURL(blob);
+    a.download = `vistoria-${loja}-${data}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('Excel gerado localmente.', 'success');
+  } catch (err) {
+    showToast('Erro ao gerar o arquivo Excel.', 'error');
+  }
+}
+
+function buildChecklistExcelBase64(payload) {
+  const header = ['Loja', 'Data', 'Responsável', 'Regional', 'Seção', 'Item', 'Status', 'Quantidade', 'Observação'];
+  const rows = [header];
+  payload.itens.forEach(item => {
+    rows.push([
+      item.loja,
+      item.data,
+      item.responsavel,
+      item.regional,
+      item.secao,
+      item.item,
+      item.status,
+      item.quantidade,
+      item.observacao
+    ]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Checklist');
+  return XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+}
+
+function sendCurrentChecklistExcel() {
+  const payload = buildPayload();
+  const loja = document.getElementById('fLoja').value || 'Loja';
+  const data = document.getElementById('fData').value || new Date().toLocaleDateString('pt-BR');
+  const url   = document.getElementById('cfgUrl')?.value || DEFAULT_URL;
+
+  if (!payload.itens.length) {
+    showToast('Nenhum item preenchido para enviar.', 'error');
+    return;
+  }
+
+  let excelBase64;
+  try {
+    excelBase64 = buildChecklistExcelBase64(payload);
+  } catch (err) {
+    showToast('Erro ao gerar a planilha Excel.', 'error');
+    return;
+  }
+
+  const request = {
+    action: 'sendChecklistExcel',
+    subject: `Checklist TI – ${loja} – ${data}`,
+    body: `Segue a planilha Excel do checklist atual de ${loja} em ${data}.`,
+    excelName: `checklist-${loja}-${data}.xlsx`,
+    excelBase64,
+    checklist: payload,
+    loja,
+    data
+  };
+
+  showToast('Enviando planilha atual...', 'info');
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request)
+  })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json().catch(() => ({}));
+    })
+    .then(() => {
+      showToast('Planilha enviada com sucesso.', 'success');
+      closeModal('exportModal');
+    })
+    .catch(() => showToast('Erro ao enviar a planilha. Verifique o fluxo.', 'error'));
 }
 
 function exportJSON() {
