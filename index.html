@@ -1918,7 +1918,7 @@ const APP_MARKUP = `
       <svg class="save-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Salvar Vistoria
     </button>
-    <button class="icon-btn" onclick="openEmailModal()" title="Enviar por E-mail" aria-label="Enviar por e-mail">
+    <button id="openEmailModalBtn" type="button" class="icon-btn" onclick="openEmailModal()" title="Enviar por E-mail" aria-label="Enviar por e-mail">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
     </button>
     <button class="icon-btn" onclick="showExport()" title="Exportar" aria-label="Exportar relatório">
@@ -2052,8 +2052,8 @@ const APP_MARKUP = `
         </label>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button id="emailPreviewBtn" class="cfg-save-btn" onclick="previewEmailPdf()" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6);flex:1">Pré-visualizar PDF</button>
-        <button id="emailSendBtn" class="cfg-save-btn" onclick="sendEmailReport()" style="background:linear-gradient(135deg,#2563EB,#3B82F6);flex:1">Enviar por E-mail</button>
+        <button type="button" id="emailPreviewBtn" class="cfg-save-btn" onclick="previewEmailPdf()" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6);flex:1">Pré-visualizar PDF</button>
+        <button type="button" id="emailSendBtn" class="cfg-save-btn" onclick="sendEmailReport()" style="background:linear-gradient(135deg,#2563EB,#3B82F6);flex:1">Enviar por E-mail</button>
       </div>
       <div class="modal-section-label">Histórico de envios</div>
       <div class="history-list" id="emailHistoryList"></div>
@@ -4101,6 +4101,19 @@ if (emailAttachmentInput) {
     handleEmailAttachmentSelection(e.target.files);
     e.target.value = '';
   });
+}
+
+const emailOpenBtn = document.getElementById('openEmailModalBtn');
+if (emailOpenBtn) {
+  emailOpenBtn.addEventListener('click', openEmailModal);
+}
+const emailSendBtn = document.getElementById('emailSendBtn');
+if (emailSendBtn) {
+  emailSendBtn.addEventListener('click', sendEmailReport);
+}
+const emailPreviewBtn = document.getElementById('emailPreviewBtn');
+if (emailPreviewBtn) {
+  emailPreviewBtn.addEventListener('click', previewEmailPdf);
 }
 
 /* BACKDROP CLICK TO CLOSE */
