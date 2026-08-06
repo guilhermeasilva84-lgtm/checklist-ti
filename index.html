@@ -2208,6 +2208,90 @@ function saveSections() {
 
 let SECTIONS = loadSections();
 
+/* CADASTRO DE IMPRESSORAS
+   A planilha fica junto do app e é lida no navegador. Assim, ao trocar a
+   loja, a aba Impressoras mostra somente os equipamentos daquela unidade. */
+const PRINTERS_FILE = 'impressoras 2026 1.xlsx';
+let printersByStore = {};
+let printersLoadState = 'loading';
+
+function getStoreCode(storeName) {
+  return String(storeName || '').trim().split(/\s+-\s+/)[0].toUpperCase();
+}
+
+function normalizePrinterRow(row) {
+  const get = (...names) => {
+    const key = Object.keys(row).find(k => names.includes(String(k).trim().toLowerCase()));
+    const value = key ? row[key] : '';
+    return value === 0 ? '' : String(value || '').trim();
+  };
+  return {
+    serie: get('série', 'serie'), modelo: get('modelo'), loja: get('loja'),
+    departamento: get('departamento'), fornecedor: get('fornecedor'),
+    impressoes: get('impressões', 'impressoes'), obs: get('obs', 'observação', 'observacao')
+  };
+}
+
+async function loadPrintersCatalog() {
+  if (typeof XLSX === 'undefined') {
+    printersLoadState = 'error'; renderPrintersForSelectedStore(); return;
+  }
+  try {
+    const response = await fetch(encodeURI(PRINTERS_FILE), { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Arquivo não encontrado (${response.status})`);
+    const workbook = XLSX.read(await response.arrayBuffer(), { type: 'array' });
+    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: '' }).map(normalizePrinterRow);
+    printersByStore = rows.reduce((stores, printer) => {
+      const code = getStoreCode(printer.loja);
+      if (code) (stores[code] ||= []).push(printer);
+      return stores;
+    }, {});
+    printersLoadState = 'ready';
+  } catch (error) {
+    console.error('Não foi possível carregar o cadastro de impressoras.', error);
+    printersLoadState = 'error';
+  }
+  renderPrintersForSelectedStore();
+}
+
+function escapePrinterText(value) {
+  return String(value || '').replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[char]);
+}
+
+function renderPrintersForSelectedStore() {
+  const panel = document.getElementById('printersStorePanel');
+  if (!panel) return;
+  const store = document.getElementById('fLoja')?.value || '';
+  const code = getStoreCode(store);
+  const title = panel.querySelector('[data-printers-title]');
+  const content = panel.querySelector('[data-printers-content]');
+  if (!store) {
+    title.textContent = 'Selecione uma loja para consultar as impressoras';
+    content.innerHTML = '<div class="printers-empty">Escolha a loja no topo do checklist.</div>';
+    return;
+  }
+  title.textContent = `Impressoras cadastradas — ${code}`;
+  if (printersLoadState === 'loading') {
+    content.innerHTML = '<div class="printers-empty">Carregando cadastro de impressoras...</div>';
+    return;
+  }
+  if (printersLoadState === 'error') {
+    content.innerHTML = '<div class="printers-empty">Não foi possível carregar a planilha de impressoras.</div>';
+    return;
+  }
+  const printers = printersByStore[code] || [];
+  if (!printers.length) {
+    content.innerHTML = `<div class="printers-empty">Nenhuma impressora cadastrada para ${escapePrinterText(code)}.</div>`;
+    return;
+  }
+  content.innerHTML = `<div class="printers-count">${printers.length} equipamento${printers.length === 1 ? '' : 's'} encontrado${printers.length === 1 ? '' : 's'}</div>` + printers.map(printer => `
+    <article class="printer-record">
+      <div class="printer-record-main"><strong>${escapePrinterText(printer.modelo || 'Modelo não informado')}</strong><span>S/N: ${escapePrinterText(printer.serie || 'não informado')}</span></div>
+      <div class="printer-record-meta">${printer.departamento ? `<span>${escapePrinterText(printer.departamento)}</span>` : ''}${printer.fornecedor ? `<span>${escapePrinterText(printer.fornecedor)}</span>` : ''}${printer.impressoes ? `<span>${escapePrinterText(printer.impressoes)} impressões</span>` : ''}${printer.obs ? `<span>${escapePrinterText(printer.obs)}</span>` : ''}</div>
+    </article>`).join('');
+}
+
 /* ADMINISTRADORES — guilherme.silva é admin fixo (definido no código).
    Outros e-mails podem ser adicionados pelo próprio app (ver ADMIN_EXTRA_KEY)
    por quem já é administrador, sem precisar editar o código. */
@@ -2433,6 +2517,16 @@ function buildChecklistSlides() {
     header.className = 'slide-section-header';
     header.innerHTML = `<span class="slide-section-title">${sec.title}</span><span class="slide-section-count">${sec.items.length} itens</span>`;
     slide.appendChild(header);
+
+    if (sec.id === 'impr') {
+      const printersPanel = document.createElement('section');
+      printersPanel.className = 'printers-store-panel';
+      printersPanel.id = 'printersStorePanel';
+      printersPanel.innerHTML = `
+        <div class="printers-panel-title" data-printers-title>Selecione uma loja para consultar as impressoras</div>
+        <div data-printers-content><div class="printers-empty">Escolha a loja no topo do checklist.</div></div>`;
+      slide.appendChild(printersPanel);
+    }
 
     sec.items.forEach((item, ii) => {
       slide.appendChild(buildItemCard(si, ii, item));
@@ -2899,6 +2993,7 @@ function setupFieldListeners() {
     if (el) {
       el.addEventListener('change', autoSave);
       el.addEventListener('input',  autoSave);
+      if (id === 'fLoja') el.addEventListener('change', renderPrintersForSelectedStore);
     }
   });
 }
