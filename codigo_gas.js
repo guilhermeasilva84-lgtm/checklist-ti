@@ -49,7 +49,8 @@ function doPost(e) {
 
     return ContentService
       .createTextOutput(JSON.stringify({ status: 'OK', rows: rows.length }))
-      .setMimeType(ContentService.MimeType.JSON);
+      .setMimeType(ContentService.MimeType.JSON); 
+      .s
 
   } catch (err) {
     return ContentService
