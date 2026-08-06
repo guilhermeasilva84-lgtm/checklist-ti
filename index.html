@@ -1693,6 +1693,18 @@ body.light .field-chip select option { background: #fff; color: #111; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Cadastro de impressoras por loja */
+.printers-store-panel { margin:0 0 12px; padding:12px; border:1px solid rgba(20,184,166,.35); border-radius:12px; background:linear-gradient(135deg,rgba(15,118,110,.14),rgba(20,184,166,.05)); }
+.printers-panel-title { font-size:12px; font-weight:700; color:var(--text); margin-bottom:8px; }
+.printers-count { font-size:11px; color:var(--muted); margin-bottom:7px; }
+.printer-record { padding:9px 0; border-top:1px solid var(--border); }
+.printer-record-main { display:flex; align-items:baseline; justify-content:space-between; gap:8px; font-size:12px; }
+.printer-record-main strong { color:var(--text); }
+.printer-record-main span { color:var(--muted); font-size:10px; white-space:nowrap; }
+.printer-record-meta { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
+.printer-record-meta span { padding:2px 6px; border-radius:999px; background:rgba(20,184,166,.13); color:var(--muted); font-size:10px; }
+.printers-empty { color:var(--muted); font-size:11px; padding:3px 0; }
 </style>
 </head>
 <body>
@@ -2280,7 +2292,10 @@ function renderPrintersForSelectedStore() {
     content.innerHTML = '<div class="printers-empty">Não foi possível carregar a planilha de impressoras.</div>';
     return;
   }
-  const printers = printersByStore[code] || [];
+  // A planilha usa CT para parte das lojas que aparecem como TA no app
+  // (por exemplo: TA25 no seletor corresponde a CT25 no cadastro).
+  const alternateCode = code.replace(/^TA/, 'CT');
+  const printers = printersByStore[code] || printersByStore[alternateCode] || [];
   if (!printers.length) {
     content.innerHTML = `<div class="printers-empty">Nenhuma impressora cadastrada para ${escapePrinterText(code)}.</div>`;
     return;
@@ -3881,6 +3896,7 @@ function restoreSession() {
 
     updateProgress();
     updateTabBadges();
+    renderPrintersForSelectedStore();
     document.getElementById('resumeBanner').classList.remove('show');
     showToast('Checklist restaurado!', 'success');
   } catch(e) {
@@ -4259,6 +4275,7 @@ document.head.appendChild(spinStyle);
 
   // Build UI
   buildUI();
+  loadPrintersCatalog();
 
   function finishBoot() {
     const splash = document.getElementById('splash');
