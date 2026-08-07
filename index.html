@@ -7,12 +7,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Sistema corporativo de vistorias TI — Tenda Atacado">
+<<<<<<< Updated upstream
 <meta name="application-name" content="Checklist TI - Tenda">
 <title>Checklist TI - Tenda</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="tenda-logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="tenda-logo.svg">
 <meta name="msapplication-TileImage" content="tenda-logo.svg">
+=======
+<meta name="application-name" content="Checklist Ti">
+<title>C</title>
+>>>>>>> Stashed changes
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- MSAL.js — biblioteca oficial da Microsoft para login com conta corporativa (Entra ID).
@@ -599,35 +604,71 @@ body {
 
 /* APP SHELL */
 #app {
-  position: fixed; inset: 0;
-  display: flex; flex-direction: column;
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* IMPORTANTE: permite filhos flex funcionarem direito */
+.slides-viewport {
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
+<<<<<<< Updated upstream
   opacity: 0;
   transition: opacity var(--dur-slow) var(--ease-out);
   width: 100vw;
   height: 100dvh;
   max-height: 100dvh;
   max-width: 100vw;
+=======
+  display: flex;
+}
+
+/* TRACK PRECISA HERDAR ALTURA REAL */
+.slides-track {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+/* CADA SLIDE PRECISA TER ALTURA REAL */
+.slide {
+  flex-shrink: 0;
+  width: 100vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* DASHBOARD AGORA FUNCIONA DE VERDADE */
+.slide-dashboard {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+>>>>>>> Stashed changes
 }
 #app.visible { opacity: 1; }
 
 @media (min-width: 768px) {
   #app {
-    inset: 0;
-    transform: none;
-    width: 100vw;
-    height: 100dvh;
-    max-width: 100vw;
-    max-height: 100dvh;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .slide,
-  .slide-dashboard {
-    padding-left: max(24px, calc((100vw - 1280px) / 2));
-    padding-right: max(24px, calc((100vw - 1280px) / 2));
+    left: 50%;
+    top: 12px;
+    bottom: 12px;
+    transform: translateX(-50%);
+    width: min(100vw - 24px, 480px);
+    height: auto;
+    max-height: calc(100dvh - 24px);
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
   }
 }
 
@@ -880,6 +921,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
 }
 .search-clear:hover { color: var(--text-primary); }
 
+<<<<<<< Updated upstream
 /* SLIDES */
 .slides-viewport {
   flex: 1;
@@ -890,10 +932,24 @@ body.light .field-chip select option { background: #fff; color: #111; }
 .slides-track {
   display: flex;
   /* NÃO usar height:100% aqui — deixar o track se expandir naturalmente */
+=======
+/* ═══════════════════════════════════════════════════════════════════
+   SLIDES
+═══════════════════════════════════════════════════════════════════ */
+.slides-viewport {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.slides-track {
+  display: flex;
+>>>>>>> Stashed changes
   height: 100%;
   will-change: transform;
   transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
+<<<<<<< Updated upstream
 .slide,
 .slide-dashboard {
   flex-shrink: 0;
@@ -961,6 +1017,50 @@ body.light .field-chip select option { background: #fff; color: #111; }
 .search-mode-empty.show { display: flex; }
 
 /* CHECKLIST ITEM CARDS */
+=======
+
+/* BASE DE TODAS AS TELAS */
+.slide {
+  flex-shrink: 0;
+  width: 100vw;
+  height: 100%;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 12px 12px 80px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  scrollbar-width: none;
+}
+
+.slide::-webkit-scrollbar {
+  display: none;
+}
+
+/* DASHBOARD (IMPORTANTE: NÃO travar altura) */
+.slide-dashboard {
+  flex: 1;
+  width: 100%;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  padding: 12px 12px 80px;
+
+  min-height: 0; /* ESSENCIAL pra flex funcionar direito */
+}
+/* ═══════════════════════════════════════════════════════════════════
+   CHECKLIST ITEM CARDS
+═══════════════════════════════════════════════════════════════════ */
+>>>>>>> Stashed changes
 .item-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1142,6 +1242,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
   filter: blur(24px);
   pointer-events: none;
 }
+<<<<<<< Updated upstream
 .dash-score-label {
   font-size: 10px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.08em; color: var(--text-muted);
@@ -1157,6 +1258,12 @@ body.light .field-chip select option { background: #fff; color: #111; }
 .dash-score-sub {
   font-size: 10px; margin-top: 4px;
   color: var(--text-muted);
+=======
+.score-header { display: flex; align-items: center; justify-content: space-between; }
+.score-label {
+  font-size: 15px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-secondary);
+>>>>>>> Stashed changes
 }
 .score-grade {
   display: inline-flex; align-items: center; justify-content: center;
@@ -1698,18 +1805,6 @@ body.light .field-chip select option { background: #fff; color: #111; }
     transition-duration: 0.01ms !important;
   }
 }
-
-/* Cadastro de impressoras por loja */
-.printers-store-panel { margin:0 0 12px; padding:12px; border:1px solid rgba(20,184,166,.35); border-radius:12px; background:linear-gradient(135deg,rgba(15,118,110,.14),rgba(20,184,166,.05)); }
-.printers-panel-title { font-size:12px; font-weight:700; color:var(--text); margin-bottom:8px; }
-.printers-count { font-size:11px; color:var(--muted); margin-bottom:7px; }
-.printer-record { padding:9px 0; border-top:1px solid var(--border); }
-.printer-record-main { display:flex; align-items:baseline; justify-content:space-between; gap:8px; font-size:12px; }
-.printer-record-main strong { color:var(--text); }
-.printer-record-main span { color:var(--muted); font-size:10px; white-space:nowrap; }
-.printer-record-meta { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
-.printer-record-meta span { padding:2px 6px; border-radius:999px; background:rgba(20,184,166,.13); color:var(--muted); font-size:10px; }
-.printers-empty { color:var(--muted); font-size:11px; padding:3px 0; }
 </style>
 </head>
 <body>
@@ -2225,9 +2320,9 @@ function saveSections() {
 
 let SECTIONS = loadSections();
 
-
-
-
+/* CADASTRO DE IMPRESSORAS
+   A planilha fica junto do app e é lida no navegador. Assim, ao trocar a
+   loja, a aba Impressoras mostra somente os equipamentos daquela unidade. */
 const PRINTERS_FILE = 'impressoras 2026 1.xlsx';
 let printersByStore = {};
 let printersLoadState = 'loading';
@@ -2240,8 +2335,7 @@ function normalizePrinterRow(row) {
   const get = (...names) => {
     const key = Object.keys(row).find(k => names.includes(String(k).trim().toLowerCase()));
     const value = key ? row[key] : '';
-    return value === 0 ? '' : String(value || '').trim(); 
-    const value =PRINTERS_FILE "impressoras 2026 1.xlsx";
+    return value === 0 ? '' : String(value || '').trim();
   };
   return {
     serie: get('série', 'serie'), modelo: get('modelo'), loja: get('loja'),
@@ -2298,10 +2392,7 @@ function renderPrintersForSelectedStore() {
     content.innerHTML = '<div class="printers-empty">Não foi possível carregar a planilha de impressoras.</div>';
     return;
   }
-  
-  
-  const alternateCode = code.replace(/^TA/, 'CT');
-  const printers = printersByStore[code] || printersByStore[alternateCode] || [];
+  const printers = printersByStore[code] || [];
   if (!printers.length) {
     content.innerHTML = `<div class="printers-empty">Nenhuma impressora cadastrada para ${escapePrinterText(code)}.</div>`;
     return;
@@ -3902,7 +3993,6 @@ function restoreSession() {
 
     updateProgress();
     updateTabBadges();
-    renderPrintersForSelectedStore();
     document.getElementById('resumeBanner').classList.remove('show');
     showToast('Checklist restaurado!', 'success');
   } catch(e) {
@@ -4281,7 +4371,6 @@ document.head.appendChild(spinStyle);
 
   // Build UI
   buildUI();
-  loadPrintersCatalog();
 
   function finishBoot() {
     const splash = document.getElementById('splash');
