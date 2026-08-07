@@ -2225,9 +2225,9 @@ function saveSections() {
 
 let SECTIONS = loadSections();
 
-/* CADASTRO DE IMPRESSORAS
-   A planilha fica junto do app e é lida no navegador. Assim, ao trocar a
-   loja, a aba Impressoras mostra somente os equipamentos daquela unidade. */
+
+
+
 const PRINTERS_FILE = 'impressoras 2026 1.xlsx';
 let printersByStore = {};
 let printersLoadState = 'loading';
@@ -2240,7 +2240,7 @@ function normalizePrinterRow(row) {
   const get = (...names) => {
     const key = Object.keys(row).find(k => names.includes(String(k).trim().toLowerCase()));
     const value = key ? row[key] : '';
-    return value === 0 ? '' : String(value || '').trim();
+    return value === 0 ? '' : String(value || '').trim(); 
   };
   return {
     serie: get('série', 'serie'), modelo: get('modelo'), loja: get('loja'),
@@ -2297,8 +2297,8 @@ function renderPrintersForSelectedStore() {
     content.innerHTML = '<div class="printers-empty">Não foi possível carregar a planilha de impressoras.</div>';
     return;
   }
-  // A planilha usa CT para parte das lojas que aparecem como TA no app
-  // (por exemplo: TA25 no seletor corresponde a CT25 no cadastro).
+  
+  
   const alternateCode = code.replace(/^TA/, 'CT');
   const printers = printersByStore[code] || printersByStore[alternateCode] || [];
   if (!printers.length) {
