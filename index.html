@@ -2305,13 +2305,24 @@ function renderPrintersForSelectedStore() {
     content.innerHTML = `<div class="printers-empty">Nenhuma impressora cadastrada para ${escapePrinterText(code)}.</div>`;
     return;
   }
-  content.innerHTML = `<div class="printers-count">${printers.length} equipamento${printers.length === 1 ? '' : 's'} encontrado${printers.length === 1 ? '' : 's'}</div>` + printers.map(printer => `
+    content.innerHTML = `<div class="printers-count">${printers.length} equipamento${printers.length === 1 ? '' : 's'} encontrado${printers.length === 1 ? '' : 's'}</div>` + printers.map(printer => `
     <article class="printer-record">
       <div class="printer-record-main"><strong>${escapePrinterText(printer.modelo || 'Modelo não informado')}</strong><span>S/N: ${escapePrinterText(printer.serie || 'não informado')}</span></div>
-      <div class="printer-record-meta">${printer.departamento ? `<span>${escapePrinterText(printer.departamento)}</span>` : ''}${printer.fornecedor ? `<span>${escapePrinterText(printer.fornecedor)}</span>` : ''}${printer.impressoes ? `<span>${escapePrinterText(printer.impressoes)} impressões</span>` : ''}${printer.obs ? `<span>${escapePrinterText(printer.obs)}</span>` : ''}</div>
-    </article>`).join('');
-}
+      <div class="printer-record-meta">${printer.departamento ? `<span>${escapePrinterText(printer.departamento)}</span>` : ''}${printer.fornecedor ? `<span>${escapePrinterText(printer.fornecedor)}</span>` : ''}${printer.modelo ? `<span>${escapePrinterText(printer.modelo)}</span>` : ''}${printer.impressoes ? `<span>${escapePrinterText(printer.impressoes)} impressões</span>` : ''}</div>
+    </article>
+    `).join('');
 
+    <div style="margin-top:10px;">
+      <label style="display:block;margin-bottom:4px;font-weight:600;">
+        Observação
+      </label>
+      <textarea
+         rows="3"
+         style="width:100%;padding:8px;border-radius:8px;resize:vertical;"
+         placeholder="Digite uma observação..."
+         >${escapePrinterText(printer.obs || '')}</textarea>
+    </div>
+     
 /* ADMINISTRADORES — guilherme.silva é admin fixo (definido no código).
    Outros e-mails podem ser adicionados pelo próprio app (ver ADMIN_EXTRA_KEY)
    por quem já é administrador, sem precisar editar o código. */
