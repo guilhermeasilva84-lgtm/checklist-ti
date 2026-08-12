@@ -195,8 +195,9 @@
   animation: soft-glow 0.6s ease-out;
 }
 .tab-btn.active, .save-btn, .cfg-save-btn {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* Performance: avoid forcing an extra compositing layer for small controls. */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* TIME-BASED GREETING */
@@ -283,6 +284,40 @@ body.light .brand-logo-color { display: none !important; }
 
 </style>
 <style>
+
+/* ============================================================
+   PERFORMANCE PATCH — 60 FPS
+   Mantém o design, reduz custo de pintura/composição.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .topnav,
+  .bottom-bar,
+  .modal-sheet {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+
+  .item-card,
+  .status-btn {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Avoid expensive paint effects while an element is idle. */
+.item-card {
+  contain: layout paint style;
+}
+
 .email-modal .modal-body { gap: 14px; }
 .email-field { display: flex; flex-direction: column; gap: 6px; }
 .email-label { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
@@ -636,8 +671,9 @@ body {
 .topnav {
   flex-shrink: 0;
   background: var(--bg-glass);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  /* Keep the glass look, but use a cheaper effect. */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
   padding: 12px 16px 10px;
   position: relative;
@@ -893,6 +929,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
   /* NÃO usar height:100% aqui — deixar o track se expandir naturalmente */
   height: 100%;
   will-change: transform;
+  transform: translateZ(0);
   transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .slide,
@@ -968,12 +1005,8 @@ body.light .field-chip select option { background: #fff; color: #111; }
   border-radius: var(--r-lg);
   overflow: hidden;
   transition: border-color var(--dur-fast), background var(--dur-fast),
-              transform var(--dur-fast), box-shadow var(--dur-fast),
-              filter var(--dur-fast), backdrop-filter var(--dur-fast);
-  /* will-change fixo em TODO card força uma camada de composição por
-     card, permanentemente, mesmo parado. Com dezenas de cards isso
-     consome memória/GPU e derruba o fps. As animações pontuais
-     (card-reveal, card-pulse) já promovem a própria camada sozinhas. */
+              transform var(--dur-fast), box-shadow var(--dur-fast);
+  /* Não usar will-change permanente: dezenas de camadas GPU reduzem FPS. */
   flex-shrink: 0;
   /* Isola o layout/paint de cada card: abrir/fechar detalhes de UM
      item não força recálculo de reflow na lista inteira. */
@@ -1044,8 +1077,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
   display: flex; align-items: center; justify-content: center;
   transition: background var(--dur-fast), border-color var(--dur-fast),
               color var(--dur-fast), transform var(--dur-fast),
-              box-shadow var(--dur-fast), filter var(--dur-fast),
-              backdrop-filter var(--dur-fast);
+              box-shadow var(--dur-fast);
   position: relative; overflow: hidden;
   flex-shrink: 0;
 }
@@ -1353,8 +1385,9 @@ body.light .field-chip select option { background: #fff; color: #111; }
 .bottom-bar {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: var(--bg-glass);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  /* Keep the glass look, but use a cheaper effect. */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-top: 1px solid var(--border);
   padding: 8px 12px;
   padding-bottom: max(8px, env(safe-area-inset-bottom));
@@ -1753,8 +1786,9 @@ body.light .field-chip select option { background: #fff; color: #111; }
 .printers-screen-header {
   flex-shrink: 0;
   background: var(--bg-glass);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  /* Keep the glass look, but use a cheaper effect. */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
   padding: 12px 16px;
   display: flex; flex-direction: column; gap: 10px;
@@ -3116,17 +3150,19 @@ function goToTab(si) {
   const trackOffset = si === -1 ? 0 : (si + 1);
   DOM.slidesTrack.style.transform = `translateX(-${trackOffset * 100}vw)`;
 
-  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+  const tabs = DOM.sectionTabs ? DOM.sectionTabs.children : [];
+  for (let i = 0; i < tabs.length; i++) {
+    const b = tabs[i];
     const isActive = (si === -1 && i === 0) || (si >= 0 && i === si + 1);
     b.classList.toggle('active', isActive);
     b.setAttribute('aria-selected', isActive ? 'true' : 'false');
-  });
+  }
 
   // Scroll active tab into view
   const activeTab = si === -1
     ? document.getElementById('tab-dashboard')
     : document.getElementById(`tab-${si}`);
-  if (activeTab) activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  if (activeTab) activeTab.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
 
   updateTabBadges();
   if (si === -1) updateDashboard();
@@ -3202,13 +3238,17 @@ function updateTabBadges() {
     const tab   = document.getElementById(`tab-${si}`);
     if (!badge || !tab) return;
 
-    const keys   = sec.items.map((_, ii) => `${si}-${ii}`);
-    const done   = keys.filter(k => State.items[k]?.status !== null).length;
-    const crits  = keys.filter(k => State.items[k]?.status === 'crit').length;
-    const warns  = keys.filter(k => State.items[k]?.status === 'warn').length;
-    const allOk  = done === keys.length && crits === 0 && warns === 0;
+    let done = 0, crits = 0, warns = 0;
+    for (let ii = 0; ii < sec.items.length; ii++) {
+      const item = State.items[`${si}-${ii}`];
+      if (!item) continue;
+      if (item.status !== null) done++;
+      if (item.status === 'crit') crits++;
+      if (item.status === 'warn') warns++;
+    }
+    const allOk = done === sec.items.length && crits === 0 && warns === 0;
 
-    badge.textContent = done === keys.length ? '✓' : crits > 0 ? crits : done > 0 ? done : sec.items.length;
+    badge.textContent = done === sec.items.length ? '✓' : crits > 0 ? crits : done > 0 ? done : sec.items.length;
     tab.className = 'tab-btn' + (crits > 0 ? ' has-crit' : warns > 0 ? ' has-warn' : allOk ? ' all-ok' : '');
     if (State.ui.currentTab === si) tab.classList.add('active');
   });
@@ -4318,17 +4358,29 @@ function doSave() {
 /* AUTO SAVE (DRAFT) */
 const autoSave = debounce(() => {
   try {
+    const stateSnapshot = {};
+    for (const key in State.items) {
+      const s = State.items[key];
+      stateSnapshot[key] = {
+        status: s.status,
+        qty: s.qty,
+        obs: s.obs,
+        ts: s.ts
+      };
+    }
+
     const draft = {
-      state: JSON.parse(JSON.stringify(State.items)),
-      loja:  document.getElementById('fLoja').value,
-      data:  document.getElementById('fData').value,
-      resp:  document.getElementById('fResp').value,
-      reg:   document.getElementById('fReg').value,
+      state: stateSnapshot,
+      loja: document.getElementById('fLoja').value,
+      data: document.getElementById('fData').value,
+      resp: document.getElementById('fResp').value,
+      reg: document.getElementById('fReg').value,
       savedAt: new Date().toISOString()
     };
+
     localStorage.setItem('checklist-draft', JSON.stringify(draft));
   } catch(e) {}
-}, 500);
+}, 800);
 
 function restoreSession() {
   try {
@@ -4982,15 +5034,25 @@ function scrollToTop() {
   haptic('light');
 }
 
-/* AUTO-SCROLL ACTIVE TAB ON STATUS CHANGE */
+/* AUTO-SCROLL ACTIVE TAB ON STATUS CHANGE
+   Só rola quando o card realmente saiu da área visível. */
 const origHandle = handleStatusClick;
 window.handleStatusClick = function(key, status) {
   origHandle(key, status);
-  // Scroll card into view after status change
+
   requestAnimationFrame(() => {
     const card = document.getElementById(`card-${key}`);
-    if (card) {
-      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (!card) return;
+
+    const rect = card.getBoundingClientRect();
+    const vp = document.querySelector('.slides-viewport');
+    if (!vp) return;
+
+    const vpRect = vp.getBoundingClientRect();
+    const outside = rect.top < vpRect.top || rect.bottom > vpRect.bottom;
+
+    if (outside) {
+      card.scrollIntoView({ behavior: 'auto', block: 'nearest' });
     }
   });
 };
@@ -5020,21 +5082,11 @@ window.updateProgress = function() {
   checkCompletion();
 };
 
-/* STAGGERED CARD ANIMATIONS */
-function animateCardsInView(si) {
-  const slide = document.getElementById(`slide-${si}`);
-  if (!slide) return;
-  slide.querySelectorAll('.item-card').forEach((card, i) => {
-    card.style.animationDelay = `${i * 30}ms`;
-    card.style.animationPlayState = 'running';
-  });
-}
-
-/* Hook into goToTab */
+/* Performance: cards are rendered immediately when switching sections.
+   The original staggered animation created dozens of simultaneous animations. */
 const origGoToTab = goToTab;
 window.goToTab = function(si) {
   origGoToTab(si);
-  if (si >= 0) setTimeout(() => animateCardsInView(si), 50);
   if (si === -1) updateDashboard();
 };
 
