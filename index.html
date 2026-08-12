@@ -390,6 +390,7 @@ body.light .brand-logo-color { display: none !important; }
 
   /* Z-INDEX */
   --z-overlay: 100;
+  --z-screen: 150;
   --z-modal: 200;
   --z-toast: 300;
   --z-splash: 400;
@@ -1710,6 +1711,181 @@ body.light .field-chip select option { background: #fff; color: #111; }
 .printer-record-meta { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
 .printer-record-meta span { padding:2px 6px; border-radius:999px; background:rgba(20,184,166,.13); color:var(--muted); font-size:10px; }
 .printers-empty { color:var(--muted); font-size:11px; padding:3px 0; }
+
+.printers-open-btn {
+  margin-top: 10px;
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 14px;
+  border: none; border-radius: var(--r-md);
+  background: var(--brand-gradient);
+  color: #fff; font-size: 12.5px; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  transition: transform var(--dur-fast), box-shadow var(--dur-fast), opacity var(--dur-fast);
+  box-shadow: var(--shadow-brand);
+}
+.printers-open-btn:active { transform: scale(0.97); }
+.printers-open-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+.printers-open-btn svg { flex-shrink: 0; }
+
+/* ================================================================
+   TELA DE VISTORIA DE IMPRESSORAS — tela independente, full-screen,
+   reaproveita os tokens visuais do restante do app.
+   ================================================================ */
+.printers-screen {
+  position: fixed; inset: 0;
+  z-index: var(--z-screen, 150);
+  display: flex; flex-direction: column;
+  width: 100vw; height: 100dvh; max-height: 100dvh; max-width: 100vw;
+  background: var(--bg-app);
+  opacity: 0;
+  transform: translateX(3%);
+  pointer-events: none;
+  transition: opacity var(--dur-mid) var(--ease-out), transform var(--dur-mid) var(--ease-out);
+  overflow: hidden;
+}
+.printers-screen.open {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.printers-screen-header {
+  flex-shrink: 0;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.printers-back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  align-self: flex-start;
+  border: 1px solid var(--border);
+  background: var(--bg-badge);
+  color: var(--text-secondary);
+  font-family: inherit; font-size: 12.5px; font-weight: 600;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background var(--dur-fast), color var(--dur-fast), transform var(--dur-fast);
+}
+.printers-back-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.printers-back-btn:active { transform: scale(0.96); }
+.printers-back-btn svg { flex-shrink: 0; }
+
+.printers-screen-titlebar { display: flex; flex-direction: column; gap: 2px; }
+.printers-screen-title {
+  font-size: 15px; font-weight: 800; letter-spacing: -0.2px; color: var(--text-primary);
+}
+.printers-screen-sub { font-size: 12px; color: var(--text-secondary); }
+.printers-screen-count { font-size: 11px; color: var(--text-muted); }
+
+.printers-screen-search { padding: 0 16px; margin-top: 2px; }
+.printers-screen-search .search-input-wrap {
+  background: var(--bg-input);
+}
+
+.printers-screen-body {
+  flex: 1; min-height: 0; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 16px 90px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.printers-screen-state {
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.printers-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 700px) {
+  .printers-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1100px) {
+  .printers-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.printer-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast);
+  contain: layout style paint;
+}
+.printer-card.has-ok {
+  border-color: rgba(34,197,94,0.25);
+  background: linear-gradient(135deg, rgba(34,197,94,0.04) 0%, var(--bg-card) 60%);
+}
+.printer-card.has-warn {
+  border-color: rgba(245,158,11,0.25);
+  background: linear-gradient(135deg, rgba(245,158,11,0.04) 0%, var(--bg-card) 60%);
+}
+.printer-card.has-crit {
+  border-color: rgba(239,68,68,0.3);
+  background: linear-gradient(135deg, rgba(239,68,68,0.05) 0%, var(--bg-card) 60%);
+  box-shadow: var(--shadow-glow-crit);
+}
+.printer-card.has-na { border-color: rgba(107,114,128,0.2); opacity: 0.75; }
+
+.printer-card-top {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+}
+.printer-card-serial { font-size: 13px; font-weight: 700; color: var(--text-primary); word-break: break-all; }
+.printer-card-status-group { display: flex; gap: 6px; flex-shrink: 0; }
+.printer-status-btn {
+  width: 28px; height: 28px;
+  border: 1.5px solid transparent;
+  border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur-fast);
+  flex-shrink: 0;
+}
+.printer-status-btn:active { transform: scale(0.87); }
+
+.printer-card-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.printer-chip {
+  padding: 3px 9px;
+  border-radius: var(--r-full);
+  background: var(--bg-badge);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 10.5px; font-weight: 600;
+  white-space: nowrap;
+}
+
+.printer-card-obs-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+.printer-obs-input {
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  font-family: inherit; font-size: 12px; line-height: 1.5;
+  resize: vertical; outline: none;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.printer-obs-input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--brand-dim); }
+.printer-obs-input::placeholder { color: var(--text-placeholder); }
+
+@media (max-width: 480px) {
+  .printers-screen-header { padding: 10px 12px; }
+  .printers-screen-search { padding: 0 12px; }
+  .printers-screen-body { padding: 12px 12px 90px; }
+}
 </style>
 </head>
 <body>
@@ -1947,6 +2123,31 @@ const APP_MARKUP = `
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </button>
   </div>
+</div>
+
+<!-- TELA DE VISTORIA DE IMPRESSORAS — independente do checklist -->
+<div id="printersScreen" class="printers-screen" role="region" aria-label="Vistoria de Impressoras">
+  <div class="printers-screen-header">
+    <button type="button" class="printers-back-btn" onclick="closePrintersScreen()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Voltar para o Checklist
+    </button>
+    <div class="printers-screen-titlebar">
+      <div class="printers-screen-title">VISTORIA DE IMPRESSORAS</div>
+      <div class="printers-screen-sub" id="printersScreenStoreLabel">Loja: —</div>
+      <div class="printers-screen-count" id="printersScreenCount">0 impressoras encontradas</div>
+    </div>
+    <div class="printers-screen-search">
+      <div class="search-input-wrap">
+        <span class="search-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <input class="search-input" id="printersScreenSearch" type="text" placeholder="Pesquisar impressora..." oninput="filterPrinters(this.value)">
+        <button type="button" class="search-clear" id="printersScreenSearchClear" onclick="clearPrintersSearch()" style="display:none" aria-label="Limpar pesquisa">x</button>
+      </div>
+    </div>
+  </div>
+  <div class="printers-screen-body" id="printersScreenBody"></div>
 </div>
 
 <!-- SETTINGS MODAL -->
@@ -2283,6 +2484,8 @@ function renderPrintersForSelectedStore() {
   const code = getStoreCode(store);
   const title = panel.querySelector('[data-printers-title]');
   const content = panel.querySelector('[data-printers-content]');
+  const openBtn = document.getElementById('printersOpenBtn');
+  if (openBtn) openBtn.disabled = !store;
   if (!store) {
     title.textContent = 'Selecione uma loja para consultar as impressoras';
     content.innerHTML = '<div class="printers-empty">Escolha a loja no topo do checklist.</div>';
@@ -2310,6 +2513,271 @@ function renderPrintersForSelectedStore() {
       <div class="printer-record-main"><strong>S/N: ${escapePrinterText(printer.serie || 'não informado')}</strong><span>Obs: ${escapePrinterText(printer.obs || 'sem observação')}</span></div>
       <div class="printer-record-meta">${printer.departamento ? `<span>${escapePrinterText(printer.departamento)}</span>` : ''}${printer.modelo ? `<span>${escapePrinterText(printer.modelo)}</span>` : ''}${printer.fornecedor ? `<span>${escapePrinterText(printer.fornecedor)}</span>` : ''}${printer.impressoes ? `<span>${escapePrinterText(printer.impressoes)} impressões</span>` : ''}</div>
     </article>`).join('');
+}
+
+/* ================================================================
+   TELA DE VISTORIA DE IMPRESSORAS (independente do checklist)
+   ------------------------------------------------------------------
+   Reaproveita: printersByStore / printersLoadState / getStoreCode /
+   escapePrinterText / normalizePrinterRow / loadPrintersCatalog
+   (nenhuma dessas funções é duplicada ou substituída).
+   Organização: ESTADO → DADOS → RENDERIZAÇÃO → NAVEGAÇÃO →
+   PERSISTÊNCIA → EXPORTAÇÃO.
+   ================================================================ */
+
+/* ---- ESTADO da tela ---- */
+const PRINTERS_DRAFT_KEY = 'ti-printers-vistoria';
+const printersScreenUi = { search: '', storeCode: '', printers: [] };
+
+/* ---- DADOS: identificação/observação por impressora ---- */
+// Usa o número de série como identificador; se a impressora não tiver
+// série informada, usa um identificador estável baseado na loja +
+// modelo + posição na lista, para nunca colidir com outra impressora.
+function getPrinterKey(printer, index) {
+  if (printer.serie) return printer.serie;
+  return `${getStoreCode(printer.loja)}__${printer.modelo || 'sem-modelo'}__${index}`;
+}
+
+function getPrinterState(key) {
+  if (!State.printers[key]) {
+    State.printers[key] = { status: null, obs: '', ts: null };
+  }
+  return State.printers[key];
+}
+
+/* ---- NAVEGAÇÃO: Checklist ⇄ Tela de Impressoras ---- */
+function openPrintersScreen() {
+  const store = document.getElementById('fLoja')?.value || '';
+  if (!store) {
+    showToast('Selecione uma loja antes de abrir a vistoria de impressoras.', 'error');
+    return;
+  }
+  const screen = document.getElementById('printersScreen');
+  if (!screen) return;
+
+  printersScreenUi.storeCode = getStoreCode(store);
+  printersScreenUi.search = '';
+  const searchInput = document.getElementById('printersScreenSearch');
+  if (searchInput) searchInput.value = '';
+  const clearBtn = document.getElementById('printersScreenSearchClear');
+  if (clearBtn) clearBtn.style.display = 'none';
+
+  const storeLabel = document.getElementById('printersScreenStoreLabel');
+  if (storeLabel) storeLabel.textContent = `Loja: ${store}`;
+
+  screen.classList.add('open');
+  screen.setAttribute('aria-hidden', 'false');
+  document.getElementById('app')?.setAttribute('inert', '');
+
+  renderPrintersScreen();
+}
+
+function closePrintersScreen() {
+  const screen = document.getElementById('printersScreen');
+  if (!screen) return;
+  screen.classList.remove('open');
+  screen.setAttribute('aria-hidden', 'true');
+  document.getElementById('app')?.removeAttribute('inert');
+  // O estado do checklist (State.items, campos fLoja/fData/fResp/fReg,
+  // aba atual, progresso) nunca é tocado por esta função — o checklist
+  // continua exatamente como estava antes da navegação.
+}
+
+/* ---- RENDERIZAÇÃO ---- */
+function filterPrinters(query) {
+  printersScreenUi.search = String(query || '');
+  const clearBtn = document.getElementById('printersScreenSearchClear');
+  if (clearBtn) clearBtn.style.display = printersScreenUi.search ? 'flex' : 'none';
+  renderPrintersScreen();
+}
+
+function clearPrintersSearch() {
+  const searchInput = document.getElementById('printersScreenSearch');
+  if (searchInput) searchInput.value = '';
+  filterPrinters('');
+}
+
+function renderPrintersScreen() {
+  const body = document.getElementById('printersScreenBody');
+  const countEl = document.getElementById('printersScreenCount');
+  if (!body) return;
+
+  const code = printersScreenUi.storeCode;
+
+  if (printersLoadState === 'loading') {
+    body.innerHTML = '<div class="printers-screen-state">Carregando impressoras...</div>';
+    if (countEl) countEl.textContent = '';
+    return;
+  }
+  if (printersLoadState === 'error') {
+    body.innerHTML = '<div class="printers-screen-state">Não foi possível carregar o cadastro de impressoras.</div>';
+    if (countEl) countEl.textContent = '';
+    return;
+  }
+
+  const alternateCode = code.replace(/^TA/, 'CT');
+  const allPrinters = printersByStore[code] || printersByStore[alternateCode] || [];
+  printersScreenUi.printers = allPrinters;
+
+  if (!allPrinters.length) {
+    body.innerHTML = '<div class="printers-screen-state">Nenhuma impressora encontrada para esta loja.</div>';
+    if (countEl) countEl.textContent = '0 impressoras encontradas';
+    return;
+  }
+
+  const q = printersScreenUi.search.trim().toLowerCase();
+  const filtered = !q ? allPrinters : allPrinters.filter(p =>
+    (p.serie || '').toLowerCase().includes(q) ||
+    (p.modelo || '').toLowerCase().includes(q) ||
+    (p.departamento || '').toLowerCase().includes(q) ||
+    (p.fornecedor || '').toLowerCase().includes(q)
+  );
+
+  if (countEl) {
+    countEl.textContent = `${allPrinters.length} impressora${allPrinters.length === 1 ? '' : 's'} encontrada${allPrinters.length === 1 ? '' : 's'}`;
+  }
+
+  if (!filtered.length) {
+    body.innerHTML = '<div class="printers-screen-state">Nenhuma impressora corresponde à pesquisa.</div>';
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'printers-grid';
+  filtered.forEach((printer, idx) => {
+    const key = getPrinterKey(printer, allPrinters.indexOf(printer) !== -1 ? allPrinters.indexOf(printer) : idx);
+    grid.appendChild(renderPrinterCard(printer, key));
+  });
+  body.innerHTML = '';
+  body.appendChild(grid);
+}
+
+function renderPrinterCard(printer, key) {
+  const s = getPrinterState(key);
+  const card = document.createElement('article');
+  card.className = 'printer-card';
+  if (s.status) card.classList.add(`has-${s.status}`);
+  card.id = `printer-card-${escapePrinterText(key)}`;
+
+  const chips = [
+    printer.departamento,
+    printer.modelo,
+    printer.fornecedor,
+    printer.impressoes ? `${printer.impressoes} impressões` : ''
+  ].filter(Boolean);
+
+  card.innerHTML = `
+    <div class="printer-card-top">
+      <div class="printer-card-serial">S/N: ${escapePrinterText(printer.serie || 'não informado')}</div>
+      <div class="printer-card-status-group">
+        <button type="button" class="printer-status-btn btn-ok${s.status === 'ok' ? ' sel' : ''}" data-key="${escapePrinterText(key)}" data-s="ok" title="OK" aria-label="OK">✓</button>
+        <button type="button" class="printer-status-btn btn-warn${s.status === 'warn' ? ' sel' : ''}" data-key="${escapePrinterText(key)}" data-s="warn" title="Atenção" aria-label="Atenção">!</button>
+        <button type="button" class="printer-status-btn btn-crit${s.status === 'crit' ? ' sel' : ''}" data-key="${escapePrinterText(key)}" data-s="crit" title="Crítico" aria-label="Crítico">✗</button>
+        <button type="button" class="printer-status-btn btn-na${s.status === 'na' ? ' sel' : ''}" data-key="${escapePrinterText(key)}" data-s="na" title="Não se aplica" aria-label="N/A">—</button>
+      </div>
+    </div>
+    <div class="printer-card-chips">${chips.map(c => `<span class="printer-chip">${escapePrinterText(c)}</span>`).join('')}</div>
+    <div>
+      <div class="printer-card-obs-label">Observação</div>
+      <textarea class="printer-obs-input" placeholder="Digite aqui a observação desta impressora..."></textarea>
+    </div>`;
+
+  const textarea = card.querySelector('.printer-obs-input');
+  textarea.value = s.obs || '';
+  textarea.addEventListener('input', debounce(e => {
+    updatePrinterObservation(key, e.target.value);
+  }, 300));
+
+  card.querySelectorAll('.printer-status-btn').forEach(btn => {
+    btn.addEventListener('click', () => handlePrinterStatusClick(key, btn.dataset.s, card));
+  });
+
+  return card;
+}
+
+function handlePrinterStatusClick(key, newStatus, cardEl) {
+  const s = getPrinterState(key);
+  const same = s.status === newStatus;
+  s.status = same ? null : newStatus;
+  s.ts = s.status ? new Date().toISOString() : null;
+
+  const card = cardEl || document.getElementById(`printer-card-${key}`);
+  if (card) {
+    card.classList.remove('has-ok', 'has-warn', 'has-crit', 'has-na');
+    if (s.status) card.classList.add(`has-${s.status}`);
+    card.querySelectorAll('.printer-status-btn').forEach(b => {
+      b.classList.toggle('sel', b.dataset.s === s.status);
+    });
+  }
+
+  autoSavePrinters();
+}
+
+/* ---- PERSISTÊNCIA das observações/status da vistoria ----
+   As observações NUNCA são gravadas de volta na planilha original —
+   ela continua sendo somente a fonte de cadastro. O que o usuário
+   digita fica em State.printers e é espelhado no localStorage para
+   sobreviver a trocas de aba, volta ao checklist e atualizações da
+   página, sem interferir no rascunho (checklist-draft) já existente. */
+function updatePrinterObservation(key, value) {
+  const s = getPrinterState(key);
+  s.obs = value;
+  s.ts = new Date().toISOString();
+  autoSavePrinters();
+}
+
+const autoSavePrinters = debounce(() => {
+  try {
+    localStorage.setItem(PRINTERS_DRAFT_KEY, JSON.stringify(State.printers));
+  } catch (e) {}
+}, 400);
+
+function restorePrintersDraft() {
+  try {
+    const raw = localStorage.getItem(PRINTERS_DRAFT_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (saved && typeof saved === 'object') {
+      State.printers = saved;
+    }
+  } catch (e) {}
+}
+
+/* ---- EXPORTAÇÃO: integra a vistoria de impressoras ao relatório ----
+   Gera linhas no MESMO formato usado pelo restante do checklist
+   (loja, data, responsavel, regional, secao, item, status,
+   quantidade, observacao), para que CSV/Excel/JSON/e-mail/PDF
+   continuem funcionando sem qualquer alteração adicional. */
+function buildPrinterExportRows() {
+  const loja = document.getElementById('fLoja')?.value || '';
+  const data = document.getElementById('fData')?.value || '';
+  const resp = document.getElementById('fResp')?.value || '';
+  const reg  = document.getElementById('fReg')?.value || '';
+  const code = getStoreCode(loja);
+  const alternateCode = code.replace(/^TA/, 'CT');
+  const printers = printersByStore[code] || printersByStore[alternateCode] || [];
+
+  return printers.map((printer, idx) => {
+    const key = getPrinterKey(printer, idx);
+    const s = State.printers[key] || {};
+    if (!s.status && !s.obs) return null; // só inclui impressoras já avaliadas na vistoria
+    return {
+      loja: loja || '',
+      data: data || '',
+      responsavel: resp || '',
+      regional: reg || '',
+      secao: 'Impressoras',
+      item: `S/N ${printer.serie || 'não informado'} — ${printer.modelo || ''}`.trim(),
+      status: s.status || '',
+      quantidade: printer.impressoes || '',
+      observacao: s.obs || '',
+      // campos extras usados no relatório detalhado de impressoras
+      serie: printer.serie || '',
+      modelo: printer.modelo || '',
+      departamento: printer.departamento || '',
+      fornecedor: printer.fornecedor || ''
+    };
+  }).filter(Boolean);
 }
 
 /* ADMINISTRADORES — guilherme.silva é admin fixo (definido no código).
@@ -2341,6 +2809,7 @@ function isAdminEmail(email) {
 /* STATE */
 const State = {
   items: {},       // "si-ii" → { status, qty, obs, ts }
+  printers: {},    // chave (serie ou fallback) → { status, obs, ts }
   ui: {
     currentTab: 0,
     searchQuery: '',
@@ -2544,7 +3013,11 @@ function buildChecklistSlides() {
       printersPanel.id = 'printersStorePanel';
       printersPanel.innerHTML = `
         <div class="printers-panel-title" data-printers-title>Selecione uma loja para consultar as impressoras</div>
-        <div data-printers-content><div class="printers-empty">Escolha a loja no topo do checklist.</div></div>`;
+        <div data-printers-content><div class="printers-empty">Escolha a loja no topo do checklist.</div></div>
+        <button type="button" class="printers-open-btn" id="printersOpenBtn" onclick="openPrintersScreen()" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="9" rx="1"/><path d="M6 12v8h12v-8"/><path d="M6 17h4"/></svg>
+          Abrir vistoria de impressoras
+        </button>`;
       slide.appendChild(printersPanel);
     }
 
