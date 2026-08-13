@@ -195,9 +195,8 @@
   animation: soft-glow 0.6s ease-out;
 }
 .tab-btn.active, .save-btn, .cfg-save-btn {
-  /* Performance: avoid forcing an extra compositing layer for small controls. */
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 /* TIME-BASED GREETING */
@@ -284,40 +283,6 @@ body.light .brand-logo-color { display: none !important; }
 
 </style>
 <style>
-
-/* ============================================================
-   PERFORMANCE PATCH — 60 FPS
-   Mantém o design, reduz custo de pintura/composição.
-   ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-@media (max-width: 900px) {
-  .topnav,
-  .bottom-bar,
-  .modal-sheet {
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-  }
-
-  .item-card,
-  .status-btn {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-}
-
-/* Avoid expensive paint effects while an element is idle. */
-.item-card {
-  contain: layout paint style;
-}
-
 .email-modal .modal-body { gap: 14px; }
 .email-field { display: flex; flex-direction: column; gap: 6px; }
 .email-label { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
@@ -671,7 +636,6 @@ body {
 .topnav {
   flex-shrink: 0;
   background: var(--bg-glass);
-  /* Keep the glass look, but use a cheaper effect. */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
@@ -928,9 +892,7 @@ body.light .field-chip select option { background: #fff; color: #111; }
   display: flex;
   /* NÃO usar height:100% aqui — deixar o track se expandir naturalmente */
   height: 100%;
-  will-change: transform;
-  transform: translateZ(0);
-  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+transform: translate3d(0,0,0); will-change: transform; transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .slide,
 .slide-dashboard {
@@ -1005,8 +967,12 @@ body.light .field-chip select option { background: #fff; color: #111; }
   border-radius: var(--r-lg);
   overflow: hidden;
   transition: border-color var(--dur-fast), background var(--dur-fast),
-              transform var(--dur-fast), box-shadow var(--dur-fast);
-  /* Não usar will-change permanente: dezenas de camadas GPU reduzem FPS. */
+              transform var(--dur-fast), box-shadow var(--dur-fast),
+              filter var(--dur-fast), backdrop-filter var(--dur-fast);
+  /* will-change fixo em TODO card força uma camada de composição por
+     card, permanentemente, mesmo parado. Com dezenas de cards isso
+     consome memória/GPU e derruba o fps. As animações pontuais
+     (card-reveal, card-pulse) já promovem a própria camada sozinhas. */
   flex-shrink: 0;
   /* Isola o layout/paint de cada card: abrir/fechar detalhes de UM
      item não força recálculo de reflow na lista inteira. */
@@ -1077,7 +1043,8 @@ body.light .field-chip select option { background: #fff; color: #111; }
   display: flex; align-items: center; justify-content: center;
   transition: background var(--dur-fast), border-color var(--dur-fast),
               color var(--dur-fast), transform var(--dur-fast),
-              box-shadow var(--dur-fast);
+              box-shadow var(--dur-fast), filter var(--dur-fast),
+              backdrop-filter var(--dur-fast);
   position: relative; overflow: hidden;
   flex-shrink: 0;
 }
@@ -1385,7 +1352,6 @@ body.light .field-chip select option { background: #fff; color: #111; }
 .bottom-bar {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: var(--bg-glass);
-  /* Keep the glass look, but use a cheaper effect. */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-top: 1px solid var(--border);
@@ -1786,7 +1752,6 @@ body.light .field-chip select option { background: #fff; color: #111; }
 .printers-screen-header {
   flex-shrink: 0;
   background: var(--bg-glass);
-  /* Keep the glass look, but use a cheaper effect. */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
@@ -1919,6 +1884,30 @@ body.light .field-chip select option { background: #fff; color: #111; }
   .printers-screen-header { padding: 10px 12px; }
   .printers-screen-search { padding: 0 12px; }
   .printers-screen-body { padding: 12px 12px 90px; }
+}
+</style>
+<style id="performance-optimization">
+.item-card { contain: layout paint style; }
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after {
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+@media (max-width:900px) {
+  .item-card { backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+}
+.performance-mode .item-card,
+.performance-mode .item-card::before,
+.performance-mode .item-card::after {
+  animation:none !important;
+  transition-duration:.01ms !important;
+}
+@media (max-width:700px) {
+  input,select,textarea,button { touch-action:manipulation; }
+  .slides-viewport { overscroll-behavior-x:contain; }
 }
 </style>
 </head>
@@ -3150,13 +3139,11 @@ function goToTab(si) {
   const trackOffset = si === -1 ? 0 : (si + 1);
   DOM.slidesTrack.style.transform = `translateX(-${trackOffset * 100}vw)`;
 
-  const tabs = DOM.sectionTabs ? DOM.sectionTabs.children : [];
-  for (let i = 0; i < tabs.length; i++) {
-    const b = tabs[i];
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
     const isActive = (si === -1 && i === 0) || (si >= 0 && i === si + 1);
     b.classList.toggle('active', isActive);
     b.setAttribute('aria-selected', isActive ? 'true' : 'false');
-  }
+  });
 
   // Scroll active tab into view
   const activeTab = si === -1
@@ -3238,15 +3225,11 @@ function updateTabBadges() {
     const tab   = document.getElementById(`tab-${si}`);
     if (!badge || !tab) return;
 
-    let done = 0, crits = 0, warns = 0;
-    for (let ii = 0; ii < sec.items.length; ii++) {
-      const item = State.items[`${si}-${ii}`];
-      if (!item) continue;
-      if (item.status !== null) done++;
-      if (item.status === 'crit') crits++;
-      if (item.status === 'warn') warns++;
-    }
-    const allOk = done === sec.items.length && crits === 0 && warns === 0;
+    const keys   = sec.items.map((_, ii) => `${si}-${ii}`);
+    const done   = keys.filter(k => State.items[k]?.status !== null).length;
+    const crits  = keys.filter(k => State.items[k]?.status === 'crit').length;
+    const warns  = keys.filter(k => State.items[k]?.status === 'warn').length;
+    const allOk  = done === keys.length && crits === 0 && warns === 0;
 
     badge.textContent = done === sec.items.length ? '✓' : crits > 0 ? crits : done > 0 ? done : sec.items.length;
     tab.className = 'tab-btn' + (crits > 0 ? ' has-crit' : warns > 0 ? ' has-warn' : allOk ? ' all-ok' : '');
@@ -4361,26 +4344,18 @@ const autoSave = debounce(() => {
     const stateSnapshot = {};
     for (const key in State.items) {
       const s = State.items[key];
-      stateSnapshot[key] = {
-        status: s.status,
-        qty: s.qty,
-        obs: s.obs,
-        ts: s.ts
-      };
+      stateSnapshot[key] = {status:s.status ?? null, qty:s.qty ?? '', obs:s.obs ?? '', ts:s.ts ?? null};
     }
-
-    const draft = {
+    localStorage.setItem('checklist-draft', JSON.stringify({
       state: stateSnapshot,
-      loja: document.getElementById('fLoja').value,
-      data: document.getElementById('fData').value,
-      resp: document.getElementById('fResp').value,
-      reg: document.getElementById('fReg').value,
+      loja: document.getElementById('fLoja')?.value || '',
+      data: document.getElementById('fData')?.value || '',
+      resp: document.getElementById('fResp')?.value || '',
+      reg: document.getElementById('fReg')?.value || '',
       savedAt: new Date().toISOString()
-    };
-
-    localStorage.setItem('checklist-draft', JSON.stringify(draft));
+    }));
   } catch(e) {}
-}, 800);
+}, 900);
 
 function restoreSession() {
   try {
@@ -4859,6 +4834,85 @@ document.head.appendChild(spinStyle);
   }, 1800);
 })();
 </script>
+<script id="ultra-features">
+(function(){
+  'use strict';
+
+  const undoStack=[], redoStack=[];
+  function snap(){
+    const o={}; for(const k in State.items) o[k]={...State.items[k]}; return JSON.stringify(o);
+  }
+  function restore(raw){
+    try{
+      State.items=JSON.parse(raw);
+      if(typeof renderAll==='function') renderAll();
+      else if(typeof render==='function') render();
+      if(typeof updateDashboard==='function') updateDashboard();
+      if(typeof autoSave==='function') autoSave();
+    }catch(e){}
+  }
+  window.checklistHistory={
+    checkpoint(){
+      const s=snap();
+      if(undoStack[undoStack.length-1]!==s){
+        undoStack.push(s); if(undoStack.length>40) undoStack.shift(); redoStack.length=0;
+      }
+    },
+    undo(){
+      if(undoStack.length<2)return;
+      redoStack.push(undoStack.pop()); restore(undoStack[undoStack.length-1]);
+    },
+    redo(){
+      if(!redoStack.length)return;
+      const s=redoStack.pop(); undoStack.push(s); restore(s);
+    }
+  };
+
+  window.filterChecklist=function(q){
+    q=String(q||'').trim().toLocaleLowerCase('pt-BR');
+    document.querySelectorAll('.item-card').forEach(card=>{
+      card.hidden=!!q && !card.textContent.toLocaleLowerCase('pt-BR').includes(q);
+    });
+  };
+
+  window.downloadChecklistBackup=function(){
+    try{
+      const payload={
+        version:1,
+        exportedAt:new Date().toISOString(),
+        form:{
+          loja:document.getElementById('fLoja')?.value||'',
+          data:document.getElementById('fData')?.value||'',
+          responsavel:document.getElementById('fResp')?.value||'',
+          regional:document.getElementById('fReg')?.value||''
+        },
+        items:State.items
+      };
+      const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=url; a.download=`checklist-backup-${Date.now()}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      if(typeof showToast==='function')showToast('Backup criado com sucesso!','success');
+    }catch(e){ if(typeof showToast==='function')showToast('Não foi possível criar o backup.','error'); }
+  };
+
+  try{
+    if((navigator.hardwareConcurrency && navigator.hardwareConcurrency<=4) ||
+       matchMedia('(prefers-reduced-motion: reduce)').matches)
+      document.documentElement.classList.add('performance-mode');
+  }catch(e){}
+
+  document.addEventListener('keydown',e=>{
+    const typing=/INPUT|TEXTAREA|SELECT/.test(e.target?.tagName);
+    if((e.ctrlKey||e.metaKey)&&!typing&&e.key.toLowerCase()==='z'){
+      e.preventDefault(); checklistHistory.undo();
+    }else if((e.ctrlKey||e.metaKey)&&!typing&&e.key.toLowerCase()==='y'){
+      e.preventDefault(); checklistHistory.redo();
+    }
+  },{passive:false});
+})();
+</script>
 </body>
 </html>
 
@@ -5034,26 +5088,16 @@ function scrollToTop() {
   haptic('light');
 }
 
-/* AUTO-SCROLL ACTIVE TAB ON STATUS CHANGE
-   Só rola quando o card realmente saiu da área visível. */
+/* Smart auto-scroll: only when the changed card is outside the viewport. */
 const origHandle = handleStatusClick;
 window.handleStatusClick = function(key, status) {
   origHandle(key, status);
-
   requestAnimationFrame(() => {
     const card = document.getElementById(`card-${key}`);
-    if (!card) return;
-
-    const rect = card.getBoundingClientRect();
     const vp = document.querySelector('.slides-viewport');
-    if (!vp) return;
-
-    const vpRect = vp.getBoundingClientRect();
-    const outside = rect.top < vpRect.top || rect.bottom > vpRect.bottom;
-
-    if (outside) {
-      card.scrollIntoView({ behavior: 'auto', block: 'nearest' });
-    }
+    if (!card || !vp) return;
+    const r = card.getBoundingClientRect(), v = vp.getBoundingClientRect();
+    if (r.top < v.top || r.bottom > v.bottom) card.scrollIntoView({behavior:'auto', block:'nearest'});
   });
 };
 
@@ -5082,12 +5126,11 @@ window.updateProgress = function() {
   checkCompletion();
 };
 
-/* Performance: cards are rendered immediately when switching sections.
-   The original staggered animation created dozens of simultaneous animations. */
+/* Performance: render cards immediately; no simultaneous stagger animations. */
 const origGoToTab = goToTab;
 window.goToTab = function(si) {
   origGoToTab(si);
-  if (si === -1) updateDashboard();
+  if (si === -1 && typeof updateDashboard === 'function') updateDashboard();
 };
 
 /* KEYBOARD SHORTCUT HINTS */
