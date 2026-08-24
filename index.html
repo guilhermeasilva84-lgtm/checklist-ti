@@ -2546,9 +2546,19 @@ const TENDA_LOGO_DATA_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAvQAA
 const MSAL_CONFIG = {
   clientId: "583ecb85-0864-4f6d-85f3-9ce48b5ab9cd",
   tenantId: "d685b1be-26d4-4fc2-89b2-6333f4469d11",
-  redirectUri: window.location.origin + window.location.pathname,
+  // MSAL/Entra ID não funciona com redirect file://. Em produção usamos
+  // a URL real do site; em localhost o login pode ser configurado normalmente.
+  redirectUri: (window.location.protocol === "file:" ? "http://localhost" : window.location.origin + window.location.pathname),
   allowedDomains: ["tendaatacado.com.br", "alimentaangola.co.ao"] // domínios permitidos para login
 };
+
+// Ao abrir diretamente o index.html pelo Windows (file://), o Microsoft
+// Entra ID não consegue completar o redirect. Para não deixar o usuário
+// preso na tela de login, o app entra automaticamente em modo local de teste.
+// Em qualquer URL http/https o login corporativo continua obrigatório.
+const LOCAL_RUNTIME = window.location.protocol === "file:" ||
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
 
 let msalInstance = null;
 function isMsalConfigured() {
@@ -4941,6 +4951,14 @@ function adminRemoveEmail(email) {
 }
 
 /* LOGIN / LOGOUT (Microsoft / Entra ID via MSAL) */
+function enterLocalMode() {
+  State.user = { email: 'usuario.local@tenda', name: 'Usuário Local', isAdmin: true, localMode: true };
+  sessionStorage.setItem('ti-user', JSON.stringify(State.user));
+  document.getElementById('loginPage').classList.add('hidden');
+  openApp();
+  showToast('Modo local ativado. O login Microsoft é usado quando o app estiver publicado.', 'info');
+}
+
 function doMsLogin() {
   const errEl = document.getElementById('loginError');
   const btn   = document.getElementById('loginBtn');
@@ -5144,6 +5162,13 @@ document.head.appendChild(spinStyle);
     const splash = document.getElementById('splash');
     splash.classList.add('hidden');
 
+    // Quando o arquivo é aberto diretamente pelo Windows, não tentamos
+    // redirecionar para a Microsoft: isso causava o loop de login/redirect.
+    if (LOCAL_RUNTIME && window.location.protocol === 'file:') {
+      enterLocalMode();
+      return;
+    }
+
     // 1) Sessão já aberta nesta aba (sessionStorage)
     const saved = sessionStorage.getItem('ti-user');
     if (saved) {
@@ -5175,6 +5200,13 @@ document.head.appendChild(spinStyle);
   // Aguarda o MSAL processar o retorno do login (loginRedirect) antes de
   // decidir se mostra a tela de login ou já abre o app.
   setTimeout(() => {
+    // Nunca inicialize o fluxo de redirect do MSAL quando este arquivo está
+    // sendo aberto por file://. Esse é o cenário mais comum ao extrair o ZIP.
+    if (window.location.protocol === 'file:') {
+      finishBoot();
+      return;
+    }
+
     const pca = getMsalInstance();
     if (pca) {
       pca.handleRedirectPromise()
@@ -5189,7 +5221,7 @@ document.head.appendChild(spinStyle);
     } else {
       finishBoot();
     }
-  }, 1800);
+  }, 800);
 })();
 </script>
 <script id="ultra-features">
