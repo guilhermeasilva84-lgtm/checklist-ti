@@ -1909,6 +1909,47 @@ transform: translate3d(0,0,0); will-change: transform; transition: transform 0.3
   input,select,textarea,button { touch-action:manipulation; }
   .slides-viewport { overscroll-behavior-x:contain; }
 }
+
+/* ================================================================
+   CENTRAL DE OPERAÇÕES — recursos inspirados em fluxos de auditoria
+   profissional: evidências, planos de ação, assinatura, agenda e
+   histórico/reabertura.
+   ================================================================ */
+.ops-feature-btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:34px; padding:0 12px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-primary); border-radius:10px; font-size:11px; font-weight:700; cursor:pointer; }
+.ops-feature-btn:hover { border-color:var(--border-focus); background:var(--bg-card-hover); }
+.ops-feature-btn.primary { background:linear-gradient(135deg,#1D4ED8,#2563EB); color:#fff; border-color:transparent; }
+.ops-feature-btn.warn { background:linear-gradient(135deg,#D97706,#F59E0B); color:#fff; border-color:transparent; }
+.ops-feature-btn.ok { background:linear-gradient(135deg,#059669,#10B981); color:#fff; border-color:transparent; }
+.item-tools { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.item-evidence-strip { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.item-evidence-thumb { width:52px; height:40px; border-radius:7px; object-fit:cover; border:1px solid var(--border); background:var(--bg-muted); }
+.item-evidence-count { font-size:10px; color:var(--text-secondary); align-self:center; }
+.ops-kpi-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+@media(max-width:720px){ .ops-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+.ops-kpi { padding:10px; border:1px solid var(--border); border-radius:10px; background:var(--bg-card); }
+.ops-kpi b{display:block;font-size:18px;color:var(--text-primary)} .ops-kpi span{font-size:10px;color:var(--text-secondary)}
+.ops-row-card { padding:10px; border:1px solid var(--border); border-radius:10px; background:var(--bg-card); display:flex; flex-direction:column; gap:6px; }
+.ops-row-top { display:flex; justify-content:space-between; gap:8px; align-items:flex-start; }
+.ops-row-title { font-size:12px; font-weight:700; color:var(--text-primary); }
+.ops-row-meta { font-size:10px; color:var(--text-secondary); }
+.ops-tag { display:inline-flex; width:max-content; padding:3px 7px; border-radius:999px; font-size:9px; font-weight:700; background:var(--bg-muted); color:var(--text-secondary); }
+.ops-tag.critical { background:rgba(239,68,68,.12); color:#DC2626; }
+.ops-tag.warn { background:rgba(245,158,11,.14); color:#B45309; }
+.ops-tag.done { background:rgba(16,185,129,.12); color:#047857; }
+.ops-form { display:grid; gap:8px; }
+.ops-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+@media(max-width:720px){ .ops-form-grid{grid-template-columns:1fr;} }
+.ops-input,.ops-select,.ops-textarea { width:100%; box-sizing:border-box; border:1px solid var(--border); background:var(--bg-input); color:var(--text-primary); border-radius:9px; padding:9px 10px; font:inherit; font-size:12px; }
+.ops-textarea{min-height:70px;resize:vertical;}
+.ops-section-box { padding:10px; border:1px solid var(--border); border-radius:10px; background:var(--bg-muted); }
+.signature-wrap { border:1px dashed var(--border-strong); border-radius:10px; overflow:hidden; background:#fff; }
+#signatureCanvas { width:100%; height:180px; display:block; touch-action:none; }
+.evidence-preview-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+@media(max-width:720px){ .evidence-preview-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+.evidence-preview-card { border:1px solid var(--border); border-radius:9px; overflow:hidden; background:var(--bg-card); }
+.evidence-preview-card img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
+.evidence-preview-card div { padding:5px 7px; font-size:9px; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
 </style>
 </head>
 <body>
@@ -2142,6 +2183,9 @@ const APP_MARKUP = `
     <button id="openEmailModalBtn" type="button" class="icon-btn" onclick="openEmailModal()" title="Enviar por E-mail" aria-label="Enviar por e-mail">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
     </button>
+    <button class="icon-btn" onclick="openOpsCenter()" title="Central de Operações" aria-label="Central de Operações">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
     <button class="icon-btn" onclick="showExport()" title="Exportar" aria-label="Exportar relatório">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </button>
@@ -2185,7 +2229,7 @@ const APP_MARKUP = `
       <div>
         <div class="modal-section-label">Integração / Envio</div>
         <div class="cfg-field">
-          <label class="cfg-label" for="cfgUrl">URL do backend (Google Apps Script / Power Automate)</label>
+          <label class="cfg-label" for="cfgUrl">URL do backend (Power Automate / API)</label>
           <input class="cfg-input" id="cfgUrl" type="url"
             value="https://defaultd685b1be26d44fc289b26333f4469d.11.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8d132a623ef64376b6392fd620b80610/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=m99ubwzbeHbjhPto-135KY1zl1x5q9PG67oJXPlYaJI">
         </div>
@@ -2372,6 +2416,110 @@ const APP_MARKUP = `
       <button type="button" class="cfg-save-btn" style="margin-top:20px;background:linear-gradient(135deg,#6B7280,#9CA3AF)" onclick="adminResetSections()">
         Restaurar seções padrão
       </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- CENTRAL DE OPERAÇÕES -->
+<div class="modal-backdrop" id="opsCenterModal" role="dialog" aria-modal="true" aria-label="Central de Operações">
+  <div class="modal-sheet" style="max-width:760px">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title">Central de Operações</span>
+      <button class="modal-close" onclick="closeModal('opsCenterModal')">x</button>
+    </div>
+    <div class="modal-body">
+      <div class="ops-kpi-grid">
+        <div class="ops-kpi"><b id="opsKpiActions">0</b><span>Planos de ação</span></div>
+        <div class="ops-kpi"><b id="opsKpiOpen">0</b><span>Ações abertas</span></div>
+        <div class="ops-kpi"><b id="opsKpiEvidence">0</b><span>Evidências</span></div>
+        <div class="ops-kpi"><b id="opsKpiAgenda">0</b><span>Agendamentos</span></div>
+      </div>
+
+      <div class="ops-section-box">
+        <div class="modal-section-label">Ações rápidas</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" class="ops-feature-btn primary" onclick="openSignaturePad()">Assinar vistoria</button>
+          <button type="button" class="ops-feature-btn" onclick="openAgendaSection()">Agenda de vistorias</button>
+          <button type="button" class="ops-feature-btn" onclick="generateEvaluationId()">Gerar ID da vistoria</button>
+          <button type="button" class="ops-feature-btn ok" onclick="downloadLocalEvidenceBundle()">Backup completo</button>
+        </div>
+        <div id="opsEvaluationIdHint" style="margin-top:8px;font-size:10px;color:var(--text-secondary)"></div>
+      </div>
+
+      <div class="ops-section-box">
+        <div class="modal-section-label">Planos de ação</div>
+        <div class="ops-form-grid">
+          <input id="actionPlanTitle" class="ops-input" placeholder="Ação / correção necessária">
+          <input id="actionPlanResponsible" class="ops-input" placeholder="Responsável">
+        </div>
+        <div class="ops-form-grid" style="margin-top:8px">
+          <input id="actionPlanDue" class="ops-input" type="date">
+          <select id="actionPlanPriority" class="ops-select"><option value="normal">Prioridade normal</option><option value="high">Alta prioridade</option><option value="critical">Crítica</option></select>
+        </div>
+        <textarea id="actionPlanNotes" class="ops-textarea" style="margin-top:8px" placeholder="Descrição, causa, correção e observações"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <button type="button" class="ops-feature-btn primary" onclick="saveActionPlanFromForm()">Criar plano de ação</button>
+          <button type="button" class="ops-feature-btn" onclick="clearActionPlanForm()">Limpar</button>
+        </div>
+        <div id="actionPlansList" style="display:grid;gap:8px;margin-top:10px"></div>
+      </div>
+
+      <div class="ops-section-box" id="agendaSection" style="display:none">
+        <div class="modal-section-label">Agenda / recorrência</div>
+        <div class="ops-form-grid">
+          <input id="agendaTitle" class="ops-input" placeholder="Título da vistoria">
+          <input id="agendaDate" class="ops-input" type="date">
+        </div>
+        <div class="ops-form-grid" style="margin-top:8px">
+          <select id="agendaRecurrence" class="ops-select"><option value="once">Única</option><option value="weekly">Semanal</option><option value="monthly">Mensal</option><option value="quarterly">Trimestral</option></select>
+          <input id="agendaResponsible" class="ops-input" placeholder="Responsável">
+        </div>
+        <button type="button" class="ops-feature-btn primary" style="margin-top:8px" onclick="saveAgendaItem()">Agendar</button>
+        <div id="agendaList" style="display:grid;gap:8px;margin-top:10px"></div>
+      </div>
+
+      <div class="ops-section-box">
+        <div class="modal-section-label">Assinatura atual</div>
+        <div id="signaturePreviewWrap" style="font-size:10px;color:var(--text-secondary)">Nenhuma assinatura registrada.</div>
+      </div>
+
+      <div class="ops-section-box">
+        <div class="modal-section-label">Evidências da vistoria</div>
+        <div id="opsEvidenceGrid" class="evidence-preview-grid"></div>
+        <div id="opsEvidenceEmpty" style="font-size:10px;color:var(--text-secondary)">As evidências ficam vinculadas aos itens do checklist. Use o botão “Evidência” dentro de cada item.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ASSINATURA -->
+<div class="modal-backdrop" id="signatureModal" role="dialog" aria-modal="true" aria-label="Assinatura da vistoria">
+  <div class="modal-sheet" style="max-width:640px">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">Assinatura da vistoria</span><button class="modal-close" onclick="closeModal('signatureModal')">x</button></div>
+    <div class="modal-body">
+      <div class="cfg-hint">Assine com mouse ou com o dedo. A assinatura será armazenada junto da vistoria e inserida no PDF.</div>
+      <div class="signature-wrap"><canvas id="signatureCanvas" width="1100" height="360"></canvas></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button type="button" class="ops-feature-btn" onclick="clearSignaturePad()">Limpar</button>
+        <button type="button" class="ops-feature-btn primary" onclick="saveSignature()">Salvar assinatura</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVIDÊNCIA -->
+<div class="modal-backdrop" id="evidenceModal" role="dialog" aria-modal="true" aria-label="Evidências do item">
+  <div class="modal-sheet" style="max-width:680px">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><span class="modal-title">Evidências</span><button class="modal-close" onclick="closeModal('evidenceModal')">x</button></div>
+    <div class="modal-body">
+      <div id="evidenceItemTitle" style="font-size:12px;font-weight:700;color:var(--text-primary)"></div>
+      <div class="cfg-hint">Adicione fotos da condição encontrada. O app compacta as imagens para funcionar melhor offline.</div>
+      <input id="evidenceFileInput" type="file" accept="image/*" capture="environment" multiple style="width:100%">
+      <div id="evidenceItemGrid" class="evidence-preview-grid" style="margin-top:10px"></div>
     </div>
   </div>
 </div>
@@ -2576,7 +2724,7 @@ function getPrinterKey(printer, index) {
 
 function getPrinterState(key) {
   if (!State.printers[key]) {
-    State.printers[key] = { status: null, obs: '', ts: null };
+    State.printers[key] = { status: null, obs: '', ts: null, evidence: [] };
   }
   return State.printers[key];
 }
@@ -2716,6 +2864,11 @@ function renderPrinterCard(printer, key) {
     <div>
       <div class="printer-card-obs-label">Observação</div>
       <textarea class="printer-obs-input" placeholder="Digite aqui a observação desta impressora..."></textarea>
+      <div class="item-tools">
+        <button type="button" class="ops-feature-btn" data-printer-evidence-key="${escapePrinterText(key)}">📷 Evidência</button>
+        <span class="item-evidence-count" id="printer-ev-count-${escapePrinterText(key)}"></span>
+      </div>
+      <div class="item-evidence-strip" id="printer-ev-strip-${escapePrinterText(key)}"></div>
     </div>`;
 
   const textarea = card.querySelector('.printer-obs-input');
@@ -2727,6 +2880,9 @@ function renderPrinterCard(printer, key) {
   card.querySelectorAll('.printer-status-btn').forEach(btn => {
     btn.addEventListener('click', () => handlePrinterStatusClick(key, btn.dataset.s, card));
   });
+  const printerEvidenceBtn = card.querySelector('[data-printer-evidence-key]');
+  if (printerEvidenceBtn) printerEvidenceBtn.addEventListener('click', (e) => { e.stopPropagation(); openPrinterEvidencePicker(key); });
+  renderPrinterEvidence(key);
 
   return card;
 }
@@ -2811,7 +2967,10 @@ function buildPrinterExportRows() {
       serie: printer.serie || '',
       modelo: printer.modelo || '',
       departamento: printer.departamento || '',
-      fornecedor: printer.fornecedor || ''
+      fornecedor: printer.fornecedor || '',
+      evidencias: Array.isArray(s.evidence) ? s.evidence : [],
+      horario: s.ts ? new Date(s.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '',
+      evidencias: Array.isArray(s.evidence) ? s.evidence : []
     };
   }).filter(Boolean);
 }
@@ -2896,7 +3055,7 @@ const State = {
 /* INIT */
 SECTIONS.forEach((sec, si) => {
   sec.items.forEach((_, ii) => {
-    State.items[`${si}-${ii}`] = { status: null, qty: '', obs: '', ts: null };
+    State.items[`${si}-${ii}`] = { status: null, qty: '', obs: '', ts: null, evidence: [] };
   });
 });
 
@@ -2941,7 +3100,7 @@ function rebuildApp() {
   State.items = {};
   SECTIONS.forEach((sec, si) => {
     sec.items.forEach((_, ii) => {
-      State.items[`${si}-${ii}`] = { status: null, qty: '', obs: '', ts: null };
+      State.items[`${si}-${ii}`] = { status: null, qty: '', obs: '', ts: null, evidence: [] };
     });
   });
   DOM.slidesTrack.innerHTML = '';
@@ -3096,6 +3255,12 @@ function buildItemCard(si, ii, label) {
           <textarea class="detail-input obs-input" id="obs-${key}" placeholder="Adicione detalhes, número de série, modelo..."></textarea>
         </div>
         <div class="item-timestamp" id="ts-${key}"></div>
+        <div class="item-tools">
+          <button type="button" class="ops-feature-btn" data-evidence-key="${key}">📷 Evidência</button>
+          <button type="button" class="ops-feature-btn warn" data-action-key="${key}">Plano de ação</button>
+          <span class="item-evidence-count" id="ev-count-${key}"></span>
+        </div>
+        <div class="item-evidence-strip" id="ev-strip-${key}"></div>
       </div>
     </div>`;
 
@@ -3110,6 +3275,11 @@ function buildItemCard(si, ii, label) {
   const obsIn = card.querySelector(`#obs-${key}`);
   if (qtyIn) qtyIn.addEventListener('input', debounce(e => { State.items[key].qty = e.target.value; autoSave(); }, 300));
   if (obsIn) obsIn.addEventListener('input', debounce(e => { State.items[key].obs = e.target.value; autoSave(); }, 300));
+  const evidenceBtn = card.querySelector(`[data-evidence-key="${key}"]`);
+  const actionBtn = card.querySelector(`[data-action-key="${key}"]`);
+  if (evidenceBtn) evidenceBtn.addEventListener('click', (e) => { e.stopPropagation(); openEvidencePicker(key); });
+  if (actionBtn) actionBtn.addEventListener('click', (e) => { e.stopPropagation(); openActionPlanForItem(key); });
+  renderItemEvidence(key);
 
   return card;
 }
@@ -3771,7 +3941,13 @@ function persistSavedSubmission(payload, status = 'Salvo') {
     notes: '',
     from: State.user.email || 'sem-login',
     summary,
-    itens: payload.itens || []
+    itens: payload.itens || [],
+    impressoras: payload.impressoras || [],
+    stateSnapshot: JSON.parse(JSON.stringify(State.items)),
+    printerSnapshot: JSON.parse(JSON.stringify(State.printers || {})),
+    actionPlans: JSON.parse(JSON.stringify(loadActionPlans())),
+    signature: localStorage.getItem(SIGNATURE_KEY) || '',
+    evaluationId: getEvaluationId()
   };
   const list = loadSavedSubmissions();
   list.unshift(record);
@@ -3809,6 +3985,7 @@ function renderSavedSubmissions() {
           <option value="Falha no envio" ${item.status === 'Falha no envio' ? 'selected' : ''}>Falha no envio</option>
         </select>
         <button type="button" class="cfg-save-btn" style="width:auto;padding:0 12px" onclick="saveSubmissionRecord('${item.id}')">Salvar</button>
+        <button type="button" class="cfg-save-btn" style="width:auto;padding:0 12px;background:linear-gradient(135deg,#2563EB,#3B82F6)" onclick="reopenSavedSubmission('${item.id}')">Reabrir</button>
         <button type="button" class="cfg-save-btn" style="width:auto;padding:0 12px;background:linear-gradient(135deg,#6B7280,#9CA3AF)" onclick="deleteSubmissionRecord('${item.id}')">Excluir</button>
       </div>
     </div>
@@ -4004,6 +4181,10 @@ function buildEmailReportData() {
     impressorasOk: printerRows.filter(p => p.status === 'ok').length,
     impressorasAtencao: printerRows.filter(p => p.status === 'warn').length,
     impressorasCriticas: printerRows.filter(p => p.status === 'crit').length,
+    planosAcao: loadActionPlans().filter(p => !p.status || p.status !== 'done').length,
+    evidencias: countAllEvidence(),
+    assinatura: !!localStorage.getItem(SIGNATURE_KEY),
+    evaluationId: getEvaluationId(),
     geradoEm: now.toLocaleString('pt-BR')
   };
   return { summary, rows: buildPayload().itens, printers: printerRows };
@@ -4112,6 +4293,54 @@ function buildPdfReport() {
       }
       y += 4;
     });
+  }
+
+
+  const plans = loadActionPlans().filter(p => !p.store || p.store === (report.summary.loja || ''));
+  if (plans.length) {
+    if (y > pageHeight - 140) { doc.addPage(); addPdfHeader(doc, report); y = 124; }
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(30,41,69);
+    doc.text('Planos de Ação', 40, y); y += 14;
+    doc.setDrawColor(220,224,232); doc.line(40, y, pageWidth - 40, y); y += 10;
+    plans.forEach(plan => {
+      if (y > pageHeight - 82) { doc.addPage(); addPdfHeader(doc, report); y = 124; }
+      const tag = plan.priority === 'critical' ? 'CRÍTICA' : plan.priority === 'high' ? 'ALTA' : 'NORMAL';
+      const color = plan.status === 'done' ? [16,185,129] : plan.priority === 'critical' ? [220,38,38] : plan.priority === 'high' ? [217,119,6] : [37,99,235];
+      doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(...color); doc.text(plan.status === 'done' ? 'CONCLUÍDO' : tag, 40, y);
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(15,23,42);
+      const titleLines = doc.splitTextToSize(plan.title || 'Plano de ação', 435); doc.text(titleLines, 112, y); y += Math.max(11, titleLines.length * 11);
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(80,89,110);
+      const meta = `Responsável: ${plan.responsible || '—'} · Prazo: ${plan.due || '—'}${plan.sourceItem ? ` · Item: ${plan.sourceItem}` : ''}`;
+      doc.text(doc.splitTextToSize(meta, 435), 112, y); y += 10;
+      if (plan.notes) { const noteLines = doc.splitTextToSize(`Obs.: ${plan.notes}`, 435); doc.text(noteLines, 112, y); y += Math.max(10, noteLines.length * 10); }
+      y += 4;
+    });
+  }
+
+  const allEvidence = [];
+  (report.rows || []).forEach(item => (item.evidencias || []).forEach(ev => allEvidence.push({ ...ev, title: item.item })));
+  (report.printers || []).forEach(item => (item.evidencias || []).forEach(ev => allEvidence.push({ ...ev, title: `Impressora ${item.serie || ''} ${item.modelo || ''}` })));
+  if (allEvidence.length) {
+    if (y > pageHeight - 180) { doc.addPage(); addPdfHeader(doc, report); y = 124; }
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(30,41,69);
+    doc.text(`Evidências (${allEvidence.length})`, 40, y); y += 18;
+    for (const ev of allEvidence.slice(0, 12)) {
+      if (y > pageHeight - 170) { doc.addPage(); addPdfHeader(doc, report); y = 124; }
+      doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(15,23,42);
+      doc.text(doc.splitTextToSize(`${ev.title || 'Item'} · ${ev.name || 'foto'}`, 450), 40, y); y += 8;
+      try {
+        const dims = {w: 240, h: 160};
+        doc.addImage(ev.dataUrl, 'JPEG', 40, y, dims.w, dims.h, undefined, 'FAST');
+        y += dims.h + 14;
+      } catch (_) { doc.setTextColor(120,120,120); doc.text('Evidência não pôde ser incorporada ao PDF.',40,y+10); y += 28; }
+    }
+  }
+
+  const signature = localStorage.getItem(SIGNATURE_KEY) || '';
+  if (signature) {
+    if (y > pageHeight - 130) { doc.addPage(); addPdfHeader(doc, report); y = 124; }
+    doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(30,41,69); doc.text('Assinatura', 40, y); y += 14;
+    try { doc.addImage(signature, 'PNG', 40, y, 220, 72, undefined, 'FAST'); y += 86; } catch (_) {}
   }
 
   if (selectedEmailAttachments.length) {
@@ -4256,7 +4485,7 @@ function exportCSV() {
   showToast('CSV exportado com checklist e impressoras.', 'success');
 }
 
-function downloadCurrentChecklistExcel() {
+function downloadCurrentChecklistExcel(mode='normal') {
   const payload = buildPayload();
   if (!payload.itens.length && !payload.impressoras.length) {
     showToast('Nenhum item preenchido para exportar.', 'error');
@@ -4268,7 +4497,7 @@ function downloadCurrentChecklistExcel() {
     const blob = new Blob([binary], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `${getReportFilename('vistoria')}.xlsx`; a.click();
+    a.href = url; a.download = `${getReportFilename('vistoria')}${mode === 'fallback' ? '-offline' : ''}.xlsx`; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     showToast('Excel gerado com abas Checklist e Impressoras.', 'success');
   } catch (err) {
@@ -4405,14 +4634,15 @@ function buildPayload() {
         secao: sec.title, item,
         status: st.status || '', quantidade: st.qty || '', observacao: st.obs || '',
         horario: st.ts ? new Date(st.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '',
-        score, progresso, salvoEm
+        score, progresso, salvoEm,
+        evidencias: Array.isArray(st.evidence) ? st.evidence : []
       });
     });
   });
 
   const impressoras = buildPrinterExportRows();
 
-  return { itens, impressoras, score, progresso, salvoEm };
+  return { itens, impressoras, score, progresso, salvoEm, actionPlans: loadActionPlans(), assinatura: localStorage.getItem(SIGNATURE_KEY) || '', evaluationId: getEvaluationId() };
 }
 
 async function doSave() {
@@ -4455,7 +4685,8 @@ async function doSave() {
     maybeAutoSendEmailFromSave();
   } catch (e) {
     enqueuePendingSave(request);
-    showToast('Sem conexão com o servidor. Dados salvos localmente e colocados na fila de sincronização.', 'error');
+    try { downloadCurrentChecklistExcel('fallback'); } catch (_) {}
+    showToast('Servidor indisponível. Dados salvos localmente + Excel gerado com aba separada de Impressoras.', 'error');
   } finally {
     btn.classList.remove('loading'); btn.innerHTML = original;
   }
@@ -4904,6 +5135,9 @@ document.head.appendChild(spinStyle);
   // Build UI
   restorePrintersDraft();
   buildUI();
+  // Estado inicial dos recursos de auditoria profissional.
+  try { if (!getEvaluationId()) ensureEvaluationId(); } catch (_) {}
+  updateOpsCenter();
   loadPrintersCatalog();
 
   function finishBoot() {
@@ -5350,5 +5584,233 @@ window.shareReport = async function() {
     copyReport();
   }
 };
+
+
+/* ================================================================
+   CENTRAL DE OPERAÇÕES — implementação local/offline
+   ================================================================ */
+const ACTION_PLANS_KEY = 'ti-action-plans';
+const AGENDA_KEY = 'ti-audit-agenda';
+const SIGNATURE_KEY = 'ti-audit-signature';
+const EVALUATION_ID_KEY = 'ti-evaluation-id';
+let activeEvidenceKey = null;
+
+function safeJsonGet(key, fallback) {
+  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (_) { return fallback; }
+}
+function safeJsonSet(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {} }
+function loadActionPlans() { const v = safeJsonGet(ACTION_PLANS_KEY, []); return Array.isArray(v) ? v : []; }
+function saveActionPlans(list) { safeJsonSet(ACTION_PLANS_KEY, list); }
+function loadAgenda() { const v = safeJsonGet(AGENDA_KEY, []); return Array.isArray(v) ? v : []; }
+function saveAgenda(list) { safeJsonSet(AGENDA_KEY, list); }
+function getEvaluationId() { return localStorage.getItem(EVALUATION_ID_KEY) || ''; }
+function generateEvaluationId() {
+  const loja = getStoreCode(document.getElementById('fLoja')?.value || 'LOJA');
+  const date = (document.getElementById('fData')?.value || new Date().toISOString().slice(0,10)).replace(/-/g,'');
+  const id = `${loja}-${date}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
+  localStorage.setItem(EVALUATION_ID_KEY, id);
+  showToast(`ID da vistoria: ${id}`, 'success');
+  updateOpsCenter();
+  return id;
+}
+function ensureEvaluationId() { return getEvaluationId() || generateEvaluationId(); }
+
+function openOpsCenter() { ensureEvaluationId(); updateOpsCenter(); openModal('opsCenterModal'); }
+function updateOpsCenter() {
+  const plans = loadActionPlans();
+  const agenda = loadAgenda();
+  const evidence = countAllEvidence();
+  const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  set('opsKpiActions', plans.length); set('opsKpiOpen', plans.filter(p => p.status !== 'done').length); set('opsKpiEvidence', evidence); set('opsKpiAgenda', agenda.filter(a => a.status !== 'done').length);
+  const hint = document.getElementById('opsEvaluationIdHint'); if (hint) hint.textContent = `ID desta vistoria: ${getEvaluationId() || '—'}`;
+  renderActionPlans(); renderAgenda(); renderSignaturePreview(); renderAllEvidence();
+}
+function countAllEvidence() {
+  return Object.values(State.items || {}).reduce((sum, st) => sum + ((st && Array.isArray(st.evidence)) ? st.evidence.length : 0), 0) + Object.values(State.printers || {}).reduce((sum, st) => sum + ((st && Array.isArray(st.evidence)) ? st.evidence.length : 0), 0);
+}
+function compressEvidence(dataUrl, maxW=1200, quality=.68) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const ratio = Math.min(1, maxW / Math.max(img.naturalWidth || maxW, 1));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round((img.naturalWidth || maxW) * ratio));
+      c.height = Math.max(1, Math.round((img.naturalHeight || 800) * ratio));
+      const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, c.width, c.height);
+      resolve(c.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+function openEvidencePicker(key) {
+  activeEvidenceKey = key;
+  const item = State.items[key] || (State.items[key] = {status:null,qty:'',obs:'',ts:null,evidence:[]});
+  item.evidence = Array.isArray(item.evidence) ? item.evidence : [];
+  const si = Number(key.split('-')[0]), ii = Number(key.split('-')[1]);
+  const title = document.getElementById('evidenceItemTitle');
+  if (title) title.textContent = `${SECTIONS[si]?.title || 'Item'} · ${SECTIONS[si]?.items[ii] || key}`;
+  const input = document.getElementById('evidenceFileInput');
+  if (input) input.value = '';
+  renderEvidenceModal();
+  openModal('evidenceModal');
+}
+function openPrinterEvidencePicker(key) {
+  activeEvidenceKey = `printer:${key}`;
+  const state = State.printers[key] || (State.printers[key] = {status:null,obs:'',ts:null,evidence:[]});
+  state.evidence = Array.isArray(state.evidence) ? state.evidence : [];
+  const title = document.getElementById('evidenceItemTitle');
+  if (title) title.textContent = `Impressora S/N ${key}`;
+  const input = document.getElementById('evidenceFileInput'); if (input) input.value='';
+  renderEvidenceModal(); openModal('evidenceModal');
+}
+function getActiveEvidenceList() {
+  if (!activeEvidenceKey) return [];
+  if (String(activeEvidenceKey).startsWith('printer:')) { const k=String(activeEvidenceKey).slice(8); const st=State.printers[k] || (State.printers[k]={status:null,obs:'',ts:null,evidence:[]}); st.evidence=Array.isArray(st.evidence)?st.evidence:[]; return st.evidence; }
+  const st=State.items[activeEvidenceKey] || (State.items[activeEvidenceKey]={status:null,qty:'',obs:'',ts:null,evidence:[]}); st.evidence=Array.isArray(st.evidence)?st.evidence:[]; return st.evidence;
+}
+
+function renderEvidenceModal() {
+  const grid = document.getElementById('evidenceItemGrid'); if (!grid) return;
+  const list = getActiveEvidenceList();
+  grid.innerHTML = list.length ? list.map((ev, idx) => `<div class="evidence-preview-card"><img src="${ev.dataUrl}" alt="${escapeHtml(ev.name || 'evidência')}"><div>${escapeHtml(ev.name || 'Evidência')} · <button type="button" class="ops-feature-btn" style="min-height:22px;padding:0 6px;font-size:9px" onclick="removeEvidence(${idx})">Excluir</button></div></div>`).join('') : '<div style="font-size:10px;color:var(--text-secondary)">Nenhuma evidência adicionada.</div>';
+}
+function renderPrinterEvidence(key) {
+  const list = Array.isArray(State.printers[key]?.evidence) ? State.printers[key].evidence : [];
+  const strip=document.getElementById(`printer-ev-strip-${key}`), count=document.getElementById(`printer-ev-count-${key}`);
+  if(count) count.textContent=list.length?`${list.length} evidência(s)`:'';
+  if(strip) strip.innerHTML=list.slice(0,4).map(ev=>`<img class="item-evidence-thumb" src="${ev.dataUrl}" alt="evidência">`).join('');
+}
+function renderItemEvidence(key) {
+  const state = State.items[key]; const list = Array.isArray(state?.evidence) ? state.evidence : [];
+  const strip = document.getElementById(`ev-strip-${key}`); const count = document.getElementById(`ev-count-${key}`);
+  if (count) count.textContent = list.length ? `${list.length} evidência(s)` : '';
+  if (strip) strip.innerHTML = list.slice(0,4).map(ev => `<img class="item-evidence-thumb" src="${ev.dataUrl}" alt="evidência">`).join('');
+}
+async function processEvidenceFiles(files) {
+  if (!activeEvidenceKey) return;
+  const isPrinterEvidence = String(activeEvidenceKey).startsWith('printer:');
+  const targetKey = isPrinterEvidence ? String(activeEvidenceKey).slice(8) : activeEvidenceKey;
+  const state = isPrinterEvidence ? (State.printers[targetKey] || (State.printers[targetKey] = {status:null,obs:'',ts:null,evidence:[]})) : (State.items[targetKey] || (State.items[targetKey] = {status:null,qty:'',obs:'',ts:null,evidence:[]}));
+  state.evidence = Array.isArray(state.evidence) ? state.evidence : [];
+  for (const file of Array.from(files || [])) {
+    if (!(file.type || '').startsWith('image/')) continue;
+    if (file.size > 10 * 1024 * 1024) { showToast(`${file.name} é grande demais para evidência.`, 'error'); continue; }
+    const dataUrl = await new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = reject; r.readAsDataURL(file); });
+    const compact = await compressEvidence(dataUrl);
+    state.evidence.push({id:`ev-${Date.now()}-${Math.random().toString(36).slice(2,7)}`, name:file.name, dataUrl:compact, ts:new Date().toISOString()});
+  }
+  autoSave();
+  renderEvidenceModal(); if(isPrinterEvidence) renderPrinterEvidence(targetKey); else renderItemEvidence(targetKey); updateOpsCenter();
+  showToast('Evidências adicionadas.', 'success');
+}
+function removeEvidence(idx) {
+  if (!activeEvidenceKey) return;
+  const list = getActiveEvidenceList();
+  list.splice(idx,1);
+  autoSave(); autoSavePrinters(); renderEvidenceModal(); if(String(activeEvidenceKey).startsWith('printer:')) renderPrinterEvidence(String(activeEvidenceKey).slice(8)); else renderItemEvidence(activeEvidenceKey); updateOpsCenter();
+}
+
+function openActionPlanForItem(key) {
+  const si = Number(key.split('-')[0]), ii = Number(key.split('-')[1]);
+  const title = SECTIONS[si]?.items[ii] || key;
+  const existing = loadActionPlans().find(p => p.sourceKey === key && p.status !== 'done');
+  document.getElementById('actionPlanTitle').value = existing?.title || `Corrigir: ${title}`;
+  document.getElementById('actionPlanResponsible').value = existing?.responsible || document.getElementById('fResp')?.value || '';
+  document.getElementById('actionPlanDue').value = existing?.due || new Date(Date.now()+3*86400000).toISOString().slice(0,10);
+  document.getElementById('actionPlanPriority').value = existing?.priority || ((State.items[key]?.status === 'crit') ? 'critical' : 'high');
+  document.getElementById('actionPlanNotes').value = existing?.notes || State.items[key]?.obs || '';
+  updateOpsCenter(); openModal('opsCenterModal');
+}
+function saveActionPlanFromForm(sourceKey='') {
+  const title = (document.getElementById('actionPlanTitle')?.value || '').trim();
+  if (!title) { showToast('Informe o que precisa ser corrigido.', 'error'); return; }
+  const plans = loadActionPlans();
+  const match = sourceKey ? plans.find(p => p.sourceKey === sourceKey && p.status !== 'done') : null;
+  const plan = match || {
+    id:`pa-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,
+    sourceKey: activeActionSourceKey || '',
+    store: document.getElementById('fLoja')?.value || '',
+    createdAt:new Date().toISOString()
+  };
+  plan.title = title;
+  plan.responsible = document.getElementById('actionPlanResponsible')?.value || '';
+  plan.due = document.getElementById('actionPlanDue')?.value || '';
+  plan.priority = document.getElementById('actionPlanPriority')?.value || 'normal';
+  plan.notes = document.getElementById('actionPlanNotes')?.value || '';
+  plan.status = plan.status || 'open';
+  plan.evaluationId = ensureEvaluationId();
+  if (match) saveActionPlans(plans); else { plans.unshift(plan); saveActionPlans(plans); }
+  activeActionSourceKey = '';
+  clearActionPlanForm(); updateOpsCenter(); showToast('Plano de ação salvo.', 'success');
+}
+let activeActionSourceKey = '';
+// Override openActionPlanForItem with explicit source binding after function declaration above.
+const _openActionPlanForItem = openActionPlanForItem;
+openActionPlanForItem = function(key) { activeActionSourceKey = key; _openActionPlanForItem(key); };
+function clearActionPlanForm() {
+  ['actionPlanTitle','actionPlanResponsible','actionPlanDue','actionPlanNotes'].forEach(id => { const el=document.getElementById(id); if (el) el.value=''; });
+  const pr=document.getElementById('actionPlanPriority'); if(pr) pr.value='normal';
+}
+function toggleActionPlanStatus(id) {
+  const plans = loadActionPlans(); const p = plans.find(x => x.id === id); if (!p) return; p.status = p.status === 'done' ? 'open' : 'done'; p.completedAt = p.status === 'done' ? new Date().toISOString() : '';
+  saveActionPlans(plans); updateOpsCenter();
+}
+function deleteActionPlan(id) { saveActionPlans(loadActionPlans().filter(p => p.id !== id)); updateOpsCenter(); }
+function renderActionPlans() {
+  const wrap = document.getElementById('actionPlansList'); if (!wrap) return;
+  const plans = loadActionPlans();
+  if (!plans.length) { wrap.innerHTML = '<div class="ops-row-meta">Nenhum plano de ação cadastrado.</div>'; return; }
+  wrap.innerHTML = plans.map(p => `<div class="ops-row-card"><div class="ops-row-top"><div><div class="ops-row-title">${escapeHtml(p.title)}</div><div class="ops-row-meta">${escapeHtml(p.store || '')} · Resp.: ${escapeHtml(p.responsible || '—')} · Prazo: ${escapeHtml(p.due || '—')}</div></div><span class="ops-tag ${p.status==='done'?'done':p.priority==='critical'?'critical':p.priority==='high'?'warn':''}">${p.status==='done'?'CONCLUÍDO':p.priority==='critical'?'CRÍTICA':p.priority==='high'?'ALTA':'NORMAL'}</span></div><div class="ops-row-meta">${escapeHtml(p.notes || '')}</div><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="ops-feature-btn ok" onclick="toggleActionPlanStatus('${p.id}')">${p.status==='done'?'Reabrir':'Concluir'}</button><button type="button" class="ops-feature-btn" onclick="deleteActionPlan('${p.id}')">Excluir</button></div></div>`).join('');
+}
+function openAgendaSection() { const sec=document.getElementById('agendaSection'); if(sec) sec.style.display = sec.style.display==='none' ? 'block' : 'none'; renderAgenda(); }
+function saveAgendaItem() {
+  const title=(document.getElementById('agendaTitle')?.value || '').trim(); if(!title){showToast('Informe o título da vistoria.','error');return;}
+  const list=loadAgenda(); list.unshift({id:`ag-${Date.now()}`, title, date:document.getElementById('agendaDate')?.value || new Date().toISOString().slice(0,10), recurrence:document.getElementById('agendaRecurrence')?.value || 'once', responsible:document.getElementById('agendaResponsible')?.value || '', status:'open'}); saveAgenda(list); renderAgenda(); updateOpsCenter(); showToast('Vistoria adicionada à agenda.','success');
+}
+function toggleAgendaStatus(id){const l=loadAgenda();const a=l.find(x=>x.id===id);if(!a)return;a.status=a.status==='done'?'open':'done';saveAgenda(l);renderAgenda();updateOpsCenter();}
+function deleteAgendaItem(id){saveAgenda(loadAgenda().filter(x=>x.id!==id));renderAgenda();updateOpsCenter();}
+function renderAgenda(){const wrap=document.getElementById('agendaList');if(!wrap)return;const list=loadAgenda();wrap.innerHTML=list.length?list.map(a=>`<div class="ops-row-card"><div class="ops-row-top"><div class="ops-row-title">${escapeHtml(a.title)}</div><span class="ops-tag ${a.status==='done'?'done':''}">${a.status==='done'?'CONCLUÍDO':escapeHtml(a.recurrence)}</span></div><div class="ops-row-meta">${escapeHtml(a.date)} · ${escapeHtml(a.responsible || 'Sem responsável')}</div><div style="display:flex;gap:6px"><button type="button" class="ops-feature-btn ok" onclick="toggleAgendaStatus('${a.id}')">${a.status==='done'?'Reabrir':'Concluir'}</button><button type="button" class="ops-feature-btn" onclick="deleteAgendaItem('${a.id}')">Excluir</button></div></div>`).join(''):'<div class="ops-row-meta">Nenhuma vistoria agendada.</div>';}
+
+function openSignaturePad(){ closeModal('opsCenterModal'); openModal('signatureModal'); setupSignatureCanvas(); }
+function setupSignatureCanvas(){ const c=document.getElementById('signatureCanvas'); if(!c)return; const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height); const old=localStorage.getItem(SIGNATURE_KEY); if(old){ const img=new Image(); img.onload=()=>ctx.drawImage(img,0,0,c.width,c.height); img.src=old; } let drawing=false; const point=e=>{const r=c.getBoundingClientRect(); const sx=c.width/r.width, sy=c.height/r.height; const src=e.touches?e.touches[0]:e; return {x:(src.clientX-r.left)*sx,y:(src.clientY-r.top)*sy};}; c.onpointerdown=e=>{drawing=true;const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);}; c.onpointermove=e=>{if(!drawing)return;const p=point(e);ctx.lineTo(p.x,p.y);ctx.strokeStyle='#111827';ctx.lineWidth=4;ctx.lineCap='round';ctx.stroke();}; c.onpointerup=()=>drawing=false; c.onpointercancel=()=>drawing=false; c.onpointerleave=()=>drawing=false; }
+function clearSignaturePad(){const c=document.getElementById('signatureCanvas');if(!c)return;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function saveSignature(){const c=document.getElementById('signatureCanvas');if(!c)return;localStorage.setItem(SIGNATURE_KEY,c.toDataURL('image/png'));showToast('Assinatura salva.','success');closeModal('signatureModal');updateOpsCenter();}
+function renderSignaturePreview(){const wrap=document.getElementById('signaturePreviewWrap');if(!wrap)return;const sig=localStorage.getItem(SIGNATURE_KEY);wrap.innerHTML=sig?`<img src="${sig}" alt="Assinatura" style="max-width:260px;height:82px;object-fit:contain;background:#fff;border:1px solid var(--border);border-radius:8px"><div style="margin-top:5px"><button type="button" class="ops-feature-btn" onclick="localStorage.removeItem(SIGNATURE_KEY);updateOpsCenter();">Remover assinatura</button></div>`:'Nenhuma assinatura registrada.';}
+function renderAllEvidence(){const grid=document.getElementById('opsEvidenceGrid'),empty=document.getElementById('opsEvidenceEmpty');if(!grid)return;const all=[];SECTIONS.forEach((sec,si)=>sec.items.forEach((item,ii)=>{const key=`${si}-${ii}`;(State.items[key]?.evidence||[]).forEach(ev=>all.push({...ev,title:item,section:sec.title,key}));}));Object.entries(State.printers||{}).forEach(([key,st])=>(st.evidence||[]).forEach(ev=>all.push({...ev,title:`Impressora S/N ${key}`,section:'Impressoras',key:`printer:${key}`})));if(empty)empty.style.display=all.length?'none':'';grid.innerHTML=all.map(ev=>`<div class="evidence-preview-card"><img src="${ev.dataUrl}" alt="evidência"><div>${escapeHtml(ev.section)} · ${escapeHtml(ev.title)}</div></div>`).join('');}
+function downloadLocalEvidenceBundle(){
+  const payload=buildPayload(); const backup={version:2,exportedAt:new Date().toISOString(),evaluationId:ensureEvaluationId(),payload,stateSnapshot:State.items,printerSnapshot:State.printers,actionPlans:loadActionPlans(),agenda:loadAgenda(),signature:localStorage.getItem(SIGNATURE_KEY)||''};
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a');a.href=url;a.download=`backup-${getReportFilename('vistoria')}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);showToast('Backup completo exportado.','success');
+}
+function reopenSavedSubmission(id){
+  const item=loadSavedSubmissions().find(x=>x.id===id); if(!item) return;
+  try {
+    if(item.stateSnapshot) Object.assign(State.items, JSON.parse(JSON.stringify(item.stateSnapshot)));
+    if(item.printerSnapshot) State.printers = JSON.parse(JSON.stringify(item.printerSnapshot));
+    if(Array.isArray(item.actionPlans)) saveActionPlans(item.actionPlans);
+    if(item.signature) localStorage.setItem(SIGNATURE_KEY,item.signature);
+    if(item.evaluationId) localStorage.setItem(EVALUATION_ID_KEY,item.evaluationId);
+    const set=(id,v)=>{const el=document.getElementById(id);if(el&&v!=null)el.value=v}; set('fLoja',item.loja||''); set('fData',item.data||''); set('fResp',item.responsavel||''); set('fReg',item.regional||'');
+    if (DOM.slidesTrack) DOM.slidesTrack.innerHTML = '';
+    buildUI(); updateProgress(); updateTabBadges(); renderPrintersForSelectedStore(); closeModal('savesModal'); showToast('Vistoria reaberta.','success');
+  } catch(e) { console.error(e); showToast('Não foi possível reabrir esta vistoria.','error'); }
+}
+
+// Captura de evidências e auto criação de plano ao marcar atenção/crítico.
+const _origHandleStatusFeature = handleStatusClick;
+handleStatusClick = function(key,newStatus){
+  _origHandleStatusFeature(key,newStatus);
+  if((newStatus==='warn'||newStatus==='crit') && State.items[key]?.status===newStatus){
+    const existing=loadActionPlans().find(p=>p.sourceKey===key&&p.status!=='done');
+    if(!existing){
+      const si=Number(key.split('-')[0]), ii=Number(key.split('-')[1]);
+      const plans=loadActionPlans(); plans.unshift({id:`pa-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,sourceKey:key,store:document.getElementById('fLoja')?.value||'',createdAt:new Date().toISOString(),title:`Corrigir: ${SECTIONS[si]?.items[ii]||key}`,responsible:document.getElementById('fResp')?.value||'',due:new Date(Date.now()+3*86400000).toISOString().slice(0,10),priority:newStatus==='crit'?'critical':'high',notes:State.items[key]?.obs||'',status:'open',evaluationId:ensureEvaluationId()});
+      saveActionPlans(plans); showToast('Plano de ação criado automaticamente.','info');
+    }
+  }
+};
+
+// Intercepta o input de evidências criado dinamicamente.
+document.addEventListener('change', e=>{ if(e.target && e.target.id==='evidenceFileInput') processEvidenceFiles(e.target.files); });
 
 </script>
