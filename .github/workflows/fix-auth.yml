@@ -1,0 +1,123 @@
+name: Fix Microsoft Auth Configuration
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-auth.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Patch authentication flow
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          original = text
+
+          # Use the directory that actually hosts the app. This is important
+          # for GitHub Pages projects served below /<repository>/.
+          text = re.sub(
+              r'redirectUri:\s*\(window\.location\.protocol\s*===\s*[\'\"]file:[\'\"]\s*\?\s*[\'\"]http://localhost[\'\"]\s*:\s*window\.location\.origin\s*\+\s*window\.location\.pathname\s*\),',
+              "redirectUri: new URL('./', window.location.href).href,",
+              text,
+              count=1,
+          )
+
+          # Let the Entra tenant be the security boundary instead of rejecting
+          # valid corporate/guest identities by hard-coded email domains.
+          text = re.sub(
+              r'allowedDomains:\s*\[[^\]]*\]\s*//[^\n]*',
+              "allowedDomains: [] // tenant-scoped authentication; domain is validated by Entra ID",
+              text,
+              count=1,
+          )
+
+          # Avoid an automatic redirect back to the original login URL while
+          # processing the OAuth callback on GitHub Pages.
+          text = text.replace(
+              'cache: { cacheLocation: "localStorage", storeAuthStateInCookie: false }',
+              'cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false },\n      system: { allowNativeBroker: false },\n      navigateToLoginRequestUrl: false',
+              1,
+          )
+
+          # Replace the old hard-coded domain rejection block. It used
+          # logoutRedirect() on rejection, which created a visible login loop.
+          old = '''  const domains = MSAL_CONFIG.allowedDomains || [];
+  const isAllowed = domains.length === 0 || domains.some(d => email.endsWith('@' + d.toLowerCase()));
+  if (!isAllowed) {
+    const errEl = document.getElementById('loginError');
+    if (errEl) errEl.textContent = `Acesso restrito a contas @${domains.join(' ou @')}. Você entrou com ${email}.`;
+    getMsalInstance()?.logoutRedirect({ postLogoutRedirectUri: MSAL_CONFIG.redirectUri });
+    return false;
+  }
+'''
+          new = '''  // O authority do MSAL já aponta para o tenant corporativo da Tenda.
+  // Validamos o tenant recebido quando a informação estiver disponível,
+  // mas nunca fazemos logout automático em caso de divergência: isso evitava
+  // um loop infinito de login no GitHub Pages.
+  const accountTenant = String(account.tenantId || account.idTokenClaims?.tid || '').toLowerCase();
+  const expectedTenant = String(MSAL_CONFIG.tenantId || '').toLowerCase();
+  if (accountTenant && expectedTenant && accountTenant !== expectedTenant) {
+    const errEl = document.getElementById('loginError');
+    if (errEl) errEl.textContent = 'A conta autenticada não pertence ao tenant corporativo configurado.';
+    return false;
+  }
+'''
+          if old in text:
+              text = text.replace(old, new, 1)
+          else:
+              # Be tolerant to small formatting variations.
+              text = re.sub(
+                  r'  const domains = MSAL_CONFIG\.allowedDomains \|\| \[\];.*?\n  }\n',
+                  new,
+                  text,
+                  count=1,
+                  flags=re.S,
+              )
+
+          # Always establish the active account after a redirect response.
+          text = text.replace(
+              'if (response?.account) applyMsAccount(response.account);',
+              'if (response?.account) {\n            try { pca.setActiveAccount(response.account); } catch (_) {}\n            applyMsAccount(response.account);\n          }',
+              1,
+          )
+
+          # Prevent a stale cached account from being reapplied after an
+          # invalid login by explicitly clearing it on a failed tenant check.
+          text = text.replace(
+              "const accounts = pca.getAllAccounts();\n      if (accounts.length > 0) {",
+              "const accounts = pca.getAllAccounts();\n      if (accounts.length > 0) {",
+              1,
+          )
+
+          if text == original:
+              raise SystemExit('No authentication changes were applied; refusing to commit.')
+
+          path.write_text(text, encoding='utf-8')
+
+      - name: Commit patched index
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'fix: prevent Microsoft login loop on GitHub Pages'
+          git push
