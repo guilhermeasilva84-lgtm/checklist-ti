@@ -1925,51 +1925,107 @@ button, input, select, textarea { touch-action: manipulation; }
 </style>
 
 <style id="ios-hover-light">
-/* iOS-style pointer glow: subtle, fast and never blocks clicks */
+/* iOS / macOS inspired interaction layer — fast, subtle and GPU-friendly */
 :root { --ios-glow-x: 50%; --ios-glow-y: 50%; }
 .item-card, .icon-btn, .save-btn, .cfg-save-btn, .filter-chip, .status-btn,
 .tab-btn, .resume-btn, .printers-back-btn, .login-btn, .printer-status-btn,
 .qty-stepper-btn, .modal-close {
   position: relative;
-  overflow: hidden;
   isolation: isolate;
-  transition: transform .2s cubic-bezier(.22,1,.36,1), box-shadow .25s ease, border-color .2s ease, background-color .2s ease;
+  transition: transform .18s cubic-bezier(.22,1,.36,1), box-shadow .22s cubic-bezier(.22,1,.36,1), border-color .18s ease, background-color .18s ease;
+  will-change: transform;
 }
+/* Cursor-following light */
 .item-card::before, .icon-btn::before, .save-btn::before, .cfg-save-btn::before,
 .filter-chip::before, .status-btn::before, .tab-btn::before, .resume-btn::before,
 .printers-back-btn::before, .login-btn::before, .printer-status-btn::before,
 .qty-stepper-btn::before, .modal-close::before {
-  content:""; position:absolute; inset:-35%; pointer-events:none; z-index:-1;
-  background: radial-gradient(circle at var(--ios-glow-x) var(--ios-glow-y), rgba(255,255,255,.28) 0, rgba(255,255,255,.10) 16%, transparent 42%);
-  opacity:0; transition:opacity .18s ease;
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+  border-radius:inherit;
+  background: radial-gradient(170px circle at var(--ios-glow-x) var(--ios-glow-y), rgba(255,255,255,.20), rgba(255,255,255,.07) 22%, transparent 58%);
+  opacity:0;
+  transition: opacity .16s ease;
+  mix-blend-mode: screen;
+}
+/* Fine inner highlight, like polished glass */
+.item-card::after, .icon-btn::after, .save-btn::after, .cfg-save-btn::after,
+.filter-chip::after, .status-btn::after, .tab-btn::after, .resume-btn::after,
+.printers-back-btn::after, .login-btn::after, .printer-status-btn::after,
+.qty-stepper-btn::after, .modal-close::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:3;
+  border-radius:inherit;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  opacity:.45;
 }
 .item-card:hover, .icon-btn:hover, .save-btn:hover, .cfg-save-btn:hover, .filter-chip:hover,
 .status-btn:hover, .tab-btn:hover, .resume-btn:hover, .printers-back-btn:hover,
 .login-btn:hover, .printer-status-btn:hover, .qty-stepper-btn:hover, .modal-close:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.10), 0 0 0 1px rgba(255,255,255,.08) inset;
+  transform: translate3d(0,-1px,0);
+  box-shadow: 0 7px 22px rgba(0,0,0,.10), 0 0 0 1px rgba(255,255,255,.07) inset;
 }
 .item-card:hover::before, .icon-btn:hover::before, .save-btn:hover::before, .cfg-save-btn:hover::before,
 .filter-chip:hover::before, .status-btn:hover::before, .tab-btn:hover::before, .resume-btn:hover::before,
 .printers-back-btn:hover::before, .login-btn:hover::before, .printer-status-btn:hover::before,
 .qty-stepper-btn:hover::before, .modal-close:hover::before { opacity:1; }
+/* Press feedback: tiny compression + moving sheen */
+.item-card:active, .icon-btn:active, .save-btn:active, .cfg-save-btn:active, .filter-chip:active,
+.status-btn:active, .tab-btn:active, .resume-btn:active, .printers-back-btn:active,
+.login-btn:active, .printer-status-btn:active, .qty-stepper-btn:active, .modal-close:active {
+  transform: translate3d(0,0,0) scale(.985);
+  transition-duration:.08s;
+}
+@keyframes ios-sheen {
+  from { transform: translate3d(-130%,0,0) skewX(-18deg); opacity:0; }
+  15% { opacity:.55; }
+  to { transform: translate3d(130%,0,0) skewX(-18deg); opacity:0; }
+}
+.save-btn:active::before, .cfg-save-btn:active::before, .login-btn:active::before {
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.32) 48%, rgba(255,255,255,.08) 53%, transparent 66%);
+  animation: ios-sheen .38s cubic-bezier(.22,1,.36,1);
+  opacity:1;
+}
 @media (hover:none), (prefers-reduced-motion:reduce) {
   .item-card, .icon-btn, .save-btn, .cfg-save-btn, .filter-chip, .status-btn, .tab-btn,
-  .resume-btn, .printers-back-btn, .login-btn, .printer-status-btn, .qty-stepper-btn, .modal-close { transition:none; }
+  .resume-btn, .printers-back-btn, .login-btn, .printer-status-btn, .qty-stepper-btn, .modal-close {
+    transition:none; will-change:auto;
+  }
   .item-card:hover, .icon-btn:hover, .save-btn:hover, .cfg-save-btn:hover, .filter-chip:hover,
   .status-btn:hover, .tab-btn:hover, .resume-btn:hover, .printers-back-btn:hover,
-  .login-btn:hover, .printer-status-btn:hover, .qty-stepper-btn:hover, .modal-close:hover { transform:none; box-shadow:none; }
+  .login-btn:hover, .printer-status-btn:hover, .qty-stepper-btn:hover, .modal-close:hover {
+    transform:none; box-shadow:none;
+  }
+  .item-card::before, .icon-btn::before, .save-btn::before, .cfg-save-btn::before, .filter-chip::before,
+  .status-btn::before, .tab-btn::before, .resume-btn::before, .printers-back-btn::before, .login-btn::before,
+  .printer-status-btn::before, .qty-stepper-btn::before, .modal-close::before { display:none; }
 }
 </style>
 <script>
 (() => {
   const selectors = '.item-card,.icon-btn,.save-btn,.cfg-save-btn,.filter-chip,.status-btn,.tab-btn,.resume-btn,.printers-back-btn,.login-btn,.printer-status-btn,.qty-stepper-btn,.modal-close';
+  let active = null, raf = 0, lastX = 0, lastY = 0;
   document.addEventListener('pointermove', e => {
     const el = e.target.closest?.(selectors);
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty('--ios-glow-x', ((e.clientX-r.left)/r.width*100)+'%');
-    el.style.setProperty('--ios-glow-y', ((e.clientY-r.top)/r.height*100)+'%');
+    if (!el || e.pointerType === 'touch') return;
+    active = el; lastX = e.clientX; lastY = e.clientY;
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      if (!active) return;
+      const r = active.getBoundingClientRect();
+      active.style.setProperty('--ios-glow-x', ((lastX-r.left)/r.width*100)+'%');
+      active.style.setProperty('--ios-glow-y', ((lastY-r.top)/r.height*100)+'%');
+    });
+  }, {passive:true});
+  document.addEventListener('pointerout', e => {
+    if (active && !active.contains(e.relatedTarget)) active = null;
   }, {passive:true});
 })();
 </script>
