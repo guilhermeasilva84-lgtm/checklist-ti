@@ -10,9 +10,9 @@
 <meta name="application-name" content="Checklist TI - Tenda">
 <title>Checklist TI - Tenda</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="tenda-atacado-logo.png" type="image/svg+xml">
-<link rel="apple-touch-icon" href="tenda-atacado-logo.png">
-<meta name="msapplication-TileImage" content="tenda-atacado-logo.png">
+<link rel="icon" href="tenda-logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="tenda-logo.svg">
+<meta name="msapplication-TileImage" content="tenda-logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- MSAL.js — biblioteca oficial da Microsoft para login com conta corporativa (Entra ID).
@@ -1910,9 +1910,35 @@ transform: translate3d(0,0,0); will-change: transform; transition: transform 0.3
   .slides-viewport { overscroll-behavior-x:contain; }
 }
 </style>
+<style>
+/* FINAL STABILITY + PERFORMANCE HARDENING */
+html { text-rendering: optimizeLegibility; }
+button, input, select, textarea { touch-action: manipulation; }
+.item-card { content-visibility: auto; contain-intrinsic-size: 120px; }
+.slides-viewport, .modal-sheet, .main-scroll { overscroll-behavior: contain; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+@media (hover: none) {
+  .item-card:hover, .status-btn:hover, .icon-btn:hover, .save-btn:hover, .cfg-save-btn:hover, .filter-chip:hover { transform: none; box-shadow: none; }
+}
+</style>
 </head>
 <body>
 <script>
+/* Runtime safety: prevent technical exceptions from becoming a white screen. */
+window.addEventListener('error', function (event) {
+  console.error('[Checklist TI] Erro de interface:', event.error || event.message);
+  const splash = document.getElementById('splash');
+  if (splash) splash.classList.add('hidden');
+  const errorBox = document.getElementById('runtimeErrorBox');
+  if (errorBox) { errorBox.hidden = false; errorBox.textContent = 'Ocorreu um erro ao carregar esta tela. Recarregue a página e tente novamente.'; }
+});
+window.addEventListener('unhandledrejection', function (event) {
+  console.error('[Checklist TI] Operação não tratada:', event.reason);
+  event.preventDefault();
+});
+
 /* Todo o HTML da tela de login, menu superior, modais e toast é montado aqui via JavaScript (template) em vez de ficar fixo no arquivo. */
 const APP_MARKUP = `
 
@@ -4149,6 +4175,7 @@ function buildPdfReport() {
 }
 
 async function sendEmailReport() {
+  if (!OperationLock.acquire('email')) return;
   const recipientsInput = document.getElementById('emailRecipients');
   const subjectInput = document.getElementById('emailSubject');
   const bodyInput = document.getElementById('emailBody');
@@ -4212,6 +4239,7 @@ async function sendEmailReport() {
     showToast('Envio não concluído. O e-mail ficou em pendências para nova tentativa.', 'error');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Enviar por E-mail'; }
+    OperationLock.release('email');
   }
 }
 
@@ -4296,16 +4324,17 @@ function buildChecklistExcelBase64(payload) {
 }
 
 async function sendCurrentChecklistExcel() {
+  if (!OperationLock.acquire('excel-email')) return;
   const payload = buildPayload();
   const loja = document.getElementById('fLoja').value || 'Loja';
   const data = document.getElementById('fData').value || new Date().toLocaleDateString('pt-BR');
   if (!payload.itens.length && !payload.impressoras.length) {
     showToast('Nenhum dado preenchido para enviar.', 'error');
-    return;
+    OperationLock.release('excel-email'); return;
   }
   let excelBase64;
   try { excelBase64 = buildChecklistExcelBase64(payload); }
-  catch (err) { showToast('Erro ao gerar a planilha Excel.', 'error'); return; }
+  catch (err) { showToast('Erro ao gerar a planilha Excel.', 'error'); OperationLock.release('excel-email'); return; }
 
   const request = {
     action: 'sendChecklistExcel',
@@ -4415,9 +4444,20 @@ function buildPayload() {
   return { itens, impressoras, score, progresso, salvoEm };
 }
 
+
+const OperationLock = (() => {
+  const active = new Set();
+  return {
+    acquire(key) { if (active.has(key)) return false; active.add(key); return true; },
+    release(key) { active.delete(key); },
+    has(key) { return active.has(key); }
+  };
+})();
+
 async function doSave() {
+  if (!OperationLock.acquire('save')) return;
   const btn = document.getElementById('saveBtn');
-  if (!btn) return;
+  if (!btn) { OperationLock.release('save'); return; }
   const original = btn.innerHTML;
   btn.classList.add('loading');
   btn.innerHTML = `<svg class="save-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Salvando...`;
@@ -4430,7 +4470,7 @@ async function doSave() {
 
   if (!payload.itens.length && !payload.impressoras.length) {
     showToast('Nenhum item ou impressora preenchido para salvar.', 'error');
-    btn.classList.remove('loading'); btn.innerHTML = original; return;
+    btn.classList.remove('loading'); btn.innerHTML = original; OperationLock.release('save'); return;
   }
 
   const request = {
@@ -4458,6 +4498,7 @@ async function doSave() {
     showToast('Sem conexão com o servidor. Dados salvos localmente e colocados na fila de sincronização.', 'error');
   } finally {
     btn.classList.remove('loading'); btn.innerHTML = original;
+    OperationLock.release('save');
   }
 }
 
@@ -4940,7 +4981,7 @@ document.head.appendChild(spinStyle);
 
   // Aguarda o MSAL processar o retorno do login (loginRedirect) antes de
   // decidir se mostra a tela de login ou já abre o app.
-  setTimeout(() => {
+  {
     const pca = getMsalInstance();
     if (pca) {
       pca.handleRedirectPromise()
@@ -4955,7 +4996,7 @@ document.head.appendChild(spinStyle);
     } else {
       finishBoot();
     }
-  }, 1800);
+  }
 })();
 </script>
 <script id="ultra-features">
