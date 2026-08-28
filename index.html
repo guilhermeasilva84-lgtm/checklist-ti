@@ -1923,6 +1923,56 @@ button, input, select, textarea { touch-action: manipulation; }
   .item-card:hover, .status-btn:hover, .icon-btn:hover, .save-btn:hover, .cfg-save-btn:hover, .filter-chip:hover { transform: none; box-shadow: none; }
 }
 </style>
+
+<style id="ios-hover-light">
+/* iOS-style pointer glow: subtle, fast and never blocks clicks */
+:root { --ios-glow-x: 50%; --ios-glow-y: 50%; }
+.item-card, .icon-btn, .save-btn, .cfg-save-btn, .filter-chip, .status-btn,
+.tab-btn, .resume-btn, .printers-back-btn, .login-btn, .printer-status-btn,
+.qty-stepper-btn, .modal-close {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform .2s cubic-bezier(.22,1,.36,1), box-shadow .25s ease, border-color .2s ease, background-color .2s ease;
+}
+.item-card::before, .icon-btn::before, .save-btn::before, .cfg-save-btn::before,
+.filter-chip::before, .status-btn::before, .tab-btn::before, .resume-btn::before,
+.printers-back-btn::before, .login-btn::before, .printer-status-btn::before,
+.qty-stepper-btn::before, .modal-close::before {
+  content:""; position:absolute; inset:-35%; pointer-events:none; z-index:-1;
+  background: radial-gradient(circle at var(--ios-glow-x) var(--ios-glow-y), rgba(255,255,255,.28) 0, rgba(255,255,255,.10) 16%, transparent 42%);
+  opacity:0; transition:opacity .18s ease;
+}
+.item-card:hover, .icon-btn:hover, .save-btn:hover, .cfg-save-btn:hover, .filter-chip:hover,
+.status-btn:hover, .tab-btn:hover, .resume-btn:hover, .printers-back-btn:hover,
+.login-btn:hover, .printer-status-btn:hover, .qty-stepper-btn:hover, .modal-close:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.10), 0 0 0 1px rgba(255,255,255,.08) inset;
+}
+.item-card:hover::before, .icon-btn:hover::before, .save-btn:hover::before, .cfg-save-btn:hover::before,
+.filter-chip:hover::before, .status-btn:hover::before, .tab-btn:hover::before, .resume-btn:hover::before,
+.printers-back-btn:hover::before, .login-btn:hover::before, .printer-status-btn:hover::before,
+.qty-stepper-btn:hover::before, .modal-close:hover::before { opacity:1; }
+@media (hover:none), (prefers-reduced-motion:reduce) {
+  .item-card, .icon-btn, .save-btn, .cfg-save-btn, .filter-chip, .status-btn, .tab-btn,
+  .resume-btn, .printers-back-btn, .login-btn, .printer-status-btn, .qty-stepper-btn, .modal-close { transition:none; }
+  .item-card:hover, .icon-btn:hover, .save-btn:hover, .cfg-save-btn:hover, .filter-chip:hover,
+  .status-btn:hover, .tab-btn:hover, .resume-btn:hover, .printers-back-btn:hover,
+  .login-btn:hover, .printer-status-btn:hover, .qty-stepper-btn:hover, .modal-close:hover { transform:none; box-shadow:none; }
+}
+</style>
+<script>
+(() => {
+  const selectors = '.item-card,.icon-btn,.save-btn,.cfg-save-btn,.filter-chip,.status-btn,.tab-btn,.resume-btn,.printers-back-btn,.login-btn,.printer-status-btn,.qty-stepper-btn,.modal-close';
+  document.addEventListener('pointermove', e => {
+    const el = e.target.closest?.(selectors);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--ios-glow-x', ((e.clientX-r.left)/r.width*100)+'%');
+    el.style.setProperty('--ios-glow-y', ((e.clientY-r.top)/r.height*100)+'%');
+  }, {passive:true});
+})();
+</script>
 </head>
 <body>
 <script>
